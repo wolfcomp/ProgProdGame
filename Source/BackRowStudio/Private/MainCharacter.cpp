@@ -19,7 +19,7 @@ AMainCharacter::AMainCharacter()
 
 	SpringArmComponent = CreateDefaultSubobject<USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComponent->SetupAttachment(GetRootComponent());
-	SpringArmComponent->TargetArmLength = 4500.f;
+	SpringArmComponent->TargetArmLength = 800.f;
 	SpringArmComponent->SetWorldRotation((FRotator(-60.f, 0.f, 0.f)));
 	SpringArmComponent->bUsePawnControlRotation = true;
 
