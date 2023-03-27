@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "BackRowStudioGameMode.h"
-#include "BackRowStudioCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
 ABackRowStudioGameMode::ABackRowStudioGameMode()
