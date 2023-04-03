@@ -16,7 +16,7 @@ struct FItemStruct : public FTableRowBase
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int MaxQuantity = 64;
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	UTexture2D* MyImage = LoadObject<UTexture2D>(NULL, TEXT("/Engine/EngineResources/AICON-Red"), NULL, LOAD_None, NULL);
+	UTexture2D* MyImage = LoadObject<UTexture2D>(nullptr, TEXT("/Engine/EngineResources/AICON-Red"), nullptr, LOAD_None, nullptr);
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FString MyDebugMsg = "this is a debug msg";
 };
@@ -28,7 +28,7 @@ struct FSlotStruct
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FItemStruct MyItem;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int Quantity;
+	int Quantity = 1;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -43,6 +43,8 @@ public:
 	UDataTable* ItemDataTable = nullptr;
 	UDataTable* Items;
 	FItemStruct* MyItem;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FSlotStruct> MyInv;
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
