@@ -24,9 +24,9 @@ public:
 	// Called every frame
 	virtual void Tick(float) override;
 
-	virtual void LightAttack(FVector, FRotator, UWorld *, TArray<AActor*>) override;
+	virtual void LightAttack(FVector, FRotator, UWorld *, TArray<AActor *> &) override;
 
-	virtual void HeavyAttack(FVector, FRotator, UWorld *, TArray<AActor*>) override;
+	virtual void HeavyAttack(FVector, FRotator, UWorld *, TArray<AActor*> &) override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FSpell Spell;

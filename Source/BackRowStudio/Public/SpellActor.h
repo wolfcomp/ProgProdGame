@@ -75,7 +75,7 @@ class ISpellActor
 
     void InternalDebugSpell(ESpellType, FVector, float, FVector, FRotator, const UWorld *) const;
 
-    void GetActors(ESpellType, UWorld *);
+    TArray<AActor *> GetActors(ESpellType, FVector, float, FVector, FRotator, UWorld *) const;
 
 public:
     FSpell Spell;
@@ -84,7 +84,7 @@ public:
 
     void DebugSpell(FVector, FRotator, const UWorld *) const;
 
-    virtual void LightAttack(FVector, FRotator, UWorld *, TArray<AActor*> actors);
+    virtual void LightAttack(FVector, FRotator, UWorld *, TArray<AActor *> &actors);
 
-    virtual void HeavyAttack(FVector, FRotator, UWorld *, TArray<AActor*> actors);
+    virtual void HeavyAttack(FVector, FRotator, UWorld *, TArray<AActor *> &actors);
 };
