@@ -2,8 +2,7 @@
 
 
 #include "InventoryWidget.h"
-
-#include "SlotWidget.h"
+#include "InventoryComponent.h"
 
 void UInventoryWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime)
 {
@@ -12,39 +11,46 @@ void UInventoryWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime
 
 void UInventoryWidget::NativePreConstruct()
 {
-    //MySlotW = *Cast<TSubclassOf<USlotWidget>>(MySlotWidget);
-    //temp = Cast<USlotWidget, UUserWidget>(MySlotWidget);
-    //MySlotW = TCastImpl<USlotWidget, TSubclassOf<USlotWidget>, ECastType::UObjectToUObject>();
-    //TCastImpl<TSubclassOf<UUserWidget>,TSubclassOf<USlotWidget>,ECastType::UObjectToUObject>(MySlotWidget);
-    //TCastImpl<From,To,ECastType::UObjectToUObject>::DoCast(UObject *)
-    //MySlotWidget = *LoadObject<TSubclassOf<USlotWidget>>(nullptr, TEXT(""), nullptr, LOAD_None, nullptr);
-    //C:/Users/Dennis/Documents/Unreal Projects/ProgProdGame/Content/IndividualFolders/Dennis/BP_InventoryWidget.uasset
-    if(!MyInventory.IsEmpty() && MySlotWidget != __nullptr)
+    Super::NativePreConstruct();
+}
+
+void UInventoryWidget::NativeConstruct()
+{
+    if(MyInventory->IsValidLowLevel())
     {
-        MyInv = MyInventory;
-        for (int i = 0; i < MyInventory.Num(); ++i)
+        if(!MyInventory->Inventory.IsEmpty())
         {
-            UUserWidget* t = CreateWidget(this, MySlotWidget,FName(*FString("a")+i));
-            USlotWidget* a = Cast<USlotWidget>(t);
-            a->MyContent = MyInventory[i];
-            MyHorizontal->AddChildToHorizontalBox(a);
+            if(MySlotWidget != __nullptr)
+            {
+                int i2 = 0;
+                int i3 = 0;
+                for (int i = 0; i < MyInventory->Inventory.Num(); ++i)
+                {
+                    if(i % HorizontalLimit == 0)
+                    {
+                        i2++;
+                        i3=0;
+                    }
+                    USlotWidget *slotWidget = Cast<USlotWidget>(CreateWidget(this, MySlotWidget));
+                    slotWidget->MyContent = MyInventory->Inventory[i];
+                    MyGridPanel->AddChildToGrid(slotWidget,i2,i3);
+                    i3++;
+                }
+            }
+            else
+            {
+                GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidgets slotWidget is nullptr"));
+            }
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidgets inventory is empty"));
         }
     }
     else
     {
-        if(MyInventory.IsEmpty())
-        {
-            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Black,FString("InventoryWidgets inventory is empty"));
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Black,FString("InventoryWidgets slotWidget is nullptr"));
-            if (MySlotWidget != nullptr)
-            {
-                GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,MySlotWidget->GetClass()->GetName());
-            }
-        }
+        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidgets has that LIVECODING INVENTORY X problem again"));
     }
-    Super::NativePreConstruct();
+    Super::NativeConstruct();
 }
 

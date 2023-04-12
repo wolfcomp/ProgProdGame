@@ -2,74 +2,92 @@
 
 
 #include "SlotWidget.h"
-
-#include "InvDragDropOperation.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Components/Border.h"
 #include "Components/Image.h"
 #include "Components/TextBlock.h"
+#include "DragPreview.h"
+
+void USlotWidget::Synchronize()
+{
+    if(MyContent && MyContent.Item->IsValidLowLevel() && MyContent.Quantity != NULL)
+    {
+        if(MyContent)
+        {
+            if(MyContent.Item->MyImage)
+            {
+                if(MyImage)
+                {
+                    MyImage->BrushDelegate.BindUFunction(this, "SetImageField");
+                    MyImage->SynchronizeProperties();
+                }
+            }
+            if (MyContent.Quantity && QuantityNum && QuantityTextBox)
+            {
+	            QuantityNum->TextDelegate.BindUFunction(this, "SetQuantityField");
+	            QuantityNum->SynchronizeProperties();
+            }   
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("a17 not valid"));
+        }
+    }
+}
 
 void USlotWidget::NativeConstruct()
 {
-    MyCon = &MyContent;
-    if(MyCon)
-    {
-        if (MyCon->MyItem.MyImage && MyImage)
-        {
-            MyImage->BrushDelegate.BindUFunction(this, "SetImageField");
-            MyImage->SynchronizeProperties();
-        }
-        if (MyCon->Quantity && QuantityNum && QuantityTextBox)
-        {
-	        QuantityNum->TextDelegate.BindUFunction(this, "SetQuantityField");
-	        QuantityNum->SynchronizeProperties();
-        }
-    }
+    OrgImg = MyImage->Brush;
+    Synchronize();
 }
 
 bool USlotWidget::NativeOnDrop(const FGeometry &InGeometry, const FDragDropEvent &InDragDropEvent, UDragDropOperation *InOperation)
 {
-    UInvDragDropOperation* InOp = Cast<UInvDragDropOperation>(InOperation);
-
-    if(InOp)
+    if(const UInvDragDropOperation* inOperation2 = Cast<UInvDragDropOperation>(InOperation))
     {
-        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Green,FString("valid drop detected"));
-        if(MyCon == nullptr)
+        if(USlotWidget* inOp = Cast<USlotWidget>(inOperation2->WidgetReference); inOp)
         {
-            MyCon = &InOp->MyContent;
-            return true;
-        } if(&MyCon->MyItem == &InOp->MyContent.MyItem)
-        {
-            return true;
+            if (inOp == this) return false;
+            if(inOp->MyContent)
+            {
+                if(MyContent.Item == inOp->MyContent.Item)
+                {
+                    MyContent.Quantity += inOp->MyContent.Quantity;
+                    GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Blue,FString("pog drop detected"));
+                    inOp->MyContent = FSlotStruct();
+                    Synchronize();
+                    return true;
+                }
+                if(!MyContent)
+                {
+                    GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,FString("got nothin'"));
+                    MyContent = inOp->MyContent;
+                    inOp->MyContent = FSlotStruct();
+                    Synchronize();
+                    return true;
+                }
+                Synchronize();
+                return false;
+            }
+            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("invalid drop detected"));
+            return false;
         }
-        return true;
     }
     GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("invalid drop detected"));
-    return false;
-    //return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
+    return Super::NativeOnDrop(InGeometry, InDragDropEvent, InOperation);
 }
 
 void USlotWidget::NativeOnDragDetected(const FGeometry &InGeometry, const FPointerEvent &InMouseEvent, UDragDropOperation *&OutOperation)
 {
-    UInvDragDropOperation* ItemDragDrop = NewObject<UInvDragDropOperation>();
-    if (ItemDragDrop != nullptr)
-    {
-        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Green,FString("valid drag detected"));
-        OldContent = MyCon;
-        if (MyCon == nullptr)
-        {
-            ItemDragDrop->MyContent = FSlotStruct();
-        } else
-        {
-            ItemDragDrop->MyContent = *MyCon;
-            MyCon = nullptr;
-        }
-        OutOperation = ItemDragDrop;
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("invalid drag detected"));
-    }
+    //a lot taken from https://forums.unrealengine.com/t/creating-drag-and-drop-ui-using-c/269049
+    UInvDragDropOperation* itemDragDrop = NewObject<class UInvDragDropOperation>();
+    //this->SetVisibility(ESlateVisibility::HitTestInvisible);
+
+    itemDragDrop->WidgetReference = this;
+    itemDragDrop->DragOffset = InGeometry.AbsoluteToLocal(InMouseEvent.GetScreenSpacePosition());
+    itemDragDrop->DefaultDragVisual = this;
+    itemDragDrop->Pivot = EDragPivot::MouseDown;
+    OutOperation = itemDragDrop;
 
     Super::NativeOnDragDetected(InGeometry, InMouseEvent, OutOperation);
 }
@@ -77,7 +95,13 @@ void USlotWidget::NativeOnDragDetected(const FGeometry &InGeometry, const FPoint
 void USlotWidget::NativeOnDragCancelled(const FDragDropEvent &InDragDropEvent, UDragDropOperation *InOperation)
 {
     GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,FString("drag cancelled"));
-    MyCon = OldContent;
+    if(const UInvDragDropOperation* inOp = Cast<UInvDragDropOperation>(InOperation))
+    {
+        if(const USlotWidget* inOp2 = Cast<USlotWidget>(inOp->WidgetReference))
+        {
+            MyContent = inOp2->MyContent;
+        }
+    }
     Super::NativeOnDragCancelled(InDragDropEvent, InOperation);
 }
 
@@ -87,24 +111,32 @@ FReply USlotWidget::NativeOnMouseButtonDown(const FGeometry &InGeometry, const F
     if(InMouseEvent.GetEffectingButton() == EKeys::LeftMouseButton)
     {
         //GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Black,FString("OnMouseButtonDown triggered with Mouse button"));
-        returnReply.DetectDrag(TakeWidget(),EKeys::LeftMouseButton);
+        if(MyContent)
+        {
+            returnReply.DetectDrag(TakeWidget(),EKeys::LeftMouseButton);
+        }
     }
-    else
+    else if (InMouseEvent.GetEffectingButton() == EKeys::RightMouseButton)
     {
-         //GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Black,FString("OnMouseButtonDown triggered with non Mouse button"));
+        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Yellow,FString("OnMouseButtonDown triggered with right Mouse button"));
+        if(MyContent)
+        {
+            if(MyContent.Item->HasMenu)
+            {
+                //if(myItem.HasMenu) CreateWidgetInstance();
+            }
+        }
     }
-
     return returnReply;
 }
 
-
 FText USlotWidget::SetQuantityField() const
 {
-    if(MyCon != nullptr)
+    if(QuantityNum) return QuantityNum->GetText();
+    if(MyContent)
     {
-        if(MyCon->Quantity != 0) {
-        QuantityTextBox->SetVisibility(ESlateVisibility::Visible);
-        return FText::FromString(FString::FromInt(MyCon->Quantity));
+        if(MyContent.Quantity >= 1) {
+            return FText::FromString(FString::FromInt(MyContent.Quantity));
         }
     }
     return FText::FromString("");
@@ -112,11 +144,11 @@ FText USlotWidget::SetQuantityField() const
 
 FSlateBrush USlotWidget::SetImageField() const
 {
-    if(MyCon != nullptr)
+    if(MyContent && MyContent.Item && MyContent.Item->MyImage)
     {
-        return UWidgetBlueprintLibrary::MakeBrushFromTexture(MyCon->MyItem.MyImage, 32, 32);
+        return UWidgetBlueprintLibrary::MakeBrushFromTexture(MyContent.Item->MyImage.Get(), 32, 32);
     }
-
+    //return MySlateBrush;
     return FSlateBrush();
 }
 

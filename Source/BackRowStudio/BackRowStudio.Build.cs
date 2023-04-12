@@ -6,10 +6,10 @@ public class BackRowStudio : ModuleRules
 {
 	public BackRowStudio(ReadOnlyTargetRules Target) : base(Target)
 	{
-		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+        PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput", "Niagara" });
 
         PublicDependencyModuleNames.AddRange(new string[] { "UMG", "Slate", "SlateCore" });
-	}
+    }
 }

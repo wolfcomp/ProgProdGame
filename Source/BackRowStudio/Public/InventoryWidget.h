@@ -3,17 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "InventoryComponent.h"
-#include "SlotWidget.h"
 #include "Blueprint/UserWidget.h"
-#include "Blueprint/UserWidgetBlueprint.h"
-#include "Components/HorizontalBox.h"
-#include "Components/VerticalBox.h"
+#include "SlotWidget.h"
+#include "InventoryComponent.h"
+#include "Components/GridPanel.h"
 #include "InventoryWidget.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class BACKROWSTUDIO_API UInventoryWidget : public UUserWidget
 {
@@ -21,17 +16,14 @@ class BACKROWSTUDIO_API UInventoryWidget : public UUserWidget
 public:
 	virtual void NativeTick(const FGeometry &MyGeometry, float InDeltaTime) override;
 	virtual void NativePreConstruct() override;
-	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn))
-    TArray<FSlotStruct> MyInventory;
-	TArray<FSlotStruct> MyInv;
+	virtual void NativeConstruct() override;
 
-	//UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	//UVerticalBox* MyVertical;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
+	    UInventoryComponent* MyInventory;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UHorizontalBox* MyHorizontal;
+	    UGridPanel* MyGridPanel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<USlotWidget> MySlotWidget;
-	UPROPERTY()
-	//TSubclassOf<USlotWidget>* MySlotW;
-	USlotWidget* temp;
+	    TSubclassOf<USlotWidget> MySlotWidget;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	    int HorizontalLimit = 5;
 };
