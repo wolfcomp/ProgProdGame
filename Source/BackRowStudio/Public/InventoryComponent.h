@@ -15,9 +15,9 @@ class BACKROWSTUDIO_API UInventoryComponent : public UActorComponent
 public:
     UInventoryComponent();
 	//don't know why i have define the pointer for this class to prevent the engine from crashing on compile
-    UInventoryComponent* operator*(UInventoryComponent in);
+    //UInventoryComponent* operator*(UInventoryComponent in);
 
-    UPROPERTY(EditAnywhere, meta = (TitleProperty="Item: {Item} ({Quantity})", ShowOnlyInnerProperties=true))
+    UPROPERTY(EditAnywhere, meta = (TitleProperty="Item: {Item} ({Quantity})"))
 	    TArray<FSlotStruct> MyInventory = {FSlotStruct(10),FSlotStruct(5)};
 	UPROPERTY(BlueprintReadWrite)
         TArray<FSlotStruct> Inventory;

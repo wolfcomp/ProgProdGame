@@ -9,10 +9,10 @@ UInventoryComponent::UInventoryComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 }
 
-UInventoryComponent * UInventoryComponent::operator*(UInventoryComponent in)
-{
-	return this;
-}
+//UInventoryComponent * UInventoryComponent::operator*(UInventoryComponent in)
+//{
+//	return this;
+//}
 
 void UInventoryComponent::AddToInventory(TArray<FSlotStruct> content)
 {

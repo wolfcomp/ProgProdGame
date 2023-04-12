@@ -18,7 +18,7 @@ public:
 	virtual void NativePreConstruct() override;
 	virtual void NativeConstruct() override;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
+	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn))
 	    UInventoryComponent* MyInventory;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	    UGridPanel* MyGridPanel;
