@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/DragDropOperation.h"
-#include "InventoryComponent.h"
 #include "InvDragDropOperation.generated.h"
 
 /**
@@ -15,10 +14,8 @@ class BACKROWSTUDIO_API UInvDragDropOperation : public UDragDropOperation
 {
 	GENERATED_BODY()
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UUserWidget* WidgetReference;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 	FVector2D DragOffset;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FSlotStruct MyContent;
+	UPROPERTY()
+	UUserWidget* WidgetReference;
 };
