@@ -2,6 +2,10 @@
 
 
 #include "SpellActor.h"
+#include "Enemy.h"
+#include "NiagaraSystem.h"
+#include "NiagaraComponent.h"
+#include "NiagaraFunctionLibrary.h"
 
 void ISpellActor::InternalDebugSpell(const ESpellType type, const FVector range, const float radius, const FVector origin, const FRotator rotation, const UWorld *world) const
 {
@@ -50,11 +54,11 @@ void ISpellActor::InternalDebugSpell(const ESpellType type, const FVector range,
     }
 }
 
-TArray<AActor *> ISpellActor::GetActors(ESpellType type, const FVector range, const float radius, const FVector origin, const FRotator rotation, UWorld *world) const
+TArray<ADamageActor *> ISpellActor::GetActors(ESpellType type, const FVector range, const float radius, const FVector origin, const FRotator rotation, UWorld *world) const
 {
     TArray<FHitResult> OutHits;
     TArray<FHitResult> OutHits2;
-    TArray<AActor *> OutActors;
+    TArray<ADamageActor *> OutActors;
     const auto location = origin + rotation.RotateVector(range);
     const auto left = rotation + FRotator(0, -radius / 2, 0);
     const auto right = left + FRotator(0, radius, 0);
@@ -67,66 +71,69 @@ TArray<AActor *> ISpellActor::GetActors(ESpellType type, const FVector range, co
     const auto boxHit = FCollisionShape::MakeBox(FVector(5, 5, 5));
     const auto sectionSize = 500 / radius * 2.5;
     const FRotator circleSection = FRotator(0, sectionSize, 0);
-    bool isHit;
     switch (type)
     {
     case ESpellType::Circle:
         for(int i = 0; i < 360 / circleSection.Yaw; ++i)
         {
-            isHit = world->SweepMultiByChannel(OutHits, location, location + (circleSection * i).RotateVector(FVector(radius, 0, 0)), FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+            world->SweepMultiByChannel(OutHits, location, location + (circleSection * i).RotateVector(FVector(radius, 0, 0)), FQuat::Identity, ECC_Visibility, boxHit);
             OutHits2.Append(OutHits);
         }
         break;
     case ESpellType::Cone:
-        isHit = world->SweepMultiByChannel(OutHits, origin, origin + leftVector, FQuat::Identity, ECC_Visibility, boxHit);
+        world->SweepMultiByChannel(OutHits, origin, origin + leftVector, FQuat::Identity, ECC_Visibility, boxHit);
         OutHits2 = OutHits;
-        isHit = world->SweepMultiByChannel(OutHits, origin, origin + rightVector, FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+        world->SweepMultiByChannel(OutHits, origin, origin + rightVector, FQuat::Identity, ECC_Visibility, boxHit);
         OutHits2.Append(OutHits);
         for (int i = 0; i < (right - left).Yaw / coneSectionSize - 1; ++i)
         {
             auto rightPos = origin + (left + section * (i + 1)).RotateVector(range);
-            isHit = world->SweepMultiByChannel(OutHits, origin, rightPos, FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+            world->SweepMultiByChannel(OutHits, origin, rightPos, FQuat::Identity, ECC_Visibility, boxHit);
             OutHits2.Append(OutHits);
         }
         break;
     case ESpellType::Line:
         for (int i = 0; i < widthOffset.Size() / widthOffsetIncrement.Size(); ++i)
         {
-            isHit = world->SweepMultiByChannel(OutHits, origin + widthOffsetIncrement * (i + 1), location + widthOffsetIncrement * (i + 1), FQuat::Identity, ECC_Visibility, boxHit);
+            world->SweepMultiByChannel(OutHits, origin + widthOffsetIncrement * (i + 1), location + widthOffsetIncrement * (i + 1), FQuat::Identity, ECC_Visibility, boxHit);
             OutHits2.Append(OutHits);
-            isHit = world->SweepMultiByChannel(OutHits, origin - widthOffsetIncrement * (i + 1), location - widthOffsetIncrement * (i + 1), FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+            world->SweepMultiByChannel(OutHits, origin - widthOffsetIncrement * (i + 1), location - widthOffsetIncrement * (i + 1), FQuat::Identity, ECC_Visibility, boxHit);
             OutHits2.Append(OutHits);
         }
-        isHit = world->SweepMultiByChannel(OutHits, origin, location, FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+        world->SweepMultiByChannel(OutHits, origin, location, FQuat::Identity, ECC_Visibility, boxHit);
         OutHits2.Append(OutHits);
-        isHit = world->SweepMultiByChannel(OutHits, origin + widthOffset, origin - widthOffset, FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+        world->SweepMultiByChannel(OutHits, origin + widthOffset, origin - widthOffset, FQuat::Identity, ECC_Visibility, boxHit);
         OutHits2.Append(OutHits);
-        isHit = world->SweepMultiByChannel(OutHits, origin + widthOffset, location + widthOffset, FQuat::Identity, ECC_Visibility, boxHit) || isHit;
+        world->SweepMultiByChannel(OutHits, origin + widthOffset, location + widthOffset, FQuat::Identity, ECC_Visibility, boxHit);
         OutHits2.Append(OutHits);
     }
 
     for (FHitResult hitResult : OutHits2)
     {
-        OutActors.AddUnique(hitResult.GetActor());
+        auto actor = hitResult.GetActor();
+        if(auto damageActor = Cast<ADamageActor>(actor); Spell.Hits.Contains(damageActor))
+        {
+            OutActors.AddUnique(damageActor);
+        }
     }
-
-    if (isHit)
-    {
-        
-    }
+    return OutActors;
 }
 
-void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorld *world, const bool is_heavy)
+void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorld *world, USceneComponent *root, const bool is_heavy)
 {
-    TArray<AActor *> actors;
+    TArray<ADamageActor *> actors;
 
     if (is_heavy)
     {
-        HeavyAttack(origin, rotation, world, actors);
+        if(Spell.Heavy.VFX)
+            UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell.Heavy.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
+        HeavyAttack(origin, rotation, world, root->GetAttachParentActor(), actors, false);
     }
     else
     {
-        LightAttack(origin, rotation, world, actors);
+        if(Spell.Light.VFX)
+            UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell.Light.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
+        LightAttack(origin, rotation, world, root->GetAttachParentActor(), actors, false);
     }
 }
 
@@ -138,6 +145,22 @@ void ISpellActor::DebugSpell(const FVector origin, const FRotator rotation, cons
         InternalDebugSpell(Spell.Light.Type, Spell.Light.Range, Spell.Light.Radius, origin, rotation, world);
 }
 
-void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, TArray<AActor *> &actors) { actors = GetActors(Spell.Light.Type, Spell.Light.Range, Spell.Light.Radius, origin, rotation, world); }
+void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, AActor * self, TArray<ADamageActor *> &actors, const bool apply_damage)
+{
+    actors = GetActors(Spell.Light.Type, Spell.Light.Range, Spell.Light.Radius, origin, rotation, world);
+    if(apply_damage)
+        for (ADamageActor * actor : actors)
+        {
+            actor->TakeDamage(Spell.Light.Potency, self);
+        }
+}
 
-void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, TArray<AActor *> &actors) { actors = GetActors(Spell.Heavy.Type, Spell.Heavy.Range, Spell.Heavy.Radius, origin, rotation, world); }
+void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, AActor * self, TArray<ADamageActor *> &actors, const bool apply_damage)
+{
+    actors = GetActors(Spell.Heavy.Type, Spell.Heavy.Range, Spell.Heavy.Radius, origin, rotation, world);
+    if(apply_damage)
+        for (ADamageActor * actor : actors)
+        {
+            actor->TakeDamage(Spell.Heavy.Potency, self);
+        }
+}

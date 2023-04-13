@@ -8,6 +8,8 @@
  *
  */
 
+class ADamageActor;
+
 UENUM(BlueprintType)
 enum class ESpellType : uint8
 {
@@ -43,6 +45,9 @@ struct FSpellInternal
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     ESpellType Type;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class UNiagaraSystem *VFX;
 };
 
 USTRUCT(BlueprintType)
@@ -67,6 +72,9 @@ struct FSpell
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Debug")
     bool DebugHeavy;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TArray<TObjectPtr<ADamageActor>> Hits;
 };
 
 class ISpellActor
@@ -75,16 +83,16 @@ class ISpellActor
 
     void InternalDebugSpell(ESpellType, FVector, float, FVector, FRotator, const UWorld *) const;
 
-    TArray<AActor *> GetActors(ESpellType, FVector, float, FVector, FRotator, UWorld *) const;
+    TArray<ADamageActor *> GetActors(ESpellType, FVector, float, FVector, FRotator, UWorld *) const;
 
 public:
     FSpell Spell;
 
-    void CastSpell(FVector, FRotator, UWorld *, bool = false);
+    void CastSpell(FVector, FRotator, UWorld *, USceneComponent *, bool = false);
 
     void DebugSpell(FVector, FRotator, const UWorld *) const;
 
-    virtual void LightAttack(FVector, FRotator, UWorld *, TArray<AActor *> &actors);
+    virtual void LightAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage);
 
-    virtual void HeavyAttack(FVector, FRotator, UWorld *, TArray<AActor *> &actors);
+    virtual void HeavyAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage);
 };

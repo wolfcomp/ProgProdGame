@@ -16,12 +16,12 @@ void ADebugSpellActor::BeginPlay()
     Super::BeginPlay();
     ISpellActor::Spell = Spell;
     DebugSpell(GetActorLocation(), GetActorRotation(), GetWorld());
-    CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), Spell.DebugHeavy);
+    CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), RootComponent, Spell.DebugHeavy);
 }
 
 // Called every frame
 void ADebugSpellActor::Tick(const float delta_time) { Super::Tick(delta_time); }
 
-void ADebugSpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, TArray<AActor *> &actors) { ISpellActor::LightAttack(origin, rotation, world, actors); }
+void ADebugSpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage) { ISpellActor::LightAttack(origin, rotation, world, self, actors, false); }
 
-void ADebugSpellActor::HeavyAttack(const FVector origin, const FRotator rotation, UWorld *world, TArray<AActor*> &actors) { ISpellActor::HeavyAttack(origin, rotation, world, actors); }
+void ADebugSpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage) { ISpellActor::HeavyAttack(origin, rotation, world, self, actors, false); }
