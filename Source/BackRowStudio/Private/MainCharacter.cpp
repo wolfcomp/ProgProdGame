@@ -92,7 +92,27 @@ void AMainCharacter::LightAttackAction(const FInputActionValue &Value) {}
 
 void AMainCharacter::HeavyAttackAction(const FInputActionValue &Value) {}
 
-void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value) { static_cast<int>(Value.Get<float>()); }
+void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value)
+{
+    switch (static_cast<int>(Value.Get<float>()))
+    {
+    case 1:
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 1 pressed"));
+        break;
+    case 2:
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 2 pressed"));
+
+        break;
+    case 3:
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 3 pressed"));
+
+        break;
+    case 4:
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 4 pressed"));
+
+        break;
+    }
+}
 
 
 // Called every frame
