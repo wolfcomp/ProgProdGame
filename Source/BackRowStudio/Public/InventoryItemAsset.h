@@ -16,7 +16,7 @@ public:
     UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	    int MaxQuantity = 64;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	    TSoftObjectPtr<UTexture2D> MyImage = TSoftObjectPtr<UTexture2D>(FSoftObjectPath("/Script/Engine.Texture2D'/Game/IndividualFolders/Dennis/womanyellingcat-1573233850.womanyellingcat-1573233850'"));
+	    UTexture2D* MyImage = nullptr;
     UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	    FString MyDebugMsg = "this is a debug msg";
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
@@ -35,7 +35,7 @@ struct FSlotStruct
     GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	    TSoftObjectPtr<UInventoryItemAsset> Item = TSoftObjectPtr<UInventoryItemAsset>(FSoftObjectPath("/Script/BackRowStudio.InventoryItemAsset'/Game/IndividualFolders/Dennis/Items/FallBackItem.FallBackItem'"));
+	    UInventoryItemAsset* Item = nullptr;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	    int Quantity = 0;
 

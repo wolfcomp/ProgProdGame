@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/SphereComponent.h"
 #include "InventoryItemAsset.h"
 #include "InventoryComponent.generated.h"
 
@@ -25,10 +26,11 @@ public:
 	    bool PicksUpOrPickup = true;
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	    int NumberOfInventorySlots = 15;
+
 	UFUNCTION(BlueprintCallable)
 	    void AddToInventory(TArray<FSlotStruct> content);
 	UFUNCTION(BlueprintCallable)
-	    void TestFunction();
+        void PickUpFunction(UInventoryComponent* collisionInventory);
 
 protected:
 	// Called when the game starts

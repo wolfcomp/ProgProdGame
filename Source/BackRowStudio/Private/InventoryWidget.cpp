@@ -16,23 +16,25 @@ void UInventoryWidget::NativePreConstruct()
 
 void UInventoryWidget::NativeConstruct()
 {
-    if(MyInventory->IsValidLowLevel())
+    SlotWidget = MySlotWidget;
+    Inventory = MyInventory;
+    if(Inventory->IsValidLowLevel())
     {
-        if(!MyInventory->Inventory.IsEmpty())
+        if(!Inventory->Inventory.IsEmpty())
         {
-            if(MySlotWidget != __nullptr)
+            if(SlotWidget != __nullptr)
             {
                 int i2 = 0;
                 int i3 = 0;
-                for (int i = 0; i < MyInventory->Inventory.Num(); ++i)
+                for (int i = 0; i < Inventory->Inventory.Num(); ++i)
                 {
                     if(i % HorizontalLimit == 0)
                     {
                         i2++;
                         i3=0;
                     }
-                    USlotWidget *slotWidget = Cast<USlotWidget>(CreateWidget(this, MySlotWidget));
-                    slotWidget->MyContent = MyInventory->Inventory[i];
+                    USlotWidget *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
+                    slotWidget->MyContent = Inventory->Inventory[i];
                     MyGridPanel->AddChildToGrid(slotWidget,i2,i3);
                     i3++;
                 }

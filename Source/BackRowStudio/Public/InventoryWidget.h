@@ -20,10 +20,14 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta=(ExposeOnSpawn))
 	    UInventoryComponent* MyInventory;
+	UInventoryComponent* Inventory;
 	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
 	    UGridPanel* MyGridPanel;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	    TSubclassOf<USlotWidget> MySlotWidget;
+
+	UPROPERTY(BlueprintReadWrite)
+    TSubclassOf<USlotWidget> SlotWidget;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	    int HorizontalLimit = 5;
 };

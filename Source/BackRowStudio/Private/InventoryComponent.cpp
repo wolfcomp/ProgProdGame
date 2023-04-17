@@ -16,78 +16,63 @@ UInventoryComponent::UInventoryComponent()
 
 void UInventoryComponent::AddToInventory(TArray<FSlotStruct> content)
 {
-	//if(!content.IsEmpty())
-	//{
-	//	for(int i = 0; i < Inventory.Num(); ++i)
-	//	{
-	//	    
-	//	}
-	//	for (int i = 0; i < content.Num(); ++i)
- //       {
-	//	    if(content[i].Item->GetFName().IsValid() && content[i].Item != ItemForEmptySlot)
-	//        {
- //               for (int i2 = 0; i2 < Inventory.Num(); ++i2)
- //               {
-	//		        if(content[i].Quantity <= 0)
-	//		        {
-	//		            return;
-	//		        }
- //                   if(Inventory[i2].Item == ItemForEmptySlot)
- //                   {
- //                       Inventory[i2] = content[i];
- //                       return;
- //                   }
-	//		        if(const int available = Inventory[i2].Item->MaxQuantity - Inventory[i2].Quantity; available > 0 && Inventory[i2].Item == content[i].Item)
-	//		        {
-	//			        if(content[i].Quantity >= available)
-	//			        {
-	//				        content[i].Quantity -= available;
-	//				        Inventory[i2].Quantity += available;
-	//			        }
- //                       else
- //                       {
-	//				        Inventory[i2].Quantity += content[i].Quantity;
-	//				        return;
- //                       }
-	//		        }
- //               }
-	//        }
- //       }
-	//}
- //   else
- //   {
- //       GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"You're Trying To Add An Empty Inventory To Another... Baka!");
- //   }
-}
-
-void UInventoryComponent::TestFunction()
-{
-	if(Inventory.IsValidIndex(0) && Inventory.IsValidIndex(1))
+	TArray<FSlotStruct> content2 = content;
+	TArray<FSlotStruct> toRemove;;
+	for (auto& myContent : Inventory)
 	{
-	    Inventory[0] += Inventory[1];
+		for(auto inContent : content2)
+		{
+			if(inContent.Item->IsValidLowLevel() == false || inContent.Quantity == 0)
+			{
+				toRemove.Add(inContent);
+				GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"got here 0");
+			}
+		    else if(myContent.Quantity == 0 || myContent.Item->IsValidLowLevel() == false)
+		    {
+				GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"got here 0.5");
+				myContent = inContent;
+				toRemove.Add(inContent);
+		    }
+		    else if (inContent.Item == myContent.Item)
+		    {
+		        if(myContent.Quantity + inContent.Quantity <= myContent.Item->MaxQuantity)
+		        {
+		            myContent.Quantity += inContent.Quantity;
+					toRemove.Add(inContent);
+					GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"got here 1");
+		        }
+		        else
+		        {
+		            if (const int remaining = myContent.Quantity + inContent.Quantity - myContent.Item->MaxQuantity; remaining > 0)
+		            {
+						GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"got here 2");
+		            }
+		        }   
+		    }
+		}
+		for (FSlotStruct remove : toRemove)
+        {
+            content2.Remove(remove);
+        }
 	}
 }
 
-//void UInventoryComponent::ConstructInventoryWidget(APlayerController* player_controller) const
-//{
-//	if(MyInventoryWidget->IsValidLowLevel())
-//	{
-//		if(UInventoryWidget *a = Cast<UInventoryWidget>(MyInventoryWidget))
-//		{
-//		    a->AddToViewport();
-//			UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(player_controller,a);
-//		}
-//        else
-//        {
-//            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"Inventory Widget not subclass of UUSerWidget somehow");   
-//        }
-//	}
-//    else
-//    {
-//        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"MyInventoryWidget is not valid");
-//    }
-//	UUserWidget* returnObj = nullptr;;
-//}
+void UInventoryComponent::PickUpFunction(UInventoryComponent* collisionInventory)
+{
+	if (collisionInventory->IsValidLowLevel() && collisionInventory != this)
+	{
+	    if (PicksUpOrPickup == true)
+	    {
+	        AddToInventory(collisionInventory->Inventory);
+			collisionInventory->PickUpFunction(this);
+	    }
+        else
+        {
+            this->GetOwner()->Destroy();
+			//GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"destroyed");
+        }   
+	}
+}
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
