@@ -10,6 +10,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "SpellActor.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -35,6 +36,10 @@ AMainCharacter::AMainCharacter()
     CharacterMovementComponent->BrakingFrictionFactor = 1000.f;
     CharacterMovementComponent->MaxWalkSpeed = 800.f;
     AutoPossessPlayer = EAutoReceiveInput::Player0;
+
+    // Spell Setup
+    ColdEnhancement = CreateDefaultSubobject<ISpellActor>(TEXT("ColdEnhancement"));
+
 }
 
 // Called when the game starts or when spawned
@@ -99,14 +104,16 @@ void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value)
     case 1:
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 1 pressed"));
         break;
+
     case 2:
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 2 pressed"));
-
         break;
+
     case 3:
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 3 pressed"));
-
+        ColdEnhancement->CastSpell(GetActorForwardVector(), GetActorRotation(), GetWorld(), GetRootComponent(), true);
         break;
+
     case 4:
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 4 pressed"));
 

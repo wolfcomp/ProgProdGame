@@ -75,3 +75,4 @@ DerivedDataCache/*
 
 # Ignore user specific files for Rider/ReSharper
 *.user
+/.idea

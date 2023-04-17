@@ -56,6 +56,10 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     class UInputAction *InputActionAbilityKey;
 
+    // |Input Action| Jump
+    UPROPERTY(EditAnywhere, Category = "Spells | Cold Enhancement")
+    class ISpellActor *ColdEnhancement;
+
 
 protected:
     // Called when the game starts or when spawned
