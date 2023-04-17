@@ -10,7 +10,7 @@ FSlateBrush UDragPreview::SetImageField() const
 {
     if(MyImage && Image)
     {
-        return UWidgetBlueprintLibrary::MakeBrushFromTexture(Content.Item->MyImage.Get(), 32, 32);
+        return UWidgetBlueprintLibrary::MakeBrushFromTexture(Content.Item->MyImage, 32, 32);
     }
     return FSlateBrush();
 }
