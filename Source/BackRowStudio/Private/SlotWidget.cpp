@@ -150,9 +150,9 @@
 FSlotStruct USlotWidget::AddContent(USlotWidget* InWidget)
 {
 	FSlotStruct inContent = InWidget->MyContent;
-	if(InWidget != this)
+	if(InWidget != this && inContent.Item->IsValidLowLevel() && inContent.Quantity > 0)
 	{
-	    if(MyContent.Quantity == 0)
+	    if(MyContent.Quantity == 0 && inContent.Quantity != 0)
 	    {
 	        MyContent = inContent;
 		    inContent = FSlotStruct();

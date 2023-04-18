@@ -16,6 +16,7 @@ void UInventoryWidget::NativePreConstruct()
 
 void UInventoryWidget::NativeConstruct()
 {
+    //this->GetOwner()->GetNetOwningPlayer()->GetPlayerController(GetWorld())->SetShowMouseCursor(true);
     SlotWidget = MySlotWidget;
     Inventory = MyInventory;
     if(Inventory->IsValidLowLevel())

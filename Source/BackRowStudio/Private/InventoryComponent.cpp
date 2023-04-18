@@ -22,6 +22,10 @@ void UInventoryComponent::AddToInventory(TArray<FSlotStruct> content)
 	{
 		for(auto inContent : content2)
 		{
+            if (inContent.Item->MySpells.Num() > 0)
+            {
+                //add spell to character array
+            }
 			if(inContent.Item->IsValidLowLevel() == false || inContent.Quantity == 0)
 			{
 				toRemove.Add(inContent);

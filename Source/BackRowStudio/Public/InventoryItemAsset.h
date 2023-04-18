@@ -2,6 +2,7 @@
 
 #pragma once
 #include "CoreMinimal.h"
+#include "SpellActor.h"
 #include "Engine/DataAsset.h"
 #include "Components/ActorComponent.h"
 #include "Engine/Texture2D.h"
@@ -27,6 +28,8 @@ public:
 	    bool HasUseMenu = false;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	    bool HasEquipMenu = false;
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	    TArray<FSpell> MySpells;
 };
 
 USTRUCT(blueprinttype)

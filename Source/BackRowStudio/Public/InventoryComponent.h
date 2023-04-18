@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
-#include "Components/SphereComponent.h"
 #include "InventoryItemAsset.h"
 #include "InventoryComponent.generated.h"
 
