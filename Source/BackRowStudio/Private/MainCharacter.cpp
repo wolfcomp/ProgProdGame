@@ -10,7 +10,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "SpellActor.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -38,7 +37,9 @@ AMainCharacter::AMainCharacter()
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
     // Spell Setup
-    ColdEnhancement = CreateDefaultSubobject<ISpellActor>(TEXT("ColdEnhancement"));
+    //ISpellActor::Spell = ColdEnhancement;
+
+
 
 }
 
