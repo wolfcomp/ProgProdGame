@@ -9,6 +9,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
+#include "BaseSpellActor.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -37,9 +38,8 @@ AMainCharacter::AMainCharacter()
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
     // Spell Setup
-    //ISpellActor::Spell = ColdEnhancement;
-
-
+    ArcaneEnhancement = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
+    ArcaneEnhancement->AttachToActor( )
 
 }
 
