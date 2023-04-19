@@ -3,12 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SpellActor.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
 struct FInputActionValue;
-class SpellActor;
 
 UCLASS()
 class BACKROWSTUDIO_API AMainCharacter : public ACharacter
@@ -63,19 +61,21 @@ public:
      */
     // |Spells| Arcane Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Arcane Enhancement")
-	class ADebugSpellActor* ArcaneEnhancement;
+	class ABaseSpellActor* ArcaneEnhancement;
 
     // |Spells| Fire Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Fire Enhancement")
-	class ADebugSpellActor* FireEnhancement;
+	class ABaseSpellActor* FireEnhancement;
 
     // |Spells| Cold Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Cold Enhancement")
-	class ADebugSpellActor* ColdEnhancement;
+	class ABaseSpellActor* ColdEnhancement;
 
     // |Spells| Lightning Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Lightning Enhancement")
-	class ADebugSpellActor* LightningEnhancement;
+	class ABaseSpellActor* LightningEnhancement;
+
+    void AttachSpellComponents();
 
 
 protected:
