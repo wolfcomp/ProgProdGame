@@ -129,7 +129,7 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Lightning Enhancement")
     class ABaseSpellActor *LightningEnhancement;
 
-    void AttachSpellComponents();
+    void AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors,*/ FName SocketName);
 
 
 protected:

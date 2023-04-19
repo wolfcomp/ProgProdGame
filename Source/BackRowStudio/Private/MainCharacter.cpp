@@ -70,6 +70,8 @@ AMainCharacter::AMainCharacter()
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
 }
 
+
+
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
@@ -206,6 +208,11 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
     {
          GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
     }
+}
+
+void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */FName SocketName)
+{
+    ArcaneEnhancement->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(SocketName));
 }
 
 void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &Value)
