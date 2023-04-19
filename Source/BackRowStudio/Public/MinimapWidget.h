@@ -18,6 +18,6 @@ class BACKROWSTUDIO_API UMinimapWidget : public UUserWidget
 public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta=(ExposeOnSpawn))
 		 class UMaterial* MyMat;
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
-    class UMiniMapComponent* MyParent;
+    //UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
+    //class UMiniMapComponent* MyParent;
 };
