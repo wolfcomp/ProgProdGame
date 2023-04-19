@@ -39,7 +39,7 @@ AMainCharacter::AMainCharacter()
 
     // Spell Setup
     ArcaneEnhancement = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
-    ArcaneEnhancement->AttachToActor( )
+    //ArcaneEnhancement->AttachToActor( )
 
 }
 
@@ -112,7 +112,6 @@ void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value)
 
     case 3:
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 3 pressed"));
-        ColdEnhancement->CastSpell(GetActorForwardVector(), GetActorRotation(), GetWorld(), GetRootComponent(), true);
         break;
 
     case 4:
