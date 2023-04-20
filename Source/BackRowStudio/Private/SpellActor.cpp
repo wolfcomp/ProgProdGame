@@ -3,9 +3,9 @@
 
 #include "SpellActor.h"
 #include "Enemy.h"
-#include "NiagaraSystem.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+#include "NiagaraSystem.h"
 
 void ISpellActor::InternalDebugSpell(const ESpellType type, const FVector range, const float radius, const FVector origin, const FRotator rotation, const UWorld *world) const
 {
@@ -74,7 +74,7 @@ TArray<ADamageActor *> ISpellActor::GetActors(ESpellType type, const FVector ran
     switch (type)
     {
     case ESpellType::Circle:
-        for(int i = 0; i < 360 / circleSection.Yaw; ++i)
+        for (int i = 0; i < 360 / circleSection.Yaw; ++i)
         {
             world->SweepMultiByChannel(OutHits, location, location + (circleSection * i).RotateVector(FVector(radius, 0, 0)), FQuat::Identity, ECC_Visibility, boxHit);
             OutHits2.Append(OutHits);
@@ -111,9 +111,19 @@ TArray<ADamageActor *> ISpellActor::GetActors(ESpellType type, const FVector ran
     for (FHitResult hitResult : OutHits2)
     {
         auto actor = hitResult.GetActor();
-        if(auto damageActor = Cast<ADamageActor>(actor); Spell.Hits.Contains(damageActor))
+        if (auto damageActor = Cast<ADamageActor>(actor))
         {
-            OutActors.AddUnique(damageActor);
+            if (Spell.Hits.Num() > 0)
+            {
+                if (Spell.Hits.Contains(damageActor))
+                {
+                    OutActors.AddUnique(damageActor);
+                }
+            }
+            else
+            {
+                OutActors.AddUnique(damageActor);
+            }
         }
     }
     return OutActors;
@@ -125,13 +135,13 @@ void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorl
 
     if (is_heavy)
     {
-        if(Spell.Heavy.VFX)
+        if (Spell.Heavy.VFX)
             UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell.Heavy.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
         HeavyAttack(origin, rotation, world, root->GetAttachParentActor(), actors, false);
     }
     else
     {
-        if(Spell.Light.VFX)
+        if (Spell.Light.VFX)
             UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell.Light.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
         LightAttack(origin, rotation, world, root->GetAttachParentActor(), actors, false);
     }
@@ -145,21 +155,21 @@ void ISpellActor::DebugSpell(const FVector origin, const FRotator rotation, cons
         InternalDebugSpell(Spell.Light.Type, Spell.Light.Range, Spell.Light.Radius, origin, rotation, world);
 }
 
-void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, AActor * self, TArray<ADamageActor *> &actors, const bool apply_damage)
+void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage)
 {
     actors = GetActors(Spell.Light.Type, Spell.Light.Range, Spell.Light.Radius, origin, rotation, world);
-    if(apply_damage)
-        for (ADamageActor * actor : actors)
+    if (apply_damage)
+        for (ADamageActor *actor : actors)
         {
             actor->TakeDamage(Spell.Light.Potency, self);
         }
 }
 
-void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, AActor * self, TArray<ADamageActor *> &actors, const bool apply_damage)
+void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage)
 {
     actors = GetActors(Spell.Heavy.Type, Spell.Heavy.Range, Spell.Heavy.Radius, origin, rotation, world);
-    if(apply_damage)
-        for (ADamageActor * actor : actors)
+    if (apply_damage)
+        for (ADamageActor *actor : actors)
         {
             actor->TakeDamage(Spell.Heavy.Potency, self);
         }
