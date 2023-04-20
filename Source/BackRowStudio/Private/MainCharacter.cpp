@@ -2,6 +2,7 @@
 
 
 #include "BackRowStudio/Public/MainCharacter.h"
+#include "BaseSpellActor.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
@@ -9,7 +10,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
-#include "BaseSpellActor.h"
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
@@ -39,8 +39,7 @@ AMainCharacter::AMainCharacter()
 
     // Spell Setup
     ArcaneEnhancement = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
-    //ArcaneEnhancement->AttachToActor( )
-
+    // ArcaneEnhancement->AttachToActor( )
 }
 
 // Called when the game starts or when spawned
@@ -58,7 +57,6 @@ void AMainCharacter::BeginPlay()
             Subsystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
-
 }
 
 // Input action Functions
@@ -100,25 +98,18 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue &Value) {}
 
 void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value)
 {
-    switch (static_cast<int>(Value.Get<float>()))
-    {
-    case 1:
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 1 pressed"));
-        break;
+    SelectedSpell = static_cast<int>(Value.Get<float>()) - 1;
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected Spell: %d"), SelectedSpell));
+}
 
-    case 2:
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 2 pressed"));
-        break;
-
-    case 3:
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 3 pressed"));
-        break;
-
-    case 4:
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Hotkey 4 pressed"));
-
-        break;
-    }
+void AMainCharacter::AbilityScrollAction(const FInputActionValue &Value)
+{
+    SelectedSpell += static_cast<int>(Value.Get<float>());
+    if(SelectedSpell < 0)
+        SelectedSpell = 3;
+    if(SelectedSpell > 3)
+        SelectedSpell = 0;
+    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected Spell: %d"), SelectedSpell));
 }
 
 
@@ -151,5 +142,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCompo
 
         // Player Ability Keys
         EnhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityKeyAction);
+
+        EnhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityScrollAction);
     }
 }

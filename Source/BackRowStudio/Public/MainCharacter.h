@@ -56,9 +56,14 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     class UInputAction *InputActionAbilityKey;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
+    UInputAction *InputActionScrollAbility;
      /**
      * Spell Objects
      */
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
+    int SelectedSpell;
+
     // |Spells| Arcane Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Arcane Enhancement")
 	class ABaseSpellActor* ArcaneEnhancement;
@@ -103,11 +108,12 @@ protected:
     // Player Ability Functions
     void AbilityKeyAction(const FInputActionValue &Value);
 
+    void AbilityScrollAction(const FInputActionValue &Value);
+
 
 public:
     // Called every frame
     virtual void Tick(float DeltaTime) override;
-
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
