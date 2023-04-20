@@ -3,7 +3,7 @@
 
 #include "MinimapWidget.h"
 //
-//void UMinimapWidget::NativeConstruct()
+// void UMinimapWidget::NativeConstruct()
 //{
 //    Super::NativeConstruct();
 //

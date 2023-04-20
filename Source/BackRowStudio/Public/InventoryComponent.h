@@ -2,55 +2,53 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "CoreMinimal.h"
 #include "InventoryItemAsset.h"
 #include "InventoryComponent.generated.h"
 
 
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class BACKROWSTUDIO_API UInventoryComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 public:
     UInventoryComponent();
-	//don't know why i have define the pointer for this class to prevent the engine from crashing on compile
-    //UInventoryComponent* operator*(UInventoryComponent in);
+    // don't know why i have define the pointer for this class to prevent the engine from crashing on compile
+    // UInventoryComponent* operator*(UInventoryComponent in);
 
-    UPROPERTY(EditAnywhere, meta = (TitleProperty="Item: {Item} ({Quantity})"))
-	    TArray<FSlotStruct> MyInventory = {FSlotStruct(10),FSlotStruct(5)};
-	UPROPERTY(BlueprintReadWrite)
-        TArray<FSlotStruct> Inventory;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	    bool PicksUpOrPickup = true;
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	    int NumberOfInventorySlots = 15;
+    UPROPERTY(EditAnywhere, meta = (TitleProperty = "Item: {Item} ({Quantity})"))
+    TArray<FSlotStruct> MyInventory = {FSlotStruct(10), FSlotStruct(5)};
+    UPROPERTY(BlueprintReadWrite)
+    TArray<FSlotStruct> Inventory;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool PicksUpOrPickup = true;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    int NumberOfInventorySlots = 15;
 
-	UFUNCTION(BlueprintCallable)
-	    void AddToInventory(TArray<FSlotStruct> content);
-	UFUNCTION(BlueprintCallable)
-        void PickUpFunction(UInventoryComponent* collisionInventory);
+    UFUNCTION(BlueprintCallable)
+    void AddToInventory(TArray<FSlotStruct> content);
+    UFUNCTION(BlueprintCallable)
+    void PickUpFunction(UInventoryComponent *collisionInventory);
 
 protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
+    // Called when the game starts
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
+    // Called every frame
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) override;
 };
 
 
-
-
 /**do not use, does not work*/
-//template <class ItemPropType>
-//FORCEINLINE TSoftObjectPtr<ItemPropType> UInventoryComponent::GetItemAssetProperty(FString itemName, FString propertyName )
+// template <class ItemPropType>
+// FORCEINLINE TSoftObjectPtr<ItemPropType> UInventoryComponent::GetItemAssetProperty(FString itemName, FString propertyName )
 //{
-//    //uint8 *a15 = TestTable.Get()->FindRowUnchecked(FName(itemName));
+//     //uint8 *a15 = TestTable.Get()->FindRowUnchecked(FName(itemName));
 //	if(TestTable.IsValid())
 //	{
-//        if(const TArray<FName> a16 = TestTable->GetRowNames(); a16.Contains(FName(itemName)))
+//         if(const TArray<FName> a16 = TestTable->GetRowNames(); a16.Contains(FName(itemName)))
 //	    {
 //			const int a17 = a16.Find(FName(itemName));
 //			if(propertyName != "")
@@ -61,9 +59,9 @@ public:
 //				    return TSoftObjectPtr<ItemPropType>(a23[a17]);
 //				}
 //			}
-//            else
-//            {
-//                for(auto structPropertyName : DataTableUtils::GetStructPropertyNames(TestTable.Get()->RowStruct))
+//             else
+//             {
+//                 for(auto structPropertyName : DataTableUtils::GetStructPropertyNames(TestTable.Get()->RowStruct))
 //			    {
 //			        TArray<FString> columnData = DataTableUtils::GetColumnDataAsString(TestTable.Get(), structPropertyName, EDataTableExportFlags::None);
 //				    if (TSoftObjectPtr<ItemPropType> a14 = TSoftObjectPtr<ItemPropType>(columnData[a17]); a14.IsValid())
@@ -71,8 +69,8 @@ public:
 //				        return a14;
 //				    }
 //			    }
-//            }
+//             }
 //	    }
 //	}
-//    return TSoftObjectPtr<ItemPropType>();
-//}
+//     return TSoftObjectPtr<ItemPropType>();
+// }
