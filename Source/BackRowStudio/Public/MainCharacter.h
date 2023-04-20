@@ -43,22 +43,22 @@ public:
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     class UInputAction *InputActionJump;
-    
+
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     class UInputAction *InputActionLightAttack;
-    
+
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     class UInputAction *InputActionHeavyAttack;
-    
+
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     class UInputAction *InputActionAbilityKey;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionScrollAbility;
-     /**
+    /**
      * Spell Objects
      */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
@@ -66,19 +66,19 @@ public:
 
     // |Spells| Arcane Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Arcane Enhancement")
-	class ABaseSpellActor* ArcaneEnhancement;
+    class ABaseSpellActor *ArcaneEnhancement;
 
     // |Spells| Fire Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Fire Enhancement")
-	class ABaseSpellActor* FireEnhancement;
+    class ABaseSpellActor *FireEnhancement;
 
     // |Spells| Cold Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Cold Enhancement")
-	class ABaseSpellActor* ColdEnhancement;
+    class ABaseSpellActor *ColdEnhancement;
 
     // |Spells| Lightning Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Lightning Enhancement")
-	class ABaseSpellActor* LightningEnhancement;
+    class ABaseSpellActor *LightningEnhancement;
 
     void AttachSpellComponents();
 
@@ -119,6 +119,6 @@ public:
 
 private:
     // Movement Component
-	//UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
-	//TObjectPtr<UCharacterMovementComponent> CharacterMovement;
+    // UPROPERTY(Category=Character, VisibleAnywhere, BlueprintReadOnly, meta=(AllowPrivateAccess = "true"))
+    // TObjectPtr<UCharacterMovementComponent> CharacterMovement;
 };

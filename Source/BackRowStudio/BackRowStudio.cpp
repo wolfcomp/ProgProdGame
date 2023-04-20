@@ -3,5 +3,4 @@
 #include "BackRowStudio.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, BackRowStudio, "BackRowStudio" );
- 
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, BackRowStudio, "BackRowStudio");

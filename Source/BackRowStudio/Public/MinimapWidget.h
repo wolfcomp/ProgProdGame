@@ -2,22 +2,22 @@
 
 #pragma once
 
-#include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/Image.h"
+#include "CoreMinimal.h"
 #include "MinimapWidget.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BACKROWSTUDIO_API UMinimapWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	//virtual void NativeConstruct() override;
+    GENERATED_BODY()
+    // virtual void NativeConstruct() override;
 public:
-	UPROPERTY(EditAnywhere,BlueprintReadWrite, meta=(ExposeOnSpawn))
-		 class UMaterial* MyMat;
-    //UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
-    //class UMiniMapComponent* MyParent;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn))
+    class UMaterial *MyMat;
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
+    // class UMiniMapComponent* MyParent;
 };

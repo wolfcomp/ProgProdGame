@@ -18,20 +18,19 @@ public:
 UCLASS()
 class BACKROWSTUDIO_API AEnemy : public ADamageActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	AEnemy();
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    AEnemy();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+public:
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	virtual void TakeDamage(float Damage, AActor *DamageCauser) override;
-
+    virtual void TakeDamage(float Damage, AActor *DamageCauser) override;
 };

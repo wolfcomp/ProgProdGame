@@ -3,28 +3,28 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "SpellActor.h"
 #include "GameFramework/Actor.h"
+#include "SpellActor.h"
 #include "BaseSpellActor.generated.h"
 
 UCLASS()
 class BACKROWSTUDIO_API ABaseSpellActor : public AActor, public ISpellActor
 {
-	GENERATED_BODY()
-	
-public:	
-	// Sets default values for this actor's properties
-	ABaseSpellActor();
+    GENERATED_BODY()
+
+public:
+    // Sets default values for this actor's properties
+    ABaseSpellActor();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
+public:
+    // Called every frame
     virtual void Tick(float DeltaTime) override;
 
-	void SetData();
+    void SetData();
 
     virtual void LightAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &, const bool apply_damage) override;
 
@@ -32,5 +32,4 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FSpell Spell;
-
 };

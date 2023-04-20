@@ -105,9 +105,9 @@ void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value)
 void AMainCharacter::AbilityScrollAction(const FInputActionValue &Value)
 {
     SelectedSpell += static_cast<int>(Value.Get<float>());
-    if(SelectedSpell < 0)
+    if (SelectedSpell < 0)
         SelectedSpell = 3;
-    if(SelectedSpell > 3)
+    if (SelectedSpell > 3)
         SelectedSpell = 0;
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected Spell: %d"), SelectedSpell));
 }
