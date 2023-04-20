@@ -24,6 +24,8 @@ public:
 	// Called every frame
     virtual void Tick(float DeltaTime) override;
 
+	void SetData();
+
     virtual void LightAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &, const bool apply_damage) override;
 
     virtual void HeavyAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &, const bool apply_damage) override;

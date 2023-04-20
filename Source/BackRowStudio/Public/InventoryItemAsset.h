@@ -29,7 +29,7 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	    bool HasEquipMenu = false;
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	    TArray<FSpell> MySpells;
+	    FSpell Spell;
 };
 
 USTRUCT(blueprinttype)
