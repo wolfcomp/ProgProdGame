@@ -29,11 +29,11 @@ public:
 
     // |Minimap| Spring Arm Component
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Minimap")
-    class USpringArmComponent *MiniMapSpringArm;
+    USpringArmComponent *MiniMapSpringArm;
 
     // |Minimap| SceneCapture Component
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Minimap")
-    class USceneCaptureComponent2D* MinimapCam;
+    USceneCaptureComponent2D *MinimapCam;
 
     // |Minimap| Minimap Widget Blueprint
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Minimap")
@@ -41,15 +41,15 @@ public:
 
     // |Minimap| Minimap Material
     UPROPERTY(BlueprintReadOnly, Category = "Minimap")
-    class UMinimapWidget* MinimapWidget;
+    UMinimapWidget *MinimapWidget;
 
     // |Minimap| Minimap Material
     UPROPERTY()
-    UMaterial* Mat;
+    UMaterial *Mat;
 
     // |Inventory| Inventory Component
-     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
-    class UInventoryComponent* MyInv;
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+    class UInventoryComponent *MyInv;
     bool OpenInventory = true;
     bool CanOpenInventory = true;
 
@@ -58,11 +58,11 @@ public:
     TSubclassOf<UInventoryWidget> MyInvWidget;
 
     UPROPERTY(BlueprintReadOnly, Category = "Inventory")
-    UInventoryWidget* InvWidget;
+    UInventoryWidget *InvWidget;
 
     // Player Controller Reference
     UPROPERTY()
-    APlayerController* PC;
+    APlayerController *PC;
 
 
     // |Input| Mapping Context Component
@@ -84,21 +84,22 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionJump;
 
-    // |Input Action| Jump
+    // |Input Action| Light Attack
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionLightAttack;
 
-    // |Input Action| Jump
+    // |Input Action| Heavy Attack
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionHeavyAttack;
 
-    // |Input Action| Jump
+    // |Input Action| Ability Keys
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionAbilityKey;
 
+    // |Input Action| Ability Scroll Wheel Trigger
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionScrollAbility;
-    
+
     // |Input Action| Open or Close Inventory
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventory;
@@ -107,27 +108,31 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventoryHelper;
 
-     /**
+    /**
      * Spell Objects
      */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
     int SelectedSpell;
 
     // |Spells| Arcane Enhancement
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Arcane Enhancement")
-    class ABaseSpellActor *ArcaneEnhancement;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Spell Enhancement")
+    class ABaseSpellActor *SpellEnenhancements;
 
-    // |Spells| Fire Enhancement
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Fire Enhancement")
-    class ABaseSpellActor *FireEnhancement;
+    //// |Spells| Arcane Enhancement
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Arcane Enhancement")
+    // class ABaseSpellActor *ArcaneEnhancement;
 
-    // |Spells| Cold Enhancement
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Cold Enhancement")
-    class ABaseSpellActor *ColdEnhancement;
+    //// |Spells| Fire Enhancement
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Fire Enhancement")
+    // class ABaseSpellActor *FireEnhancement;
 
-    // |Spells| Lightning Enhancement
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Lightning Enhancement")
-    class ABaseSpellActor *LightningEnhancement;
+    //// |Spells| Cold Enhancement
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Cold Enhancement")
+    // class ABaseSpellActor *ColdEnhancement;
+
+    //// |Spells| Lightning Enhancement
+    // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Lightning Enhancement")
+    // class ABaseSpellActor *LightningEnhancement;
 
     void AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors,*/ FName SocketName);
 
@@ -157,7 +162,9 @@ protected:
     // Player Ability Functions
     void AbilityKeyAction(const FInputActionValue &Value);
 
+    // Player Ability Scroll Functions
     void AbilityScrollAction(const FInputActionValue &Value);
+
     // Open or Close Inventory Function
     void OpenCloseInventory(const FInputActionValue &Value);
 

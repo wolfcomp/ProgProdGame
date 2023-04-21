@@ -3,20 +3,20 @@
 
 #include "BackRowStudio/Public/MainCharacter.h"
 #include "BaseSpellActor.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
-#include "Components/SceneCaptureComponent2D.h"
-#include "Engine/TextureRenderTarget2D.h"
 #include "InventoryComponent.h"
 #include "InventoryWidget.h"
 #include "MinimapWidget.h"
-#include "Blueprint/WidgetBlueprintLibrary.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -44,8 +44,8 @@ AMainCharacter::AMainCharacter()
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
     // Spell Setup
-    ArcaneEnhancement = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
-    //ArcaneEnhancement->AttachToActor( )
+    SpellEnenhancements = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
+    // ArcaneEnhancement->AttachToActor( )
 
     // Minimap Spring Arm Setup
     MiniMapSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Minimap SpringArm"));
@@ -71,7 +71,6 @@ AMainCharacter::AMainCharacter()
 }
 
 
-
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
@@ -89,7 +88,7 @@ void AMainCharacter::BeginPlay()
     }
     if (MiniMapWidgetTemplate && Mat)
     {
-        //seems like a bug that this doesn't work (doesn't display the widget on the screen)
+        // seems like a bug that this doesn't work (doesn't display the widget on the screen)
         MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
         MinimapWidget->MyMat = Mat;
         MinimapWidget->AddToViewport();
@@ -98,7 +97,7 @@ void AMainCharacter::BeginPlay()
     {
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("invalid Material or MiniMapWidgetTemplate"));
     }
-    if (APlayerController* TempPC = Cast<APlayerController>(GetController()))
+    if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
     }
@@ -106,7 +105,6 @@ void AMainCharacter::BeginPlay()
     {
         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Controller Is Not A PlayerController"));
     }
-
 }
 
 // Input action Functions
@@ -164,9 +162,9 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &Value)
 
 void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
 {
-    if(MyInv->IsValidLowLevel())
+    if (MyInv->IsValidLowLevel())
     {
-        if(CanOpenInventory)
+        if (CanOpenInventory)
         {
             if (OpenInventory)
             {
@@ -189,7 +187,7 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
             }
             else
             {
-                //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
+                // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
                 if (InvWidget)
                 {
                     InvWidget->RemoveFromParent();
@@ -206,13 +204,13 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
     }
     else
     {
-         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
     }
 }
 
-void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */FName SocketName)
+void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName SocketName)
 {
-    ArcaneEnhancement->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(SocketName));
+    SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(SocketName));
 }
 
 void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &Value)
@@ -252,6 +250,7 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCompo
         // Player Ability Keys
         EnhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityKeyAction);
 
+        // Player Ability Scroll Functions
         EnhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityScrollAction);
 
         // Player Open or Close Inventory keys
@@ -259,6 +258,5 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCompo
 
         // Player Open or Close Inventory keys
         EnhancedInputComponent->BindAction(InputActionOpenCloseInventoryHelper, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventoryHelper);
-
     }
 }

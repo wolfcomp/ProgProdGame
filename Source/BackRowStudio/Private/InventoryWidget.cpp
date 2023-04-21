@@ -2,7 +2,6 @@
 
 
 #include "InventoryWidget.h"
-<<<<<<< refs/remotes/origin/main
 #include "InventoryComponent.h"
 
 void UInventoryWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime) { Super::NativeTick(MyGeometry, InDeltaTime); }
@@ -34,55 +33,11 @@ void UInventoryWidget::NativeConstruct()
         else
         {
             GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString("InventoryWidgets inventory is empty"));
-=======
-
-#include "SlotWidget.h"
-
-void UInventoryWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime)
-{
-    Super::NativeTick(MyGeometry, InDeltaTime);
-}
-
-void UInventoryWidget::NativePreConstruct()
-{
-    Super::NativePreConstruct();
-}
-
-void UInventoryWidget::NativeConstruct()
-{
-    if(MyInventory->IsValidLowLevel())
-    {
-        if(!MyInventory->Inventory.IsEmpty())
-        {
-            UUserWidget* t = CreateWidget(this, MySlotWidget,FName(*FString("a")+i));
-            USlotWidget* a = Cast<USlotWidget>(t);
-            a->MyContent = MyInventory[i];
-            MyHorizontal->AddChildToHorizontalBox(a);
->>>>>>> added basic drag and drop functionality to items
         }
     }
     else
     {
-<<<<<<< refs/remotes/origin/main
         GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidget's Inventory Is Not Valid Low Level"));
     }
     Super::NativeConstruct();
 }
-=======
-        if(MyInventory.IsEmpty())
-        {
-            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Black,FString("InventoryWidgets inventory is empty"));
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidgets inventory is empty"));
-        }
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidgets has that LIVECODING INVENTORY X problem again"));
-    }
-    Super::NativeConstruct();
-}
-
->>>>>>> added basic drag and drop functionality to items
