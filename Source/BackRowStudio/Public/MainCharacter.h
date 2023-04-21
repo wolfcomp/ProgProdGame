@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+class UInventoryWidget;
+class UMinimapWidget;
 struct FInputActionValue;
 
 UCLASS()
@@ -25,6 +27,44 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
     class UCameraComponent *CameraComponent;
 
+    // |Minimap| Spring Arm Component
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Minimap")
+    class USpringArmComponent *MiniMapSpringArm;
+
+    // |Minimap| SceneCapture Component
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Minimap")
+    class USceneCaptureComponent2D* MinimapCam;
+
+    // |Minimap| Minimap Widget Blueprint
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Minimap")
+    TSubclassOf<UMinimapWidget> MiniMapWidgetTemplate;
+
+    // |Minimap| Minimap Material
+    UPROPERTY(BlueprintReadOnly, Category = "Minimap")
+    class UMinimapWidget* MinimapWidget;
+
+    // |Minimap| Minimap Material
+    UPROPERTY()
+    UMaterial* Mat;
+
+    // |Inventory| Inventory Component
+     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+    class UInventoryComponent* MyInv;
+    bool OpenInventory = true;
+    bool CanOpenInventory = true;
+
+    // |Inventory| Inventory Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
+    TSubclassOf<UInventoryWidget> MyInvWidget;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Inventory")
+    UInventoryWidget* InvWidget;
+
+    // Player Controller Reference
+    UPROPERTY()
+    APlayerController* PC;
+
+
     // |Input| Mapping Context Component
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     class UInputMappingContext *MappingContextComponent;
@@ -38,27 +78,36 @@ public:
 
     // |Input Action| Look Around
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    class UInputAction *InputActionLookAround;
+    UInputAction *InputActionLookAround;
 
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    class UInputAction *InputActionJump;
+    UInputAction *InputActionJump;
 
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    class UInputAction *InputActionLightAttack;
+    UInputAction *InputActionLightAttack;
 
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    class UInputAction *InputActionHeavyAttack;
+    UInputAction *InputActionHeavyAttack;
 
     // |Input Action| Jump
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    class UInputAction *InputActionAbilityKey;
+    UInputAction *InputActionAbilityKey;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionScrollAbility;
-    /**
+    
+    // |Input Action| Open or Close Inventory
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
+    UInputAction *InputActionOpenCloseInventory;
+
+    // |Input Action| Open or Close Inventory Helper
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
+    UInputAction *InputActionOpenCloseInventoryHelper;
+
+     /**
      * Spell Objects
      */
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
@@ -109,7 +158,11 @@ protected:
     void AbilityKeyAction(const FInputActionValue &Value);
 
     void AbilityScrollAction(const FInputActionValue &Value);
+    // Open or Close Inventory Function
+    void OpenCloseInventory(const FInputActionValue &Value);
 
+    // Open or Close Inventory Helper Function
+    void OpenCloseInventoryHelper(const FInputActionValue &Value);
 
 public:
     // Called every frame
