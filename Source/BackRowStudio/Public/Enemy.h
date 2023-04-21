@@ -11,8 +11,13 @@ class ADamageActor : public AActor
 {
     GENERATED_BODY()
 
+protected:
+    virtual void BeginPlay() override;
+
 public:
-    virtual void TakeDamage(float Damage, AActor *DamageCauser);
+    virtual void Tick(float) override;
+
+    virtual void TakeDamage(int, AActor *);
 };
 
 UCLASS()
@@ -30,7 +35,7 @@ protected:
 
 public:
     // Called every frame
-    virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float) override;
 
-    virtual void TakeDamage(float Damage, AActor *DamageCauser) override;
+    virtual void TakeDamage(int, AActor *) override;
 };
