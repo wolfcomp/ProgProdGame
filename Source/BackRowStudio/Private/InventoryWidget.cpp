@@ -12,8 +12,8 @@ void UInventoryWidget::NativeConstruct()
 {
     // this->GetOwner()->GetNetOwningPlayer()->GetPlayerController(GetWorld())->SetShowMouseCursor(true);
     SlotWidget = MySlotWidget;
-    Inventory = MyInventory;
-    if (Inventory->IsValidLowLevel())
+
+    if(Inventory->IsValidLowLevel())
     {
         if (!Inventory->Inventory.IsEmpty())
         {
@@ -46,7 +46,7 @@ void UInventoryWidget::NativeConstruct()
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, FString("InventoryWidgets has that LIVECODING INVENTORY X problem again"));
+        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,FString("InventoryWidget's Inventory Is Not Valid Low Level"));
     }
     Super::NativeConstruct();
 }

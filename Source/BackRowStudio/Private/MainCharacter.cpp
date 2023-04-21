@@ -11,6 +11,12 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Components/SceneCaptureComponent2D.h"
+#include "Engine/TextureRenderTarget2D.h"
+#include "InventoryComponent.h"
+#include "InventoryWidget.h"
+#include "MinimapWidget.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -39,7 +45,29 @@ AMainCharacter::AMainCharacter()
 
     // Spell Setup
     ArcaneEnhancement = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
-    // ArcaneEnhancement->AttachToActor( )
+    //ArcaneEnhancement->AttachToActor( )
+
+    // Minimap Spring Arm Setup
+    MiniMapSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Minimap SpringArm"));
+    MiniMapSpringArm->SetupAttachment(GetRootComponent());
+    MiniMapSpringArm->TargetArmLength = 900.f;
+    MiniMapSpringArm->SetWorldRotation((FRotator(-90.f, 0.f, 0.f)));
+    MiniMapSpringArm->bInheritPitch = 0;
+    MiniMapSpringArm->bInheritRoll = 0;
+    MiniMapSpringArm->bInheritYaw = 0;
+
+    // Minimap Scene Capture Setup
+    MinimapCam = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("MiniMapCamera"));
+    MinimapCam->SetupAttachment(MiniMapSpringArm);
+    const ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> minimapRenderFinder(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/IndividualFolders/Dennis/MiniMap/MiniMapRenderTarget.MiniMapRenderTarget'"));
+    MinimapCam->TextureTarget = ToObjectPtr(minimapRenderFinder.Object);
+
+    // Minimap Widget Setup
+    const ConstructorHelpers::FObjectFinder<UMaterial> minimapMatFinder(TEXT("/Script/Engine.Material'/Game/IndividualFolders/Dennis/MiniMap/MiniMapMat.MiniMapMat'"));
+    Mat = minimapMatFinder.Object;
+
+    // Inventory Component Setup
+    MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
 }
 
 // Called when the game starts or when spawned
@@ -57,6 +85,26 @@ void AMainCharacter::BeginPlay()
             Subsystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
+    if (MiniMapWidgetTemplate && Mat)
+    {
+        //seems like a bug that this doesn't work (doesn't display the widget on the screen)
+        MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
+        MinimapWidget->MyMat = Mat;
+        MinimapWidget->AddToViewport();
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("invalid Material or MiniMapWidgetTemplate"));
+    }
+    if (APlayerController* TempPC = Cast<APlayerController>(GetController()))
+    {
+        PC = TempPC;
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Controller Is Not A PlayerController"));
+    }
+
 }
 
 // Input action Functions
@@ -112,6 +160,60 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &Value)
     GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected Spell: %d"), SelectedSpell));
 }
 
+void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
+{
+    if(MyInv->IsValidLowLevel())
+    {
+        if(CanOpenInventory)
+        {
+            if (OpenInventory)
+            {
+                if (MyInvWidget)
+                {
+                    InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Inventory Widget"));
+                    InvWidget->Inventory = MyInv;
+                    InvWidget->AddToViewport();
+                    if (PC)
+                    {
+                        PC->SetShowMouseCursor(true);
+                        UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
+                    }
+                }
+                else
+                {
+                    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Widget Is Invalid"));
+                }
+                OpenInventory = false;
+            }
+            else
+            {
+                //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
+                if (InvWidget)
+                {
+                    InvWidget->RemoveFromParent();
+                }
+                if (PC)
+                {
+                    PC->SetShowMouseCursor(false);
+                    UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
+                }
+                OpenInventory = true;
+            }
+            CanOpenInventory = false;
+        }
+    }
+    else
+    {
+         GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
+    }
+}
+
+void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &Value)
+{
+    CanOpenInventory = true;
+    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Test"));
+}
+
 
 // Called every frame
 void AMainCharacter::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
@@ -144,5 +246,12 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputCompo
         EnhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityKeyAction);
 
         EnhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityScrollAction);
+
+        // Player Open or Close Inventory keys
+        EnhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventory);
+
+        // Player Open or Close Inventory keys
+        EnhancedInputComponent->BindAction(InputActionOpenCloseInventoryHelper, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventoryHelper);
+
     }
 }

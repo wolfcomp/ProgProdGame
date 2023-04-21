@@ -1,15 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InventoryComponent.h"
-// #include "InventoryWidget.h"
+#include "InventoryWidget.h"
 
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent() { PrimaryComponentTick.bCanEverTick = true; }
-
-// UInventoryComponent * UInventoryComponent::operator*(UInventoryComponent in)
-//{
-//	return this;
-// }
 
 void UInventoryComponent::AddToInventory(TArray<FSlotStruct> content)
 {
@@ -71,6 +66,31 @@ void UInventoryComponent::PickUpFunction(UInventoryComponent *collisionInventory
         }
     }
 }
+
+//void UInventoryComponent::DisplayInventory()
+//{
+//    TArray<FSlotStruct>* localInvShortHand = &Inventory;
+//	if (!localInvShortHand)
+//	{
+//	    GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"This Inventory Component's Inventory Is Not Valid");
+//	}
+//	else if (!MyInvWidget)
+//    {
+//        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"My Inventory Widget Is Not Valid");
+//    }
+//	else if (MyInvWidget && localInvShortHand)
+//	{
+//		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"Got Here");
+//        //InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Minimap"));
+//        //InvWidget->Inventory = this;
+//        //InvWidget->AddToViewport();
+//	}
+//}
+//
+//void UInventoryComponent::CloseInventory()
+//{
+//	InvWidget->RemoveFromParent();
+//}
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()

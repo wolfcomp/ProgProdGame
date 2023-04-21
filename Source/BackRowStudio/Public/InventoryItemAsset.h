@@ -44,7 +44,7 @@ struct FSlotStruct
 
     FSlotStruct();
 
-    void Erase();
+    //void Erase();
 
     explicit FSlotStruct(UInventoryItemAsset *InItem, int InQuantity);
     explicit FSlotStruct(int InQuantity);
