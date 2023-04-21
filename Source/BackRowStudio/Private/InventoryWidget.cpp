@@ -10,28 +10,19 @@ void UInventoryWidget::NativePreConstruct() { Super::NativePreConstruct(); }
 
 void UInventoryWidget::NativeConstruct()
 {
-    // this->GetOwner()->GetNetOwningPlayer()->GetPlayerController(GetWorld())->SetShowMouseCursor(true);
     SlotWidget = MySlotWidget;
 
     if(Inventory->IsValidLowLevel())
     {
-        if (!Inventory->Inventory.IsEmpty())
+        if (!Inventory->Items.IsEmpty())
         {
             if (SlotWidget != __nullptr)
             {
-                int i2 = 0;
-                int i3 = 0;
-                for (int i = 0; i < Inventory->Inventory.Num(); ++i)
+                for (int i = 0; i < Inventory->Items.Num(); ++i)
                 {
-                    if (i % HorizontalLimit == 0)
-                    {
-                        i2++;
-                        i3 = 0;
-                    }
                     USlotWidget *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
-                    slotWidget->MyContent = Inventory->Inventory[i];
-                    MyGridPanel->AddChildToGrid(slotWidget, i2, i3);
-                    i3++;
+                    slotWidget->MyContent = Inventory->Items[i];
+                    MyGridPanel->AddChildToGrid(slotWidget, i / HorizontalLimit, i % HorizontalLimit);
                 }
             }
             else

@@ -6,104 +6,45 @@
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent() { PrimaryComponentTick.bCanEverTick = true; }
 
-void UInventoryComponent::AddToInventory(TArray<FSlotStruct> content)
+void UInventoryComponent::AddItem(FSlotStruct item)
 {
-    TArray<FSlotStruct> content2 = content;
-    TArray<FSlotStruct> toRemove;
-    ;
-    for (auto &myContent : Inventory)
+    for (auto &itemSlot : Items)
     {
-        for (auto inContent : content2)
+        if (itemSlot.Item == item.Item)
         {
-            if (inContent.Item->IsValidLowLevel() == false || inContent.Quantity == 0)
-            {
-                toRemove.Add(inContent);
-                GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "got here 0");
-            }
-            else if (myContent.Quantity == 0 || myContent.Item->IsValidLowLevel() == false)
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "got here 0.5");
-                myContent = inContent;
-                toRemove.Add(inContent);
-            }
-            else if (inContent.Item == myContent.Item)
-            {
-                if (myContent.Quantity + inContent.Quantity <= myContent.Item->MaxQuantity)
-                {
-                    myContent.Quantity += inContent.Quantity;
-                    toRemove.Add(inContent);
-                    GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "got here 1");
-                }
-                else
-                {
-                    if (const int remaining = myContent.Quantity + inContent.Quantity - myContent.Item->MaxQuantity; remaining > 0)
-                    {
-                        GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "got here 2");
-                    }
-                }
-            }
+            itemSlot.Quantity += item.Quantity;
+            return;
         }
-        for (FSlotStruct remove : toRemove)
+        if (itemSlot.Item == nullptr)
         {
-            content2.Remove(remove);
+            itemSlot = item;
+            return;
         }
     }
 }
 
-void UInventoryComponent::PickUpFunction(UInventoryComponent *collisionInventory)
+void UInventoryComponent::AddSpell(FSlotStruct spell)
 {
-    if (collisionInventory->IsValidLowLevel() && collisionInventory != this)
+    for (auto &spellItem : Spells)
     {
-        if (PicksUpOrPickup == true)
+        if (spellItem.Item == spell.Item)
         {
-            AddToInventory(collisionInventory->Inventory);
-            collisionInventory->PickUpFunction(this);
+            spellItem.Quantity += spell.Quantity;
+            return;
         }
-        else
+        if (spellItem.Item == nullptr)
         {
-            this->GetOwner()->Destroy();
-            // GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"destroyed");
+            spellItem = spell;
+            return;
         }
     }
 }
-
-//void UInventoryComponent::DisplayInventory()
-//{
-//    TArray<FSlotStruct>* localInvShortHand = &Inventory;
-//	if (!localInvShortHand)
-//	{
-//	    GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"This Inventory Component's Inventory Is Not Valid");
-//	}
-//	else if (!MyInvWidget)
-//    {
-//        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"My Inventory Widget Is Not Valid");
-//    }
-//	else if (MyInvWidget && localInvShortHand)
-//	{
-//		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"Got Here");
-//        //InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Minimap"));
-//        //InvWidget->Inventory = this;
-//        //InvWidget->AddToViewport();
-//	}
-//}
-//
-//void UInventoryComponent::CloseInventory()
-//{
-//	InvWidget->RemoveFromParent();
-//}
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()
 {
-    if (!MyInventory.IsEmpty())
-    {
-        Inventory = MyInventory;
-        Inventory.SetNum(NumberOfInventorySlots, false);
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 10.0f, FColor::Red, "Invalid Inventory");
-    }
+    Items.SetNum(NumberOfInventorySlots, false);
+    Spells.SetNum(4, false);
     Super::BeginPlay();
 }
 

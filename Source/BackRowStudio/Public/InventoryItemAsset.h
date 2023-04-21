@@ -16,18 +16,25 @@ class BACKROWSTUDIO_API UInventoryItemAsset : public UDataAsset
 public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int MaxQuantity = 64;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     UTexture2D *MyImage = nullptr;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FString MyDebugMsg = "this is a debug msg";
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     bool HasMenu = true;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     bool HasDropMenu = true;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     bool HasUseMenu = false;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     bool HasEquipMenu = false;
+
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     FSpell Spell;
 };
@@ -39,6 +46,7 @@ struct FSlotStruct
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     UInventoryItemAsset *Item = nullptr;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int Quantity = 0;
 
@@ -47,9 +55,12 @@ struct FSlotStruct
     //void Erase();
 
     explicit FSlotStruct(UInventoryItemAsset *InItem, int InQuantity);
+
     explicit FSlotStruct(int InQuantity);
 
     explicit operator bool() const;
+
     FSlotStruct &operator+=(FSlotStruct &a);
+
     friend bool operator==(const FSlotStruct &lhs, const FSlotStruct &rhs);
 };
