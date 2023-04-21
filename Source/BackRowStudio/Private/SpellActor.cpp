@@ -137,13 +137,13 @@ void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorl
     {
         if (Spell.Heavy.VFX)
             UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell.Heavy.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
-        HeavyAttack(origin, rotation, world, root->GetAttachParentActor(), actors, false);
+        HeavyAttack(origin, rotation, world, root->GetAttachParentActor(), actors, true);
     }
     else
     {
         if (Spell.Light.VFX)
             UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell.Light.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
-        LightAttack(origin, rotation, world, root->GetAttachParentActor(), actors, false);
+        LightAttack(origin, rotation, world, root->GetAttachParentActor(), actors, true);
     }
 }
 
@@ -158,19 +158,17 @@ void ISpellActor::DebugSpell(const FVector origin, const FRotator rotation, cons
 void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage)
 {
     actors = GetActors(Spell.Light.Type, Spell.Light.Range, Spell.Light.Radius, origin, rotation, world);
-    if (apply_damage)
-        for (ADamageActor *actor : actors)
-        {
-            actor->TakeDamage(Spell.Light.Potency, self);
-        }
+    for (ADamageActor *actor : actors)
+    {
+        actor->TakeDamage(Spell.Light.Potency, self);
+    }
 }
 
 void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage)
 {
     actors = GetActors(Spell.Heavy.Type, Spell.Heavy.Range, Spell.Heavy.Radius, origin, rotation, world);
-    if (apply_damage)
-        for (ADamageActor *actor : actors)
-        {
-            actor->TakeDamage(Spell.Heavy.Potency, self);
-        }
+    for (ADamageActor *actor : actors)
+    {
+        actor->TakeDamage(Spell.Heavy.Potency, self);
+    }
 }

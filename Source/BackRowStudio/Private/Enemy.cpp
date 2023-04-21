@@ -3,7 +3,11 @@
 
 #include "Enemy.h"
 
-void ADamageActor::TakeDamage(float Damage, AActor *DamageCauser)
+void ADamageActor::BeginPlay() { Super::BeginPlay(); }
+
+void ADamageActor::Tick(float x) { Super::Tick(x); }
+
+void ADamageActor::TakeDamage(int damage, AActor *actor)
 {
     // Implement in sub actors
 }
@@ -19,6 +23,6 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay() { Super::BeginPlay(); }
 
 // Called every frame
-void AEnemy::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
+void AEnemy::Tick(float delta_time) { Super::Tick(delta_time); }
 
-void AEnemy::TakeDamage(float Damage, AActor *DamageCauser) {}
+void AEnemy::TakeDamage(int damage, AActor *actor) {}
