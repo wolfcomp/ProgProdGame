@@ -16,29 +16,20 @@ class BACKROWSTUDIO_API UInventoryComponent : public UActorComponent
 public:
     UInventoryComponent();
 
-    UPROPERTY(EditAnywhere, meta = (TitleProperty="Item: {Item} ({Quantity})"))
-	TArray<FSlotStruct> MyInventory = {FSlotStruct(10),FSlotStruct(5)};
+	UPROPERTY(BlueprintReadWrite)
+    TArray<FSlotStruct> Items;
 
 	UPROPERTY(BlueprintReadWrite)
-    TArray<FSlotStruct> Inventory;
-
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
-	bool PicksUpOrPickup = true;
+    TArray<FSlotStruct> Spells;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int NumberOfInventorySlots = 15;
 
 	UFUNCTION(BlueprintCallable)
-	void AddToInventory(TArray<FSlotStruct> content);
+	void AddItem(FSlotStruct item);
 
 	UFUNCTION(BlueprintCallable)
-    void PickUpFunction(UInventoryComponent* collisionInventory);
-
-	//UFUNCTION(BlueprintCallable)
-	//void DisplayInventory();
-
-	//UFUNCTION(BlueprintCallable)
-	//void CloseInventory();
+	void AddSpell(FSlotStruct spell);
 
 protected:
     // Called when the game starts

@@ -19,14 +19,17 @@ public:
     virtual void NativeConstruct() override;
 
     UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn))
-	class UInventoryComponent* Inventory;
+    class UInventoryComponent *Inventory;
+
     UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
     UGridPanel *MyGridPanel;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TSubclassOf<USlotWidget> MySlotWidget;
 
     UPROPERTY(BlueprintReadWrite)
     TSubclassOf<USlotWidget> SlotWidget;
+
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int HorizontalLimit = 5;
 };

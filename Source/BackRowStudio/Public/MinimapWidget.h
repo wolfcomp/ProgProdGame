@@ -14,10 +14,7 @@ UCLASS()
 class BACKROWSTUDIO_API UMinimapWidget : public UUserWidget
 {
     GENERATED_BODY()
-    // virtual void NativeConstruct() override;
 public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ExposeOnSpawn))
     class UMaterial *MyMat;
-    // UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(ExposeOnSpawn))
-    // class UMiniMapComponent* MyParent;
 };

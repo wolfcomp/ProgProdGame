@@ -3,17 +3,7 @@
 
 #include "InventoryItemAsset.h"
 
-FSlotStruct::FSlotStruct():
-    Quantity(0)
-{
-    Item = nullptr;
-}
-
-//void FSlotStruct::Erase()
-//{
-//    Item = nullptr;
-//    Quantity = NULL;
-//}
+FSlotStruct::FSlotStruct() { Item = nullptr; }
 
 FSlotStruct::FSlotStruct(UInventoryItemAsset *InItem, int InQuantity)
 {
