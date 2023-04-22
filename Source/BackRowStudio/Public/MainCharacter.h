@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+class UHealthBarWidget;
 class UInventoryWidget;
 class UMinimapWidget;
 struct FInputActionValue;
@@ -16,6 +17,10 @@ class BACKROWSTUDIO_API AMainCharacter : public ACharacter
     GENERATED_BODY()
 
 public:
+
+    float Health = 100;
+    float MaxHealth = 100;
+
     // Sets default values for this character's properties
     AMainCharacter();
     
@@ -55,6 +60,13 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Inventory")
     UInventoryWidget *InvWidget;
+
+    // |Health Bar| Health Bar Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health Widget")
+    TSubclassOf<UHealthBarWidget> MyHealthWidget;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Health Widget")
+    UHealthBarWidget* HealthBarWidget;
 
     // Player Controller Reference
     UPROPERTY()
