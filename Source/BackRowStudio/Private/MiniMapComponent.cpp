@@ -17,4 +17,4 @@ UMiniMapComponent::UMiniMapComponent()
 
 void UMiniMapComponent::BeginPlay() { Super::BeginPlay(); }
 
-void UMiniMapComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction *ThisTickFunction) {}
+void UMiniMapComponent::TickComponent(float delta_time, ELevelTick tick_type, FActorComponentTickFunction *tick_function) {}

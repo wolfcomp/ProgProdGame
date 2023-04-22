@@ -37,10 +37,10 @@ AMainCharacter::AMainCharacter()
     CameraComponent->SetFieldOfView(90);
 
     // Player Setup
-    auto CharacterMovementComponent = GetCharacterMovement();
-    CharacterMovementComponent->MaxAcceleration = 10000.f;
-    CharacterMovementComponent->BrakingFrictionFactor = 1000.f;
-    CharacterMovementComponent->MaxWalkSpeed = 800.f;
+    const auto characterMovementComponent = GetCharacterMovement();
+    characterMovementComponent->MaxAcceleration = 10000.f;
+    characterMovementComponent->BrakingFrictionFactor = 1000.f;
+    characterMovementComponent->MaxWalkSpeed = 800.f;
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
     // Spell Setup
@@ -77,13 +77,11 @@ void AMainCharacter::BeginPlay()
     Super::BeginPlay();
 
     // Adding mapping context component
-    APlayerController *PlayerController = Cast<APlayerController>(Controller);
-    if (PlayerController)
+    if (const auto *controller = Cast<APlayerController>(Controller))
     {
-        UEnhancedInputLocalPlayerSubsystem *Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer());
-        if (Subsystem)
+        if (auto *inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(controller->GetLocalPlayer()))
         {
-            Subsystem->AddMappingContext(MappingContextComponent, 0);
+            inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
     if (MiniMapWidgetTemplate && Mat)
@@ -108,98 +106,89 @@ void AMainCharacter::BeginPlay()
 }
 
 // Input action Functions
-void AMainCharacter::MoveAction(const FInputActionValue &Value)
+void AMainCharacter::MoveAction(const FInputActionValue &value)
 {
-    const FVector2D MovementVector = Value.Get<FVector2D>();
+    const auto movementVector = value.Get<FVector2D>();
 
     if (GetController())
     {
-        const FRotator Rotation = Controller->GetControlRotation();
-        const FRotator YawRotation(0.f, Rotation.Yaw, 0.f);
+        const auto rotation = Controller->GetControlRotation();
+        const FRotator yawRotation(0.f, rotation.Yaw, 0.f);
 
         // Getting forward vector + forward movement
-        const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-        AddMovementInput(ForwardDirection, MovementVector.Y);
+        const FVector forwardDirection = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::X);
+        AddMovementInput(forwardDirection, movementVector.Y);
 
         // Getting right vector + right movement
-        const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-        AddMovementInput(RightDirection, MovementVector.X);
+        const FVector rightDirection = FRotationMatrix(yawRotation).GetUnitAxis(EAxis::Y);
+        AddMovementInput(rightDirection, movementVector.X);
     }
 }
 
-void AMainCharacter::LookAroundAction(const FInputActionValue &Value)
+void AMainCharacter::LookAroundAction(const FInputActionValue &value)
 {
-    const FVector2D LookAxisValue = Value.Get<FVector2D>();
+    const FVector2D lookAxisValue = value.Get<FVector2D>();
 
     if (GetController())
     {
-        AddControllerYawInput(LookAxisValue.X);
-        AddControllerPitchInput(LookAxisValue.Y);
+        AddControllerYawInput(lookAxisValue.X);
+        AddControllerPitchInput(lookAxisValue.Y);
     }
 }
 
-void AMainCharacter::JumpAction(const FInputActionValue &Value) { Super::Jump(); }
+void AMainCharacter::JumpAction(const FInputActionValue &value) { Super::Jump(); }
 
-void AMainCharacter::LightAttackAction(const FInputActionValue &Value) {}
+void AMainCharacter::LightAttackAction(const FInputActionValue &value) {}
 
-void AMainCharacter::HeavyAttackAction(const FInputActionValue &Value) {}
+void AMainCharacter::HeavyAttackAction(const FInputActionValue &value) {}
 
-void AMainCharacter::AbilityKeyAction(const FInputActionValue &Value)
+void AMainCharacter::AbilityKeyAction(const FInputActionValue &value) { SelectedSpell = static_cast<int>(value.Get<float>()) - 1; }
+
+void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
 {
-    SelectedSpell = static_cast<int>(Value.Get<float>()) - 1;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected Spell: %d"), SelectedSpell));
-}
-
-void AMainCharacter::AbilityScrollAction(const FInputActionValue &Value)
-{
-    SelectedSpell += static_cast<int>(Value.Get<float>());
+    SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
         SelectedSpell = 3;
     if (SelectedSpell > 3)
         SelectedSpell = 0;
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Selected Spell: %d"), SelectedSpell));
 }
 
-void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
+void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
 {
     if (MyInv->IsValidLowLevel())
     {
-        if (CanOpenInventory)
+        if (OpenInventory)
         {
-            if (OpenInventory)
+            if (MyInvWidget)
             {
-                if (MyInvWidget)
+                InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Inventory Widget"));
+                InvWidget->Inventory = MyInv;
+                InvWidget->AddToViewport();
+                if (PC)
                 {
-                    InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Inventory Widget"));
-                    InvWidget->Inventory = MyInv;
-                    InvWidget->AddToViewport();
-                    if (PC)
-                    {
-                        PC->SetShowMouseCursor(true);
-                        UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
-                    }
+                    PC->SetShowMouseCursor(true);
+                    UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
                 }
-                else
-                {
-                    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Widget Is Invalid"));
-                }
-                OpenInventory = false;
             }
             else
             {
-                // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
-                if (InvWidget)
-                {
-                    InvWidget->RemoveFromParent();
-                }
-                if (PC)
-                {
-                    PC->SetShowMouseCursor(false);
-                    UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
-                }
-                OpenInventory = true;
+                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Widget Is Invalid"));
             }
-            CanOpenInventory = false;
+            OpenInventory = false;
+        }
+        else
+        {
+            // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
+            if (InvWidget)
+            {
+                InvWidget->RemoveFromParent();
+            }
+            if (PC)
+            {
+                PC->SetShowMouseCursor(false);
+                UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
+            }
+            OpenInventory = true;
         }
     }
     else
@@ -208,12 +197,9 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &Value)
     }
 }
 
-void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName SocketName)
-{
-    SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(SocketName));
-}
+void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName socket_name) { SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(socket_name)); }
 
-void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &Value)
+void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &value)
 {
     CanOpenInventory = true;
     GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Test"));
@@ -221,42 +207,41 @@ void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &Value)
 
 
 // Called every frame
-void AMainCharacter::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
+void AMainCharacter::Tick(float delta_time) { Super::Tick(delta_time); }
 
 // Called to bind functionality to input
-void AMainCharacter::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent)
+void AMainCharacter::SetupPlayerInputComponent(UInputComponent *input_component)
 {
-    Super::SetupPlayerInputComponent(PlayerInputComponent);
+    Super::SetupPlayerInputComponent(input_component);
 
-    UEnhancedInputComponent *EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent);
     // Setting up Player Input Action Mappings
-    if (EnhancedInputComponent)
+    if (auto *enhancedInputComponent = CastChecked<UEnhancedInputComponent>(input_component))
     {
         // Player Move
-        EnhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this, &AMainCharacter::MoveAction);
+        enhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this, &AMainCharacter::MoveAction);
 
         // Player Look Around
-        EnhancedInputComponent->BindAction(InputActionLookAround, ETriggerEvent::Triggered, this, &AMainCharacter::LookAroundAction);
+        enhancedInputComponent->BindAction(InputActionLookAround, ETriggerEvent::Triggered, this, &AMainCharacter::LookAroundAction);
 
         // Player Jump
-        EnhancedInputComponent->BindAction(InputActionJump, ETriggerEvent::Triggered, this, &AMainCharacter::JumpAction);
+        enhancedInputComponent->BindAction(InputActionJump, ETriggerEvent::Triggered, this, &AMainCharacter::JumpAction);
 
         // Player Light Attack
-        EnhancedInputComponent->BindAction(InputActionLightAttack, ETriggerEvent::Triggered, this, &AMainCharacter::LightAttackAction);
+        enhancedInputComponent->BindAction(InputActionLightAttack, ETriggerEvent::Triggered, this, &AMainCharacter::LightAttackAction);
 
         // Player Heavy Attack
-        EnhancedInputComponent->BindAction(InputActionHeavyAttack, ETriggerEvent::Triggered, this, &AMainCharacter::HeavyAttackAction);
+        enhancedInputComponent->BindAction(InputActionHeavyAttack, ETriggerEvent::Triggered, this, &AMainCharacter::HeavyAttackAction);
 
         // Player Ability Keys
-        EnhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityKeyAction);
+        enhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityKeyAction);
 
         // Player Ability Scroll Functions
-        EnhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityScrollAction);
+        enhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityScrollAction);
 
         // Player Open or Close Inventory keys
-        EnhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventory);
+        enhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Started, this, &AMainCharacter::OpenCloseInventory);
 
         // Player Open or Close Inventory keys
-        EnhancedInputComponent->BindAction(InputActionOpenCloseInventoryHelper, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventoryHelper);
+        enhancedInputComponent->BindAction(InputActionOpenCloseInventoryHelper, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventoryHelper);
     }
 }

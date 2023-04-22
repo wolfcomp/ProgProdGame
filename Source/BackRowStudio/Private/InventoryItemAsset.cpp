@@ -5,28 +5,28 @@
 
 FSlotStruct::FSlotStruct() { Item = nullptr; }
 
-FSlotStruct::FSlotStruct(UInventoryItemAsset *InItem, int InQuantity)
+FSlotStruct::FSlotStruct(UInventoryItemAsset *item, int quantity)
 {
-    Item = InItem;
-    Quantity = InQuantity;
+    Item = item;
+    Quantity = quantity;
 }
 
-FSlotStruct::FSlotStruct(int InQuantity) { Quantity = InQuantity; }
+FSlotStruct::FSlotStruct(int quantity) { Quantity = quantity; }
 
 FSlotStruct::operator bool() const { return Item->IsValidLowLevel() && Quantity > 0; }
 
-FSlotStruct &FSlotStruct::operator+=(FSlotStruct &inSlot)
+FSlotStruct &FSlotStruct::operator+=(FSlotStruct &slot)
 {
-    if (const int available = this->Item->MaxQuantity - this->Quantity; available > 0 && inSlot.Item == this->Item)
+    if (const int available = this->Item->MaxQuantity - this->Quantity; available > 0 && slot.Item == this->Item)
     {
-        if (inSlot.Quantity >= available)
+        if (slot.Quantity >= available)
         {
-            inSlot.Quantity -= available;
+            slot.Quantity -= available;
             this->Quantity += available;
             return *this;
         }
-        this->Quantity += inSlot.Quantity;
-        inSlot.Quantity = 0;
+        this->Quantity += slot.Quantity;
+        slot.Quantity = 0;
         return *this;
     }
     return *this;
