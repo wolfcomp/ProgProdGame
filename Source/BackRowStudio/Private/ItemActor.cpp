@@ -10,13 +10,13 @@ AItemActor::AItemActor()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-    Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
-
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
-	SphereCollider->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
+	SphereCollider->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 	SphereCollider->InitSphereRadius(400.f);
 
+    Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+    Mesh->AttachToComponent(SphereCollider, FAttachmentTransformRules::KeepRelativeTransform);
+		
 	Item = nullptr;
 }
 

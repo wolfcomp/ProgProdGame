@@ -16,10 +16,10 @@ class BACKROWSTUDIO_API UInventoryComponent : public UActorComponent
 public:
     UInventoryComponent();
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
     TArray<FSlotStruct> Items;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
     TArray<FSlotStruct> Spells;
 
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
