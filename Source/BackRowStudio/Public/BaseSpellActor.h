@@ -13,15 +13,12 @@ class BACKROWSTUDIO_API ABaseSpellActor : public AActor, public ISpellActor
     GENERATED_BODY()
 
 public:
-    // Sets default values for this actor's properties
     ABaseSpellActor();
 
 protected:
-    // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
 public:
-    // Called every frame
     virtual void Tick(float DeltaTime) override;
 
     void SetData();
