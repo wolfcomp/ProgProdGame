@@ -104,10 +104,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventory;
 
-    // |Input Action| Open or Close Inventory Helper
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    UInputAction *InputActionOpenCloseInventoryHelper;
-
     /**
      * Spell Objects
      */
@@ -134,10 +130,14 @@ public:
     // UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Lightning Enhancement")
     // class ABaseSpellActor *LightningEnhancement;
 
-    void AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors,*/ FName SocketName);
+    void AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors,*/ FName socket_name);
 
 
 protected:
+
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result);
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -145,37 +145,34 @@ protected:
      * Action Input Functions
      */
     // Player Move Function
-    void MoveAction(const FInputActionValue &Value);
+    void MoveAction(const FInputActionValue &value);
 
     // Player Look Around Function
-    void LookAroundAction(const FInputActionValue &Value);
+    void LookAroundAction(const FInputActionValue &value);
 
     // Player Jump Function
-    void JumpAction(const FInputActionValue &Value);
+    void JumpAction(const FInputActionValue &value);
 
     // Player Light Attack Function
-    void LightAttackAction(const FInputActionValue &Value);
+    void LightAttackAction(const FInputActionValue &value);
 
     // Player Heavy Attack Function
-    void HeavyAttackAction(const FInputActionValue &Value);
+    void HeavyAttackAction(const FInputActionValue &value);
 
     // Player Ability Functions
-    void AbilityKeyAction(const FInputActionValue &Value);
+    void AbilityKeyAction(const FInputActionValue &value);
 
     // Player Ability Scroll Functions
-    void AbilityScrollAction(const FInputActionValue &Value);
+    void AbilityScrollAction(const FInputActionValue &value);
 
     // Open or Close Inventory Function
-    void OpenCloseInventory(const FInputActionValue &Value);
-
-    // Open or Close Inventory Helper Function
-    void OpenCloseInventoryHelper(const FInputActionValue &Value);
+    void OpenCloseInventory(const FInputActionValue &value);
 
 public:
     // Called every frame
-    virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float delta_time) override;
     // Called to bind functionality to input
-    virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+    virtual void SetupPlayerInputComponent(class UInputComponent *input_component) override;
 
 private:
     // Movement Component

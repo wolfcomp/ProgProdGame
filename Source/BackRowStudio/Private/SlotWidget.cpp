@@ -3,32 +3,32 @@
 
 #include "SlotWidget.h"
 
-FSlotStruct USlotWidget::AddContent(USlotWidget *InWidget)
+FSlotStruct USlotWidget::AddContent(USlotWidget *widget)
 {
-    FSlotStruct inContent = InWidget->MyContent;
-    if (InWidget != this && inContent.Item->IsValidLowLevel() && inContent.Quantity > 0)
+    FSlotStruct content = widget->MyContent;
+    if (widget != this && content.Item->IsValidLowLevel() && content.Quantity > 0)
     {
-        if (MyContent.Quantity == 0 && inContent.Quantity != 0)
+        if (MyContent.Quantity == 0 && content.Quantity != 0)
         {
-            MyContent = inContent;
-            inContent = FSlotStruct();
+            MyContent = content;
+            content = FSlotStruct();
         }
-        else if (inContent.Item == MyContent.Item)
+        else if (content.Item == MyContent.Item)
         {
-            if (MyContent.Quantity + inContent.Quantity <= MyContent.Item->MaxQuantity)
+            if (MyContent.Quantity + content.Quantity <= MyContent.Item->MaxQuantity)
             {
-                MyContent.Quantity += inContent.Quantity;
-                inContent = FSlotStruct();
+                MyContent.Quantity += content.Quantity;
+                content = FSlotStruct();
             }
             else
             {
-                if (const int remaining = MyContent.Quantity + inContent.Quantity - MyContent.Item->MaxQuantity; remaining > 0)
+                if (const int remaining = MyContent.Quantity + content.Quantity - MyContent.Item->MaxQuantity; remaining > 0)
                 {
                     MyContent.Quantity += remaining;
-                    inContent.Quantity -= remaining;
+                    content.Quantity -= remaining;
                 }
             }
         }
     }
-    return inContent;
+    return content;
 }

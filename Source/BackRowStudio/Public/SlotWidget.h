@@ -15,7 +15,7 @@ class BACKROWSTUDIO_API USlotWidget : public UUserWidget
     GENERATED_BODY()
 public:
     UFUNCTION(BlueprintCallable)
-    FSlotStruct AddContent(USlotWidget *InWidget);
+    FSlotStruct AddContent(USlotWidget *widget);
 
     UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn))
     FSlotStruct MyContent;

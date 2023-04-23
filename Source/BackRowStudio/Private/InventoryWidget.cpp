@@ -4,7 +4,7 @@
 #include "InventoryWidget.h"
 #include "InventoryComponent.h"
 
-void UInventoryWidget::NativeTick(const FGeometry &MyGeometry, float InDeltaTime) { Super::NativeTick(MyGeometry, InDeltaTime); }
+void UInventoryWidget::NativeTick(const FGeometry &geometry, float delta_time) { Super::NativeTick(geometry, delta_time); }
 
 void UInventoryWidget::NativePreConstruct() { Super::NativePreConstruct(); }
 
@@ -20,7 +20,7 @@ void UInventoryWidget::NativeConstruct()
             {
                 for (int i = 0; i < Inventory->Items.Num(); ++i)
                 {
-                    USlotWidget *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
+                    auto *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
                     slotWidget->MyContent = Inventory->Items[i];
                     MyGridPanel->AddChildToGrid(slotWidget, i / HorizontalLimit, i % HorizontalLimit);
                 }

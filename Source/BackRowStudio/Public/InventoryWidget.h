@@ -14,8 +14,10 @@ class BACKROWSTUDIO_API UInventoryWidget : public UUserWidget
 {
     GENERATED_BODY()
 public:
-    virtual void NativeTick(const FGeometry &MyGeometry, float InDeltaTime) override;
+    virtual void NativeTick(const FGeometry &geometry, float delta_time) override;
+
     virtual void NativePreConstruct() override;
+
     virtual void NativeConstruct() override;
 
     UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn))
