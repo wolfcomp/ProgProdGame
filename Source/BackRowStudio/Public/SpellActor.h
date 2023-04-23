@@ -50,11 +50,12 @@ struct FSpellInternal
     class UNiagaraSystem *VFX;
 };
 
-USTRUCT(BlueprintType)
-struct FSpell
+UCLASS(BlueprintType)
+class USpell : public UDataAsset
 {
     GENERATED_BODY()
 
+public:
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName Name;
 
@@ -86,7 +87,7 @@ class ISpellActor
     TArray<ADamageActor *> GetActors(ESpellType, FVector, float, FVector, FRotator, UWorld *) const;
 
 public:
-    FSpell Spell;
+    USpell* Spell;
 
     void CastSpell(FVector, FRotator, UWorld *, USceneComponent *, bool = false);
 

@@ -104,10 +104,6 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventory;
 
-    // |Input Action| Open or Close Inventory Helper
-    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
-    UInputAction *InputActionOpenCloseInventoryHelper;
-
     /**
      * Spell Objects
      */
@@ -138,6 +134,10 @@ public:
 
 
 protected:
+
+    UFUNCTION()
+    void OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result);
+
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;
 
@@ -167,9 +167,6 @@ protected:
 
     // Open or Close Inventory Function
     void OpenCloseInventory(const FInputActionValue &value);
-
-    // Open or Close Inventory Helper Function
-    void OpenCloseInventoryHelper(const FInputActionValue &value);
 
 public:
     // Called every frame
