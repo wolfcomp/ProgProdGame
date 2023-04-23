@@ -6,38 +6,40 @@
 // Sets default values for this component's properties
 UInventoryComponent::UInventoryComponent() { PrimaryComponentTick.bCanEverTick = true; }
 
-void UInventoryComponent::AddItem(FSlotStruct item)
+bool UInventoryComponent::AddItem(FSlotStruct item)
 {
     for (auto &itemSlot : Items)
     {
         if (itemSlot.Item == item.Item)
         {
             itemSlot.Quantity += item.Quantity;
-            return;
+            return true;
         }
         if (itemSlot.Item == nullptr)
         {
             itemSlot = item;
-            return;
+            return true;
         }
     }
+    return false;
 }
 
-void UInventoryComponent::AddSpell(FSlotStruct spell)
+bool UInventoryComponent::AddSpell(FSlotStruct spell)
 {
     for (auto &spellItem : Spells)
     {
         if (spellItem.Item == spell.Item)
         {
             spellItem.Quantity += spell.Quantity;
-            return;
+            return true;
         }
         if (spellItem.Item == nullptr)
         {
             spellItem = spell;
-            return;
+            return true;
         }
     }
+    return false;
 }
 
 // Called when the game starts

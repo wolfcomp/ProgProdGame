@@ -8,6 +8,8 @@ public class BackRowStudio : ModuleRules
     {
         PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
+        ShadowVariableWarningLevel = WarningLevel.Off;
+
         PublicDependencyModuleNames.AddRange(new string[]
         {
             "Core", 

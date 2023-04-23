@@ -26,10 +26,10 @@ public:
 	int NumberOfInventorySlots = 15;
 
 	UFUNCTION(BlueprintCallable)
-	void AddItem(FSlotStruct item);
+    bool AddItem(FSlotStruct item);
 
 	UFUNCTION(BlueprintCallable)
-	void AddSpell(FSlotStruct spell);
+    bool AddSpell(FSlotStruct spell);
 
 protected:
     // Called when the game starts

@@ -36,7 +36,7 @@ public:
     bool HasEquipMenu = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FSpell Spell;
+    USpell* Spell;
 };
 
 USTRUCT(blueprinttype)

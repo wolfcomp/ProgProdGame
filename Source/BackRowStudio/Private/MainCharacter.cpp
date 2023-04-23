@@ -3,6 +3,7 @@
 
 #include "BackRowStudio/Public/MainCharacter.h"
 #include "BaseSpellActor.h"
+#include "Enemy.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -16,6 +17,7 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "InventoryComponent.h"
 #include "InventoryWidget.h"
+#include "ItemActor.h"
 #include "MinimapWidget.h"
 
 // Sets default values
@@ -35,6 +37,7 @@ AMainCharacter::AMainCharacter()
     CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
     CameraComponent->SetupAttachment(SpringArmComponent);
     CameraComponent->SetFieldOfView(90);
+
 
     // Player Setup
     const auto characterMovementComponent = GetCharacterMovement();
@@ -75,6 +78,8 @@ AMainCharacter::AMainCharacter()
 void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
 
     // Adding mapping context component
     if (const auto *controller = Cast<APlayerController>(Controller))
@@ -199,10 +204,33 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
 
 void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName socket_name) { SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(socket_name)); }
 
-void AMainCharacter::OpenCloseInventoryHelper(const FInputActionValue &value)
+void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result)
 {
-    CanOpenInventory = true;
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Test"));
+    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Overlap Begin"));
+    if (const auto item = Cast<AItemActor>(other_actor))
+    {
+        if (item->Item != nullptr)
+        {
+            if (item->Item->Spell != nullptr)
+            {
+                if (MyInv->AddItem(FSlotStruct(item->Item, 1)))
+                    item->Destroy();
+            }
+            else
+            {
+                if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
+                    item->Destroy();
+            }
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Item Is Invalid"));
+        }
+    }
+    if(auto enemy = Cast<AEnemy>(other_actor))
+    {
+        //implement enemy hit here when AI is integrated
+    }
 }
 
 
@@ -240,8 +268,5 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *input_component)
 
         // Player Open or Close Inventory keys
         enhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Started, this, &AMainCharacter::OpenCloseInventory);
-
-        // Player Open or Close Inventory keys
-        enhancedInputComponent->BindAction(InputActionOpenCloseInventoryHelper, ETriggerEvent::Triggered, this, &AMainCharacter::OpenCloseInventoryHelper);
     }
 }

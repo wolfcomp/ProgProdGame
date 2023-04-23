@@ -26,5 +26,5 @@ public:
     virtual void HeavyAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &, const bool apply_damage) override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FSpell Spell;
+    USpell* Spell;
 };
