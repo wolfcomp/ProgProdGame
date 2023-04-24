@@ -24,7 +24,9 @@ public class BackRowStudio : ModuleRules
             "GameplayTasks", 
             "UMG", 
             "Slate", 
-            "SlateCore"
+            "SlateCore",
+            "AiModule",
+            "NavigationSystem"
         });
     }
 
