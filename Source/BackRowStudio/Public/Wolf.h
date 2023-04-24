@@ -3,10 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "Wolf.generated.h"
 
+//https://awesometuts.com/blog/unreal-engine-enemy-ai/
 UCLASS()
 class BACKROWSTUDIO_API AWolf : public ACharacter
 {
@@ -20,17 +20,56 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
+
+	bool PlayerDetected;
+	bool CanAttackPlayer;
+
+	float CurrentPatrolPoint = 0;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool CanDealDamage;
+
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	
 	UPROPERTY(EditAnywhere)
-	USplineComponent* PatrolPath;
+	class AMainCharacter* PlayerRef;
 
 	UPROPERTY(EditAnywhere)
-	class USphereComponent* DetectPlayerSphere;
+	class AWolfAIController* WolfAIController;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USplineComponent* PatrolPath;
+
+	//UPROPERTY(EditAnywhere)
+	//class UBlackboardComponent* WolfAiBlackboard;
+
+	//UPROPERTY(EditAnywhere)
+	//class UBehaviorTreeComponent* WolfAiBehaviorTree;
+
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* PlayerAttackCollisionDetection;
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* AttackHitBox;
+
+
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* AttackMontage;
+
+	UPROPERTY(EditAnywhere)
+	class UAnimInstance* AnimInstance;
+
+	void OnMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
+	void OnAttackHitBoxBeginOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult);
+
+	UFUNCTION(BlueprintCallable)
+	void AttackAnimationEnded();
+
+	UFUNCTION()
+	void TryAttack(AActor* actorToAttack);
 };

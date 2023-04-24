@@ -6,7 +6,10 @@
 #include "AIController.h"
 #include "WolfAIController.generated.h"
 
-//REALLY helpful tutorial https://www.youtube.com/watch?v=DwjehZh5YQ0&t=119s
+//helpful tutorial: https://www.youtube.com/watch?v=DwjehZh5YQ0&t=119s
+//also this other helpful tutorial: https://sologamedevblog.com/tutorials/unreal-perception-c-friend-or-enemy/
+    //The other controllers need to inherit from IGenericTeamAgentInterface and set their team id. In this example I take the PlayerController
+
 /**
  * 
  */
@@ -26,37 +29,50 @@ private:
 	class UNavigationSystemV1* NavArea;
 
 	FVector RandomLocation = FVector();
+	TArray<FVector> patrolPoints;
 
+	bool bIsActive;
 	bool bMoveToPlayer;
 	bool bSearchForPlayer;
 	bool bCanAttackPlayer;
 
-	float wolfStoppingDistance = 60.0f;
 	float wolfAttackDistance = 200.0f;
+	float currentPatrolPoint = 0;
 
 	void GenerateRandomSearchLocation();
 	void SearchForPlayer();
 
 	void MoveToPlayer();
 	void StartChasingPlayer();
-	bool IsWolfCloseToPlayer();
-	void AttackPlayer();
+	bool PlayerInAttackRange() const;
+	void AttackPlayer() const;
+	void Patrol();
 
 	FTimerHandle SearchTimerHandle;
 	FTimerHandle AttackTimerHandle;
 
 public:
-    virtual void OnMoveCompleted(FAIRequestID RequestID, EPathFollowingResult::Type Result) override;
+	AWolfAIController();
+
+	UPROPERTY(VisibleAnywhere, Category = AI)
+	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
+	TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
+	TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	bool IsPatrolling = true;
+
+    virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result) override;
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+
+    UFUNCTION()
+	void OnTargetPerceptionUpdated_Delegate(AActor* Actor, FAIStimulus Stimulus);
 
 	UFUNCTION()
-	void OnDetectPlayerBeginOverlap(UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void Reactivate();
 
-	UFUNCTION()
-	void OnDetectPlayerEndOverlap(UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor, UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
+	UFUNCTION(BlueprintCallable)
+	void ReturnToPatrol();
 
 
 };
