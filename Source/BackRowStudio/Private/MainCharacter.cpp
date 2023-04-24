@@ -38,7 +38,6 @@ AMainCharacter::AMainCharacter()
     CameraComponent->SetupAttachment(SpringArmComponent);
     CameraComponent->SetFieldOfView(90);
 
-
     // Player Setup
     const auto characterMovementComponent = GetCharacterMovement();
     characterMovementComponent->MaxAcceleration = 10000.f;
@@ -48,7 +47,10 @@ AMainCharacter::AMainCharacter()
 
     // Spell Setup
     SpellEnenhancements = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
-    // ArcaneEnhancement->AttachToActor( )
+    //GroundSpellLocation = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ground Spell Location"));
+    //GroundSpellLocation->SetupAttachment(GetRootComponent());
+    //FVector rootLocation = GetRootComponent()->GetRelativeLocation();
+    //GroundSpellLocation->SetRelativeLocation(FVector(rootLocation.X, rootLocation.Y, rootLocation.Z - 80));
 
     // Minimap Spring Arm Setup
     MiniMapSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Minimap SpringArm"));
@@ -62,6 +64,8 @@ AMainCharacter::AMainCharacter()
     // Minimap Scene Capture Setup
     MinimapCam = CreateDefaultSubobject<USceneCaptureComponent2D>(TEXT("MiniMapCamera"));
     MinimapCam->SetupAttachment(MiniMapSpringArm);
+    MinimapCam->ProjectionType = ECameraProjectionMode::Orthographic;
+    MinimapCam->OrthoWidth = 2500.f;
     const ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> minimapRenderFinder(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/IndividualFolders/Dennis/MiniMap/MiniMapRenderTarget.MiniMapRenderTarget'"));
     MinimapCam->TextureTarget = ToObjectPtr(minimapRenderFinder.Object);
 
@@ -72,7 +76,6 @@ AMainCharacter::AMainCharacter()
     // Inventory Component Setup
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
 }
-
 
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
@@ -143,11 +146,30 @@ void AMainCharacter::LookAroundAction(const FInputActionValue &value)
 
 void AMainCharacter::JumpAction(const FInputActionValue &value) { Super::Jump(); }
 
-void AMainCharacter::LightAttackAction(const FInputActionValue &value) {}
+void AMainCharacter::LightAttackAction(const FInputActionValue &value)
+{
+    if (CanJump())
+     SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
+}
 
-void AMainCharacter::HeavyAttackAction(const FInputActionValue &value) {}
+void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
+{
+    if (!MyInv->Spells[SelectedSpell].Item) {return;}
 
-void AMainCharacter::AbilityKeyAction(const FInputActionValue &value) { SelectedSpell = static_cast<int>(value.Get<float>()) - 1; }
+    if (CanJump())
+    {
+        if (SpellEnenhancements->Spell->Heavy.IsGroundSpell)
+            SpellEnenhancements->CastSpell(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
+        else
+            SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), true);
+    }
+}
+
+void AMainCharacter::AbilityKeyAction(const FInputActionValue &value)
+{
+    SelectedSpell = static_cast<int>(value.Get<float>()) - 1;
+    SetSpell();
+}
 
 void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
 {
@@ -156,6 +178,17 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
         SelectedSpell = 3;
     if (SelectedSpell > 3)
         SelectedSpell = 0;
+    SetSpell();
+}
+
+void AMainCharacter::SetSpell()
+{
+    auto spellItem = MyInv->Spells[SelectedSpell].Item;
+    if (!spellItem) {return;}
+    auto spell = spellItem->Spell;
+    if (!spell) {return;}
+    SpellEnenhancements->Spell = spell;
+    SpellEnenhancements->SetData();
 }
 
 void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
@@ -211,7 +244,7 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
     {
         if (item->Item != nullptr)
         {
-            if (item->Item->Spell != nullptr)
+            if (item->Item->Spell == nullptr)
             {
                 if (MyInv->AddItem(FSlotStruct(item->Item, 1)))
                     item->Destroy();
@@ -219,6 +252,7 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
             else
             {
                 if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
+                    SetSpell();
                     item->Destroy();
             }
         }
@@ -232,7 +266,6 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
         //implement enemy hit here when AI is integrated
     }
 }
-
 
 // Called every frame
 void AMainCharacter::Tick(float delta_time) { Super::Tick(delta_time); }

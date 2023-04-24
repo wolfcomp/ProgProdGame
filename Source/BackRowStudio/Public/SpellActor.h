@@ -48,6 +48,10 @@ struct FSpellInternal
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UNiagaraSystem *VFX;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    bool IsGroundSpell;
+
 };
 
 UCLASS(BlueprintType)
@@ -86,10 +90,11 @@ class ISpellActor
 
     TArray<ADamageActor *> GetActors(ESpellType, FVector, float, FVector, FRotator, UWorld *) const;
 
+
 public:
     USpell* Spell;
 
-    void CastSpell(FVector, FRotator, UWorld *, USceneComponent *, bool = false);
+    void CastSpell(const FVector origin, const FRotator rotation, UWorld *world, USceneComponent *root, const bool is_heavy);
 
     void DebugSpell(FVector, FRotator, const UWorld *) const;
 

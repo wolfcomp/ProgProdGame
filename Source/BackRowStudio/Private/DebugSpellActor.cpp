@@ -16,8 +16,8 @@ void ADebugSpellActor::BeginPlay()
     Super::BeginPlay();
     ISpellActor::Spell = Spell;
     DebugSpell(GetActorLocation(), GetActorRotation(), GetWorld());
-    if(Spell != nullptr)
-        CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), RootComponent, Spell->DebugHeavy);
+    //if(Spell != nullptr);
+        //CastSpell(, , GetWorld(), RootComponent,,);
 }
 
 // Called every frame
