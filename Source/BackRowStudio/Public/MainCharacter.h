@@ -18,7 +18,7 @@ class BACKROWSTUDIO_API AMainCharacter : public ACharacter
 public:
     // Sets default values for this character's properties
     AMainCharacter();
-
+    
     // |Camera| Spring Arm Component
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
     class USpringArmComponent *SpringArmComponent;
@@ -110,6 +110,9 @@ public:
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
     int SelectedSpell;
 
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
+    float GroundSpellLocationOffset = 100.f;
+
     // |Spells| Arcane Enhancement
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Spell Enhancement")
     class ABaseSpellActor *SpellEnenhancements;
@@ -155,6 +158,9 @@ protected:
 
     // Player Light Attack Function
     void LightAttackAction(const FInputActionValue &value);
+
+    // Set Spell from Spell Inventory
+    void SetSpell();
 
     // Player Heavy Attack Function
     void HeavyAttackAction(const FInputActionValue &value);
