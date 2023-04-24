@@ -8,7 +8,6 @@
 
 #include "Wolf.h"
 #include "Components/SphereComponent.h"
-#include "Components/BoxComponent.h"
 #include "MainCharacter.h"
 #include "Components/SplineComponent.h"
 #include "Perception/AIPerceptionComponent.h"
@@ -60,20 +59,24 @@ void AWolfAIController::BeginPlay()
 
     bIsActive = true;
     bSearchForPlayer = true;
-    bCanAttackPlayer = true;
+//    bCanAttackPlayer = true;
+    bCanAttackPlayer = false;
     bMoveToPlayer = false;
 
-    GenerateRandomSearchLocation();
-    if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->GetNumberOfSplinePoints() > 0 && IsPatrolling == true)
+    if (IsInitialized)
     {
-        //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("1"));
-        IsPatrolling = true;
-        bSearchForPlayer = false;
-        Patrol();
-    }
-    else
-    {
-        SearchForPlayer();
+        GenerateRandomSearchLocation();
+        if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->GetNumberOfSplinePoints() > 0 && IsPatrolling == true)
+        {
+            //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("1"));
+            IsPatrolling = true;
+            bSearchForPlayer = false;
+            Patrol();
+        }
+        else
+        {
+            SearchForPlayer();
+        }
     }
 
     AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdated_Delegate);
@@ -103,17 +106,30 @@ void AWolfAIController::MoveToPlayer()
 {
     if(PlayerPawn->IsValidLowLevel())
     {
-        MoveToActor(PlayerPawn);
-        bSearchForPlayer = false;
-        bMoveToPlayer = true;
+        if(PlayerInAttackRange())
+        {
+            if(bCanAttackPlayer == true)
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("attacking player"));
+                AttackPlayer();
+            }
+        }
+        else if(const float distance = FVector::Dist(PlayerPawn->GetActorLocation(), this->controlledWolf->GetActorLocation()); distance > 300)
+        {
+            MoveToActor(PlayerPawn);
+            bSearchForPlayer = false;
+            bMoveToPlayer = true;   
+        }
+        else if (!bCanAttackPlayer)
+        {
+            bMoveToPlayer = false;
+        }
     }
 }
 
 void AWolfAIController::StartChasingPlayer()
 {
-    bSearchForPlayer = false;
     IsPatrolling = false;
-    bMoveToPlayer = true;
     MoveToPlayer();
 }
 
@@ -161,16 +177,16 @@ void AWolfAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollo
     if(controlledWolf)
     {
         controlledWolf->OnMoveCompleted(RequestID, Result);
+
     }
     Super::OnMoveCompleted(RequestID, Result);
-    if (IsPatrolling)
+    if (IsPatrolling && !bMoveToPlayer)
     {
         Patrol();
     }
-    else if (PlayerInAttackRange() && bCanAttackPlayer == true)
+    else if (bMoveToPlayer)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("attacking player"));
-        AttackPlayer();
+        StartChasingPlayer();
     }
     else if (bSearchForPlayer)
     {
@@ -196,13 +212,14 @@ ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &Othe
             return ETeamAttitude::Hostile;
 		}
 	}
-	return ETeamAttitude::Friendly;
+	return ETeamAttitude::Neutral;
 }
 
 void AWolfAIController::OnTargetPerceptionUpdated_Delegate(AActor *Actor, FAIStimulus Stimulus)
 {
     if (GetTeamAttitudeTowards(*Actor) == ETeamAttitude::Hostile)
     {
+        IsPatrolling = false;
         StartChasingPlayer();
     }
     switch (Stimulus.Type)

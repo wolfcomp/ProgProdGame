@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
@@ -12,10 +13,12 @@ class UMinimapWidget;
 struct FInputActionValue;
 
 UCLASS()
-class BACKROWSTUDIO_API AMainCharacter : public ACharacter
+class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamAgentInterface
+
 {
     GENERATED_BODY()
-
+private:
+    FGenericTeamId TeamID = FGenericTeamId(1);
 public:
 
     float Health = 100;

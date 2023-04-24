@@ -62,6 +62,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsPatrolling = true;
 
+	UPROPERTY(EditAnywhere)
+	bool IsInitialized = true;
+
     virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result) override;
 	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
