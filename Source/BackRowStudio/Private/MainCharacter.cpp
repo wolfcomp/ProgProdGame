@@ -38,6 +38,7 @@ AMainCharacter::AMainCharacter()
     CameraComponent->SetupAttachment(SpringArmComponent);
     CameraComponent->SetFieldOfView(90);
 
+
     // Player Setup
     const auto characterMovementComponent = GetCharacterMovement();
     characterMovementComponent->MaxAcceleration = 10000.f;
