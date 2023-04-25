@@ -20,7 +20,6 @@
 #include "PauseWidget.h"
 #include "ItemActor.h"
 #include "MinimapWidget.h"
-#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -69,10 +68,15 @@ AMainCharacter::AMainCharacter()
     MinimapCam->SetupAttachment(MiniMapSpringArm);
     MinimapCam->ProjectionType = ECameraProjectionMode::Orthographic;
     MinimapCam->OrthoWidth = 2500.f;
+    const ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> minimapRenderFinder(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/IndividualFolders/Dennis/MiniMap/MiniMapRenderTarget.MiniMapRenderTarget'"));
+    MinimapCam->TextureTarget = ToObjectPtr(minimapRenderFinder.Object);
+
+    // Minimap Widget Setup
+    const ConstructorHelpers::FObjectFinder<UMaterial> minimapMatFinder(TEXT("/Script/Engine.Material'/Game/IndividualFolders/Dennis/MiniMap/MiniMapMat.MiniMapMat'"));
+    Mat = minimapMatFinder.Object;
 
     // Inventory Component Setup
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
-    
 }
 
 // Called when the game starts or when spawned
@@ -92,19 +96,25 @@ void AMainCharacter::BeginPlay()
             inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
-    
-    if (MiniMapWidgetTemplate)
+    if (MiniMapWidgetTemplate && Mat)
     {
         // seems like a bug that this doesn't work (doesn't display the widget on the screen)
         MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
+        MinimapWidget->MyMat = Mat;
         MinimapWidget->AddToViewport();
     }
-    
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("invalid Material or MiniMapWidgetTemplate"));
+    }
     if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
     }
-    
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Controller Is Not A PlayerController"));
+    }
     if(MyPauseMenu->IsValidLowLevel())
     {
         PauseMenu = CreateWidget<UPauseWidget>(GetWorld(), MyPauseMenu, FName("Inventory Widget"));
@@ -112,6 +122,11 @@ void AMainCharacter::BeginPlay()
         PauseMenu->AddToViewport();
         PauseMenu->SetVisibility(ESlateVisibility::Collapsed);
     }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Invalid Pause Menu"));
+    }
+
 }
 
 // Input action Functions
@@ -177,23 +192,17 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
     SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
         SelectedSpell = 3;
-        
     if (SelectedSpell > 3)
         SelectedSpell = 0;
-        
     SetSpell();
 }
 
 void AMainCharacter::SetSpell()
 {
     auto spellItem = MyInv->Spells[SelectedSpell].Item;
-    if (!spellItem)
-        return;
-        
+    if (!spellItem) {return;}
     auto spell = spellItem->Spell;
-    if (!spell)
-        return;
-        
+    if (!spell) {return;}
     SpellEnenhancements->Spell = spell;
     SpellEnenhancements->SetData();
 }
@@ -215,28 +224,36 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
                     UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
                 }
             }
+            else
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Widget Is Invalid"));
+            }
             OpenInventory = false;
         }
         else
         {
+            // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
             if (InvWidget)
             {
                 InvWidget->RemoveFromParent();
             }
-            
             if (PC)
             {
                 PC->SetShowMouseCursor(false);
                 UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
             }
-            
             OpenInventory = true;
         }
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
     }
 }
 
 void AMainCharacter::OpenClosePauseMenu(const FInputActionValue &value)
 {
+    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Got Here"));
     if(MyPauseMenu->IsValidLowLevel())
     {
         if(OpenOrClosePause)
@@ -256,6 +273,7 @@ void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellA
 
 void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result)
 {
+    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Overlap Begin"));
     if (const auto item = Cast<AItemActor>(other_actor))
     {
         if (item->Item != nullptr)
@@ -263,20 +281,18 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
             if (item->Item->Spell == nullptr)
             {
                 if (MyInv->AddItem(FSlotStruct(item->Item, 1)))
-                {
                     item->Destroy();
-                    UGameplayStatics::PlaySound2D(this, PickupSound);
-                }
             }
             else
             {
                 if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
-                {
                     SetSpell();
                     item->Destroy();
-                    UGameplayStatics::PlaySound2D(this, PickupSound);
-                }
             }
+        }
+        else
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Item Is Invalid"));
         }
     }
     if(auto enemy = Cast<AEnemy>(other_actor))

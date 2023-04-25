@@ -45,7 +45,7 @@ void AWolf::BeginPlay()
 	}
 
 	AnimInstance = GetMesh()->GetAnimInstance();
-	AttackHitBox->OnComponentBeginOverlap.AddDynamic(this, &AWolf::OnAttackHitBoxBeginOverlap);
+	//AttackHitBox->OnComponentBeginOverlap.AddDynamic(this, &AWolf::OnAttackHitBoxBeginOverlap);
 
 	Super::BeginPlay();
 	

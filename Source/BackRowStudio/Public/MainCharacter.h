@@ -24,6 +24,8 @@ public:
     float Health = 100;
     float MaxHealth = 100;
 
+    bool OpenOrClosePause;
+
     // Sets default values for this character's properties
     AMainCharacter();
     
@@ -71,6 +73,13 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Health Widget")
     UHealthBarWidget* HealthBarWidget;
 
+    // |Pause Menu| Pause Menu Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pause Widget")
+    TSubclassOf<class UPauseWidget> MyPauseMenu;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Pause Widget")
+    class UPauseWidget* PauseMenu;
+
     // Player Controller Reference
     UPROPERTY()
     APlayerController *PC;
@@ -114,6 +123,11 @@ public:
     // |Input Action| Open or Close Inventory
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventory;
+
+
+    // |Input Action| Open or Close Pause Menu
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
+    UInputAction* PauseAction;
 
     /**
      * Spell Objects
@@ -187,6 +201,9 @@ protected:
 
     // Open or Close Inventory Function
     void OpenCloseInventory(const FInputActionValue &value);
+
+    // Open or Close Pause Menu Function
+    void OpenClosePauseMenu(const FInputActionValue &value);
 
 public:
     // Called every frame
