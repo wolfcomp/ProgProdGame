@@ -19,6 +19,7 @@
 #include "InventoryWidget.h"
 #include "ItemActor.h"
 #include "MinimapWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -76,6 +77,7 @@ AMainCharacter::AMainCharacter()
 
     // Inventory Component Setup
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
+    
 }
 
 // Called when the game starts or when spawned
@@ -248,13 +250,19 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
             if (item->Item->Spell == nullptr)
             {
                 if (MyInv->AddItem(FSlotStruct(item->Item, 1)))
+                {
                     item->Destroy();
+                    UGameplayStatics::PlaySound2D(this, PickupSound);
+                }
             }
             else
             {
                 if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
+                {
                     SetSpell();
                     item->Destroy();
+                    UGameplayStatics::PlaySound2D(this, PickupSound);
+                }
             }
         }
         else

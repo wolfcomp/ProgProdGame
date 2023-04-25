@@ -135,6 +135,9 @@ public:
 
     void AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors,*/ FName socket_name);
 
+    UPROPERTY(EditDefaultsOnly)
+    USoundBase* PickupSound;
+
 
 protected:
 
