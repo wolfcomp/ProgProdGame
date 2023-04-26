@@ -43,10 +43,6 @@ public:
     UPROPERTY(BlueprintReadOnly, Category = "Minimap")
     UMinimapWidget *MinimapWidget;
 
-    // |Minimap| Minimap Material
-    UPROPERTY()
-    UMaterial *Mat;
-
     // |Inventory| Inventory Component
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
     class UInventoryComponent *MyInv;

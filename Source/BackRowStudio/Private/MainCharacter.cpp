@@ -68,12 +68,6 @@ AMainCharacter::AMainCharacter()
     MinimapCam->SetupAttachment(MiniMapSpringArm);
     MinimapCam->ProjectionType = ECameraProjectionMode::Orthographic;
     MinimapCam->OrthoWidth = 2500.f;
-    const ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> minimapRenderFinder(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/IndividualFolders/Dennis/MiniMap/MiniMapRenderTarget.MiniMapRenderTarget'"));
-    MinimapCam->TextureTarget = ToObjectPtr(minimapRenderFinder.Object);
-
-    // Minimap Widget Setup
-    const ConstructorHelpers::FObjectFinder<UMaterial> minimapMatFinder(TEXT("/Script/Engine.Material'/Game/IndividualFolders/Dennis/MiniMap/MiniMapMat.MiniMapMat'"));
-    Mat = minimapMatFinder.Object;
 
     // Inventory Component Setup
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
@@ -95,11 +89,10 @@ void AMainCharacter::BeginPlay()
             inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
-    if (MiniMapWidgetTemplate && Mat)
+    if (MiniMapWidgetTemplate)
     {
         // seems like a bug that this doesn't work (doesn't display the widget on the screen)
         MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
-        MinimapWidget->MyMat = Mat;
         MinimapWidget->AddToViewport();
     }
     if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
