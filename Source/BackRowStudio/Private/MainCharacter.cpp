@@ -19,6 +19,7 @@
 #include "InventoryWidget.h"
 #include "ItemActor.h"
 #include "MinimapWidget.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -67,15 +68,10 @@ AMainCharacter::AMainCharacter()
     MinimapCam->SetupAttachment(MiniMapSpringArm);
     MinimapCam->ProjectionType = ECameraProjectionMode::Orthographic;
     MinimapCam->OrthoWidth = 2500.f;
-    const ConstructorHelpers::FObjectFinder<UTextureRenderTarget2D> minimapRenderFinder(TEXT("/Script/Engine.TextureRenderTarget2D'/Game/IndividualFolders/Dennis/MiniMap/MiniMapRenderTarget.MiniMapRenderTarget'"));
-    MinimapCam->TextureTarget = ToObjectPtr(minimapRenderFinder.Object);
-
-    // Minimap Widget Setup
-    const ConstructorHelpers::FObjectFinder<UMaterial> minimapMatFinder(TEXT("/Script/Engine.Material'/Game/IndividualFolders/Dennis/MiniMap/MiniMapMat.MiniMapMat'"));
-    Mat = minimapMatFinder.Object;
 
     // Inventory Component Setup
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
+    
 }
 
 // Called when the game starts or when spawned
@@ -93,24 +89,15 @@ void AMainCharacter::BeginPlay()
             inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
-    if (MiniMapWidgetTemplate && Mat)
+    if (MiniMapWidgetTemplate)
     {
         // seems like a bug that this doesn't work (doesn't display the widget on the screen)
         MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
-        MinimapWidget->MyMat = Mat;
         MinimapWidget->AddToViewport();
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("invalid Material or MiniMapWidgetTemplate"));
     }
     if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Controller Is Not A PlayerController"));
     }
 }
 
@@ -209,15 +196,10 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
                     UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
                 }
             }
-            else
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Widget Is Invalid"));
-            }
             OpenInventory = false;
         }
         else
         {
-            // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
             if (InvWidget)
             {
                 InvWidget->RemoveFromParent();
@@ -230,17 +212,12 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
             OpenInventory = true;
         }
     }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
-    }
 }
 
 void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName socket_name) { SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(socket_name)); }
 
 void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Overlap Begin"));
     if (const auto item = Cast<AItemActor>(other_actor))
     {
         if (item->Item != nullptr)
@@ -248,18 +225,20 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
             if (item->Item->Spell == nullptr)
             {
                 if (MyInv->AddItem(FSlotStruct(item->Item, 1)))
+                {
                     item->Destroy();
+                    UGameplayStatics::PlaySound2D(this, PickupSound);
+                }
             }
             else
             {
                 if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
+                {
                     SetSpell();
                     item->Destroy();
+                    UGameplayStatics::PlaySound2D(this, PickupSound);
+                }
             }
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Item Is Invalid"));
         }
     }
     if(auto enemy = Cast<AEnemy>(other_actor))
