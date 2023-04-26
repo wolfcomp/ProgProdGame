@@ -23,13 +23,13 @@ public:
     UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn))
     class UInventoryComponent *Inventory;
 
-    UPROPERTY(BlueprintReadWrite, meta = (BindWidget))
-    UGridPanel *MyGridPanel;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+    UGridPanel *BagPanel;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (BindWidget))
+    UGridPanel *SpellPanel;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<USlotWidget> MySlotWidget;
-
-    UPROPERTY(BlueprintReadWrite)
     TSubclassOf<USlotWidget> SlotWidget;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
