@@ -102,17 +102,9 @@ void AMainCharacter::BeginPlay()
         MinimapWidget->MyMat = Mat;
         MinimapWidget->AddToViewport();
     }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("invalid Material or MiniMapWidgetTemplate"));
-    }
     if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Controller Is Not A PlayerController"));
     }
 }
 
@@ -211,15 +203,10 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
                     UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
                 }
             }
-            else
-            {
-                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Widget Is Invalid"));
-            }
             OpenInventory = false;
         }
         else
         {
-            // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("TEST"));
             if (InvWidget)
             {
                 InvWidget->RemoveFromParent();
@@ -232,17 +219,12 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
             OpenInventory = true;
         }
     }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("My Inventory Is Invalid"));
-    }
 }
 
 void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName socket_name) { SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(socket_name)); }
 
 void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Overlap Begin"));
     if (const auto item = Cast<AItemActor>(other_actor))
     {
         if (item->Item != nullptr)
@@ -264,10 +246,6 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
                     UGameplayStatics::PlaySound2D(this, PickupSound);
                 }
             }
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Item Is Invalid"));
         }
     }
     if(auto enemy = Cast<AEnemy>(other_actor))
