@@ -3,19 +3,29 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "MainCharacter.generated.h"
 
+class UHealthBarWidget;
 class UInventoryWidget;
 class UMinimapWidget;
 struct FInputActionValue;
 
 UCLASS()
-class BACKROWSTUDIO_API AMainCharacter : public ACharacter
+class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamAgentInterface
+
 {
     GENERATED_BODY()
-
+private:
+    FGenericTeamId TeamID = FGenericTeamId(1);
 public:
+
+    float Health = 100;
+    float MaxHealth = 100;
+
+    bool OpenOrClosePause;
+
     // Sets default values for this character's properties
     AMainCharacter();
     
@@ -55,6 +65,20 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Inventory")
     UInventoryWidget *InvWidget;
+
+    // |Health Bar| Health Bar Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health Widget")
+    TSubclassOf<UHealthBarWidget> MyHealthWidget;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Health Widget")
+    UHealthBarWidget* HealthBarWidget;
+
+    // |Pause Menu| Pause Menu Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pause Widget")
+    TSubclassOf<class UPauseWidget> MyPauseMenu;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Pause Widget")
+    class UPauseWidget* PauseMenu;
 
     // Player Controller Reference
     UPROPERTY()
@@ -99,6 +123,11 @@ public:
     // |Input Action| Open or Close Inventory
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventory;
+
+
+    // |Input Action| Open or Close Pause Menu
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
+    UInputAction* PauseAction;
 
     /**
      * Spell Objects
@@ -172,6 +201,9 @@ protected:
 
     // Open or Close Inventory Function
     void OpenCloseInventory(const FInputActionValue &value);
+
+    // Open or Close Pause Menu Function
+    void OpenClosePauseMenu(const FInputActionValue &value);
 
 public:
     // Called every frame

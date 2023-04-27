@@ -12,11 +12,13 @@
 #include "Engine/TextureRenderTarget2D.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "HealthBarWidget.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "InventoryComponent.h"
 #include "InventoryWidget.h"
+#include "PauseWidget.h"
 #include "ItemActor.h"
 #include "MinimapWidget.h"
 #include "Kismet/GameplayStatics.h"
@@ -79,6 +81,8 @@ void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
+    OpenOrClosePause = true;
+
     GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
 
     // Adding mapping context component
@@ -89,15 +93,25 @@ void AMainCharacter::BeginPlay()
             inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
+    
     if (MiniMapWidgetTemplate)
     {
         // seems like a bug that this doesn't work (doesn't display the widget on the screen)
         MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
         MinimapWidget->AddToViewport();
     }
+    
     if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
+    }
+    
+    if(MyPauseMenu->IsValidLowLevel())
+    {
+        PauseMenu = CreateWidget<UPauseWidget>(GetWorld(), MyPauseMenu, FName("Inventory Widget"));
+        PauseMenu->PC = PC;
+        PauseMenu->AddToViewport();
+        PauseMenu->SetVisibility(ESlateVisibility::Collapsed);
     }
 }
 
@@ -164,17 +178,23 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
     SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
         SelectedSpell = 3;
+        
     if (SelectedSpell > 3)
         SelectedSpell = 0;
+        
     SetSpell();
 }
 
 void AMainCharacter::SetSpell()
 {
     auto spellItem = MyInv->Spells[SelectedSpell].Item;
-    if (!spellItem) {return;}
+    if (!spellItem)
+        return;
+        
     auto spell = spellItem->Spell;
-    if (!spell) {return;}
+    if (!spell)
+        return;
+        
     SpellEnenhancements->Spell = spell;
     SpellEnenhancements->SetData();
 }
@@ -204,12 +224,31 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
             {
                 InvWidget->RemoveFromParent();
             }
+            
             if (PC)
             {
                 PC->SetShowMouseCursor(false);
                 UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
             }
+            
             OpenInventory = true;
+        }
+    }
+}
+
+void AMainCharacter::OpenClosePauseMenu(const FInputActionValue &value)
+{
+    if(MyPauseMenu->IsValidLowLevel())
+    {
+        if(OpenOrClosePause)
+        {
+            PauseMenu->DoOnCreate();
+            OpenOrClosePause = false;
+        }
+        else
+        {
+            PauseMenu->DoOnDestroy();
+            OpenOrClosePause = true;
         }
     }
 }
@@ -281,5 +320,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *input_component)
 
         // Player Open or Close Inventory keys
         enhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Started, this, &AMainCharacter::OpenCloseInventory);
+
+        // Player Open or Close Inventory keys
+        enhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AMainCharacter::OpenClosePauseMenu);
     }
 }
