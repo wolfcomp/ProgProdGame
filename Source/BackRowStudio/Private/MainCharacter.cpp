@@ -21,6 +21,7 @@
 #include "PauseWidget.h"
 #include "ItemActor.h"
 #include "MinimapWidget.h"
+#include "Wolf.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -280,9 +281,12 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
             }
         }
     }
-    if(auto enemy = Cast<AEnemy>(other_actor))
+    if(auto enemy = Cast<AWolf>(other_actor))
     {
-        //implement enemy hit here when AI is integrated
+        if(enemy->CanAttackPlayer)
+        {
+            //implement enemy hit here
+        }
     }
 }
 

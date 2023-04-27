@@ -23,8 +23,6 @@ AWolf::AWolf()
 	PlayerAttackCollisionDetection->SetupAttachment(RootComponent);
 	PatrolPath = CreateDefaultSubobject<USplineComponent>(TEXT("Wolf Patrol Path"));
 	PatrolPath->SetupAttachment(RootComponent);
-	//WolfAiBlackboard = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Wolf Blackboard Component"));
-	//WolfAiBehaviorTree = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTreeComponent"));
 	AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
 	AttackHitBox->SetupAttachment(RootComponent);
 
@@ -40,12 +38,9 @@ void AWolf::BeginPlay()
 	if(AWolfAIController *tempCon = Cast<AWolfAIController>(GetController()))
 	{
 	    WolfAIController = tempCon;
-		//WolfAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject
-	 //   (this, &AWolf::OnMoveCompleted);
 	}
 
 	AnimInstance = GetMesh()->GetAnimInstance();
-	//AttackHitBox->OnComponentBeginOverlap.AddDynamic(this, &AWolf::OnAttackHitBoxBeginOverlap);
 
 	Super::BeginPlay();
 	
@@ -68,7 +63,6 @@ void AWolf::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 //just in case we wanna do something like play an animation
 void AWolf::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result)
 {
-	//GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, TEXT("I just finished moving today"));
 }
 
 void AWolf::AttackAnimationEnded()
@@ -81,17 +75,6 @@ void AWolf::TryAttack(AActor *actorToAttack)
 	if(AttackMontage)
 	{
 	    AnimInstance->Montage_Play(AttackMontage);   
-	}
-}
-
-void AWolf::OnAttackHitBoxBeginOverlap(UPrimitiveComponent *OverlappedComponent, AActor *OtherActor, UPrimitiveComponent *OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult &SweepResult)
-{
-	PlayerRef = Cast<AMainCharacter>(OtherActor);
-	if (PlayerRef && CanDealDamage)
-	{
-		// deal damage to player
-		UE_LOG(LogTemp, Warning, TEXT("Player Damaged"));
-		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Yellow, TEXT("Insert 3 paragraph evil monologue here"));
 	}
 }
 
