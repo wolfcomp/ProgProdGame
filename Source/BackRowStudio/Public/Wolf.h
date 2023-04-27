@@ -3,12 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
+#include "Enemy.h"
 #include "Wolf.generated.h"
 
 //https://awesometuts.com/blog/unreal-engine-enemy-ai/
 UCLASS()
-class BACKROWSTUDIO_API AWolf : public ACharacter
+class BACKROWSTUDIO_API AWolf : public ADamageActor
 {
 	GENERATED_BODY()
 
