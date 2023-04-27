@@ -10,7 +10,7 @@ void UInventoryWidget::NativePreConstruct() { Super::NativePreConstruct(); }
 
 void UInventoryWidget::NativeConstruct()
 {
-    if(Inventory->IsValidLowLevel())
+    if (Inventory->IsValidLowLevel())
     {
         if (!Inventory->Items.IsEmpty())
         {
@@ -24,11 +24,11 @@ void UInventoryWidget::NativeConstruct()
                 }
             }
         }
-        if(!Inventory->Spells.IsEmpty())
+        if (!Inventory->Spells.IsEmpty())
         {
-            if(SlotWidget != nullptr)
+            if (SlotWidget != nullptr)
             {
-                for(int i = 0; i < Inventory->Spells.Num(); ++i)
+                for (int i = 0; i < Inventory->Spells.Num(); ++i)
                 {
                     auto *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
                     slotWidget->MyContent = Inventory->Spells[i];

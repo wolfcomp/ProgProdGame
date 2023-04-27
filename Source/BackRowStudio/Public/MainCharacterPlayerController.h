@@ -3,19 +3,20 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GenericTeamAgentInterface.h"
 #include "GameFramework/PlayerController.h"
+#include "GenericTeamAgentInterface.h"
 #include "MainCharacterPlayerController.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class BACKROWSTUDIO_API AMainCharacterPlayerController : public APlayerController, public IGenericTeamAgentInterface
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	public:
-	FGenericTeamId TeamId = FGenericTeamId(4);
-	virtual FGenericTeamId GetGenericTeamId() const override;
+public:
+    FGenericTeamId TeamId = FGenericTeamId(4);
+
+    virtual FGenericTeamId GetGenericTeamId() const override;
 };

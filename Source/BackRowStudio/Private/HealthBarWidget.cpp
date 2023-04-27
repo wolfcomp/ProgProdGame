@@ -2,17 +2,14 @@
 
 
 #include "HealthBarWidget.h"
-#include "MainCharacter.h"
 #include "Components/ProgressBar.h"
+#include "MainCharacter.h"
 
 void UHealthBarWidget::NativeConstruct()
 {
     Super::NativeConstruct();
-    MyHealthBar->PercentDelegate.BindUFunction(this,"GetHealth");
+    MyHealthBar->PercentDelegate.BindUFunction(this, "GetHealth");
     MyHealthBar->SynchronizeProperties();
 }
 
-float UHealthBarWidget::GetHealth() const
-{
-    return MyPlayer->Health / MyPlayer->MaxHealth;
-}
+float UHealthBarWidget::GetHealth() const { return MyPlayer->Health / MyPlayer->MaxHealth; }

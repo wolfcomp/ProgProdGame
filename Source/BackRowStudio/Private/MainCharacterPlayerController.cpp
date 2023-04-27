@@ -2,7 +2,4 @@
 
 
 #include "MainCharacterPlayerController.h"
-FGenericTeamId AMainCharacterPlayerController::GetGenericTeamId() const
-{
-	return TeamId;
-}
+FGenericTeamId AMainCharacterPlayerController::GetGenericTeamId() const { return TeamId; }
