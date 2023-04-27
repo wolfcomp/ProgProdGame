@@ -6,69 +6,63 @@
 #include "Enemy.h"
 #include "Wolf.generated.h"
 
-//https://awesometuts.com/blog/unreal-engine-enemy-ai/
+// https://awesometuts.com/blog/unreal-engine-enemy-ai/
 UCLASS()
 class BACKROWSTUDIO_API AWolf : public ADamageActor
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	// Sets default values for this character's properties
-	AWolf();
+    // Sets default values for this character's properties
+    AWolf();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+    // Called when the game starts or when spawned
+    virtual void BeginPlay() override;
 
 public:
+    bool PlayerDetected;
 
-	bool PlayerDetected;
-	bool CanAttackPlayer;
+    bool CanAttackPlayer;
 
-	float CurrentPatrolPoint = 0;
+    float CurrentPatrolPoint = 0;
 
-	UPROPERTY(BlueprintReadWrite)
-	bool CanDealDamage;
+    UPROPERTY(BlueprintReadWrite)
+    bool CanDealDamage;
 
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+    // Called every frame
+    virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+    // Called to bind functionality to input
+    virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
-	UPROPERTY(EditAnywhere)
-	class AMainCharacter* PlayerRef;
+    UPROPERTY(EditAnywhere)
+    class AMainCharacter *PlayerRef;
 
-	UPROPERTY(EditAnywhere)
-	class AWolfAIController* WolfAIController;
+    UPROPERTY(EditAnywhere)
+    class AWolfAIController *WolfAIController;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class USplineComponent* PatrolPath;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class USplineComponent *PatrolPath;
 
-	//UPROPERTY(EditAnywhere)
-	//class UBlackboardComponent* WolfAiBlackboard;
+    UPROPERTY(EditAnywhere)
+    class USphereComponent *PlayerAttackCollisionDetection;
 
-	//UPROPERTY(EditAnywhere)
-	//class UBehaviorTreeComponent* WolfAiBehaviorTree;
-
-	UPROPERTY(EditAnywhere)
-	class USphereComponent* PlayerAttackCollisionDetection;
-
-	UPROPERTY(EditAnywhere)
-	class UBoxComponent* AttackHitBox;
+    UPROPERTY(EditAnywhere)
+    class UBoxComponent *AttackHitBox;
 
 
-	UPROPERTY(EditAnywhere)
-	class UAnimMontage* AttackMontage;
+    UPROPERTY(EditAnywhere)
+    class UAnimMontage *AttackMontage;
 
-	UPROPERTY(EditAnywhere)
-	class UAnimInstance* AnimInstance;
+    UPROPERTY(EditAnywhere)
+    class UAnimInstance *AnimInstance;
 
-	void OnMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult& Result);
+    void OnMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult &Result);
 
-	UFUNCTION(BlueprintCallable)
-	void AttackAnimationEnded();
+    UFUNCTION(BlueprintCallable)
+    void AttackAnimationEnded();
 
-	UFUNCTION()
-	void TryAttack(AActor* actorToAttack);
+    UFUNCTION()
+    void TryAttack(AActor *actorToAttack);
 };

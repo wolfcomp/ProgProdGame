@@ -42,30 +42,30 @@ bool UInventoryComponent::AddSpell(FSlotStruct spell)
     return false;
 }
 
-//void UInventoryComponent::DisplayInventory()
+// void UInventoryComponent::DisplayInventory()
 //{
-//    TArray<FSlotStruct>* localInvShortHand = &Inventory;
+//     TArray<FSlotStruct>* localInvShortHand = &Inventory;
 //	if (!localInvShortHand)
 //	{
 //	    GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"This Inventory Component's Inventory Is Not Valid");
 //	}
 //	else if (!MyInvWidget)
-//    {
-//        GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"My Inventory Widget Is Not Valid");
-//    }
+//     {
+//         GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"My Inventory Widget Is Not Valid");
+//     }
 //	else if (MyInvWidget && localInvShortHand)
 //	{
 //		GEngine->AddOnScreenDebugMessage(-1,10.0f,FColor::Red,"Got Here");
-//        //InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Minimap"));
-//        //InvWidget->Inventory = this;
-//        //InvWidget->AddToViewport();
+//         //InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Minimap"));
+//         //InvWidget->Inventory = this;
+//         //InvWidget->AddToViewport();
 //	}
-//}
+// }
 //
-//void UInventoryComponent::CloseInventory()
+// void UInventoryComponent::CloseInventory()
 //{
 //	InvWidget->RemoveFromParent();
-//}
+// }
 
 // Called when the game starts
 void UInventoryComponent::BeginPlay()

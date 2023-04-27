@@ -6,32 +6,32 @@
 #include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
 
-#include "Wolf.h"
 #include "Components/SphereComponent.h"
-#include "MainCharacter.h"
 #include "Components/SplineComponent.h"
+#include "MainCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Hearing.h"
 #include "Perception/AISenseConfig_Sight.h"
+#include "Wolf.h"
 
 AWolfAIController::AWolfAIController()
 {
     AIPerceptionComponent = CreateDefaultSubobject<UAIPerceptionComponent>("PerceptionComponent");
-	AISenseConfigSight = CreateDefaultSubobject<UAISenseConfig_Sight>("SenseSight");
-	AISenseConfigSight->DetectionByAffiliation.bDetectEnemies = true;
-	AISenseConfigSight->DetectionByAffiliation.bDetectFriendlies = false;
-	AISenseConfigSight->DetectionByAffiliation.bDetectNeutrals = false;
+    AISenseConfigSight = CreateDefaultSubobject<UAISenseConfig_Sight>("SenseSight");
+    AISenseConfigSight->DetectionByAffiliation.bDetectEnemies = true;
+    AISenseConfigSight->DetectionByAffiliation.bDetectFriendlies = false;
+    AISenseConfigSight->DetectionByAffiliation.bDetectNeutrals = false;
 
-	AISenseConfigHearing = CreateDefaultSubobject<UAISenseConfig_Hearing>("SenseHearing");
-	AISenseConfigHearing->DetectionByAffiliation.bDetectEnemies = true;
-	AISenseConfigHearing->DetectionByAffiliation.bDetectFriendlies = false;
-	AISenseConfigHearing->DetectionByAffiliation.bDetectNeutrals = false;
+    AISenseConfigHearing = CreateDefaultSubobject<UAISenseConfig_Hearing>("SenseHearing");
+    AISenseConfigHearing->DetectionByAffiliation.bDetectEnemies = true;
+    AISenseConfigHearing->DetectionByAffiliation.bDetectFriendlies = false;
+    AISenseConfigHearing->DetectionByAffiliation.bDetectNeutrals = false;
 
-	AIPerceptionComponent->ConfigureSense(*AISenseConfigSight);
-	AIPerceptionComponent->ConfigureSense(*AISenseConfigHearing);
+    AIPerceptionComponent->ConfigureSense(*AISenseConfigSight);
+    AIPerceptionComponent->ConfigureSense(*AISenseConfigHearing);
     AIPerceptionComponent->SetDominantSense(UAISenseConfig_Sight::StaticClass());
 
-    //Team ID For Wolf
+    // Team ID For Wolf
     AWolfAIController::SetGenericTeamId(FGenericTeamId(1));
 }
 
@@ -41,7 +41,7 @@ void AWolfAIController::BeginPlay()
 
     PlayerPawn = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
 
-    if (AWolf* localControlledWolf = Cast<AWolf>(this->GetCharacter()); this->GetCharacter()->IsValidLowLevel() && localControlledWolf)
+    if (AWolf *localControlledWolf = Cast<AWolf>(this->GetCharacter()); this->GetCharacter()->IsValidLowLevel() && localControlledWolf)
     {
         controlledWolf = localControlledWolf;
         wolfAttackDistance = controlledWolf->PlayerAttackCollisionDetection->GetScaledSphereRadius();
@@ -52,14 +52,14 @@ void AWolfAIController::BeginPlay()
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("Dafuq am i Controlling? -WolfAiController"));
+        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Dafuq am i Controlling? -WolfAiController"));
     }
 
     NavArea = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
 
     bIsActive = true;
     bSearchForPlayer = true;
-//    bCanAttackPlayer = true;
+    //    bCanAttackPlayer = true;
     bCanAttackPlayer = false;
     bMoveToPlayer = false;
 
@@ -68,7 +68,7 @@ void AWolfAIController::BeginPlay()
         GenerateRandomSearchLocation();
         if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->GetNumberOfSplinePoints() > 0 && IsPatrolling == true)
         {
-            //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("1"));
+            // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("1"));
             IsPatrolling = true;
             bSearchForPlayer = false;
             Patrol();
@@ -80,45 +80,38 @@ void AWolfAIController::BeginPlay()
     }
 
     AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdated_Delegate);
-
 }
 
-void AWolfAIController::Tick(float DeltaSeconds)
-{
-    Super::Tick(DeltaSeconds);
-}
+void AWolfAIController::Tick(float DeltaSeconds) { Super::Tick(DeltaSeconds); }
 
 void AWolfAIController::GenerateRandomSearchLocation()
 {
     FNavLocation result;
-    if(NavArea->GetRandomReachablePointInRadius(GetPawn()->GetActorLocation(), 10000.0f, result))
+    if (NavArea->GetRandomReachablePointInRadius(GetPawn()->GetActorLocation(), 10000.0f, result))
     {
         RandomLocation = result.Location;
     };
 }
 
-void AWolfAIController::SearchForPlayer()
-{
-    MoveToLocation(RandomLocation);
-}
+void AWolfAIController::SearchForPlayer() { MoveToLocation(RandomLocation); }
 
 void AWolfAIController::MoveToPlayer()
 {
-    if(PlayerPawn->IsValidLowLevel())
+    if (PlayerPawn->IsValidLowLevel())
     {
-        if(PlayerInAttackRange())
+        if (PlayerInAttackRange())
         {
-            if(bCanAttackPlayer == true)
+            if (bCanAttackPlayer == true)
             {
                 GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("attacking player"));
                 AttackPlayer();
             }
         }
-        else if(const float distance = FVector::Dist(PlayerPawn->GetActorLocation(), this->controlledWolf->GetActorLocation()); distance > 300)
+        else if (const float distance = FVector::Dist(PlayerPawn->GetActorLocation(), this->controlledWolf->GetActorLocation()); distance > 300)
         {
             MoveToActor(PlayerPawn);
             bSearchForPlayer = false;
-            bMoveToPlayer = true;   
+            bMoveToPlayer = true;
         }
         else if (!bCanAttackPlayer)
         {
@@ -135,7 +128,7 @@ void AWolfAIController::StartChasingPlayer()
 
 bool AWolfAIController::PlayerInAttackRange() const
 {
-    if(PlayerPawn->IsValidLowLevel() && controlledWolf->IsValidLowLevel())
+    if (PlayerPawn->IsValidLowLevel() && controlledWolf->IsValidLowLevel())
     {
         const float distance = FVector::Dist(PlayerPawn->GetActorLocation(), this->controlledWolf->GetActorLocation());
         if (distance <= wolfAttackDistance)
@@ -146,19 +139,16 @@ bool AWolfAIController::PlayerInAttackRange() const
     return false;
 }
 
-void AWolfAIController::AttackPlayer() const
-{
-    controlledWolf->TryAttack(PlayerPawn);
-}
+void AWolfAIController::AttackPlayer() const { controlledWolf->TryAttack(PlayerPawn); }
 
 void AWolfAIController::Patrol()
 {
-    //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("2"));
-    DrawDebugSphere(GetWorld(),patrolPoints[currentPatrolPoint], 200, 16, FColor::Red, true, 100000);
-    if(IsPatrolling && controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->IsClosedLoop())
+    // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("2"));
+    DrawDebugSphere(GetWorld(), patrolPoints[currentPatrolPoint], 200, 16, FColor::Red, true, 100000);
+    if (IsPatrolling && controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->IsClosedLoop())
     {
         MoveToLocation(patrolPoints[currentPatrolPoint]);
-        if(currentPatrolPoint + 1 < patrolPoints.Num())
+        if (currentPatrolPoint + 1 < patrolPoints.Num())
         {
             GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("1"));
             currentPatrolPoint++;
@@ -171,13 +161,12 @@ void AWolfAIController::Patrol()
     }
 }
 
-//EPathFollowingResultDetails should be used cuz this version of the parameters below is depricated
+// EPathFollowingResultDetails should be used cuz this version of the parameters below is depricated
 void AWolfAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result)
 {
-    if(controlledWolf)
+    if (controlledWolf)
     {
         controlledWolf->OnMoveCompleted(RequestID, Result);
-
     }
     Super::OnMoveCompleted(RequestID, Result);
     if (IsPatrolling && !bMoveToPlayer)
@@ -201,18 +190,18 @@ void AWolfAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollo
 
 ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &Other) const
 {
-    if (APawn const* OtherPawn = Cast<APawn>(&Other))
-	{
-		if (auto const TeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController()))
-		{
-           if (TeamAgent->GetGenericTeamId() == FGenericTeamId(0) || TeamAgent->GetGenericTeamId() == FGenericTeamId(1)) 
-           {
-               return ETeamAttitude::Friendly;
-           }
+    if (APawn const *OtherPawn = Cast<APawn>(&Other))
+    {
+        if (auto const TeamAgent = Cast<IGenericTeamAgentInterface>(OtherPawn->GetController()))
+        {
+            if (TeamAgent->GetGenericTeamId() == FGenericTeamId(0) || TeamAgent->GetGenericTeamId() == FGenericTeamId(1))
+            {
+                return ETeamAttitude::Friendly;
+            }
             return ETeamAttitude::Hostile;
-		}
-	}
-	return ETeamAttitude::Neutral;
+        }
+    }
+    return ETeamAttitude::Neutral;
 }
 
 void AWolfAIController::OnTargetPerceptionUpdated_Delegate(AActor *Actor, FAIStimulus Stimulus)
@@ -223,34 +212,33 @@ void AWolfAIController::OnTargetPerceptionUpdated_Delegate(AActor *Actor, FAISti
         StartChasingPlayer();
     }
     switch (Stimulus.Type)
-	{
-		case 0:
-            // react to sight stimulus
-            //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("react to sight stimulus"));
-		case 1:
-            // react to hearing;
-            //GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("react to hearing"));
-		default:
-			return;
-	}
+    {
+    case 0:
+        // react to sight stimulus
+        // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("react to sight stimulus"));
+    case 1:
+        // react to hearing;
+        // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("react to hearing"));
+    default:
+        return;
+    }
 }
 
 void AWolfAIController::Reactivate()
 {
-    if(!bIsActive)
+    if (!bIsActive)
     {
         bIsActive = true;
         GenerateRandomSearchLocation();
         SearchForPlayer();
     }
 }
-//not done
+// not done
 void AWolfAIController::ReturnToPatrol()
 {
-    if(controlledWolf->PatrolPath->IsValidLowLevel())
+    if (controlledWolf->PatrolPath->IsValidLowLevel())
     {
-        FVector closestLocation = controlledWolf->PatrolPath->FindLocationClosestToWorldLocation
-        (controlledWolf->GetActorLocation(), ESplineCoordinateSpace::Type::World);
+        FVector closestLocation = controlledWolf->PatrolPath->FindLocationClosestToWorldLocation(controlledWolf->GetActorLocation(), ESplineCoordinateSpace::Type::World);
 
         float distanceToPoint;
         controlledWolf->CurrentPatrolPoint = controlledWolf->PatrolPath->GetSplinePointsPosition().InaccurateFindNearest(closestLocation, distanceToPoint);

@@ -7,7 +7,7 @@
 
 void UPauseWidget::DoOnCreate()
 {
-    UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC,this);
+    UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, this);
     PC->SetShowMouseCursor(true);
     PC->SetPause(true);
     this->SetVisibility(ESlateVisibility::Visible);
