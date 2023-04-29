@@ -4,21 +4,32 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "GenericTeamAgentInterface.h"
 #include "MainCharacter.generated.h"
 
+class UHealthBarWidget;
 class UInventoryWidget;
 class UMinimapWidget;
 struct FInputActionValue;
 
 UCLASS()
-class BACKROWSTUDIO_API AMainCharacter : public ACharacter
+class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamAgentInterface
+
 {
     GENERATED_BODY()
+private:
+    FGenericTeamId TeamID = FGenericTeamId(1);
 
 public:
+    float Health = 100;
+
+    float MaxHealth = 100;
+
+    bool OpenOrClosePause;
+
     // Sets default values for this character's properties
     AMainCharacter();
-    
+
     // |Camera| Spring Arm Component
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Camera")
     class USpringArmComponent *SpringArmComponent;
@@ -46,7 +57,9 @@ public:
     // |Inventory| Inventory Component
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Inventory")
     class UInventoryComponent *MyInv;
+
     bool OpenInventory = true;
+
     bool CanOpenInventory = true;
 
     // |Inventory| Inventory Widget
@@ -55,6 +68,20 @@ public:
 
     UPROPERTY(BlueprintReadOnly, Category = "Inventory")
     UInventoryWidget *InvWidget;
+
+    // |Health Bar| Health Bar Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health Widget")
+    TSubclassOf<UHealthBarWidget> MyHealthWidget;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Health Widget")
+    UHealthBarWidget *HealthBarWidget;
+
+    // |Pause Menu| Pause Menu Widget
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Pause Widget")
+    TSubclassOf<class UPauseWidget> MyPauseMenu;
+
+    UPROPERTY(BlueprintReadOnly, Category = "Pause Widget")
+    class UPauseWidget *PauseMenu;
 
     // Player Controller Reference
     UPROPERTY()
@@ -100,6 +127,11 @@ public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
     UInputAction *InputActionOpenCloseInventory;
 
+
+    // |Input Action| Open or Close Pause Menu
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input | Input Action")
+    UInputAction *PauseAction;
+
     /**
      * Spell Objects
      */
@@ -132,11 +164,10 @@ public:
     void AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors,*/ FName socket_name);
 
     UPROPERTY(EditDefaultsOnly)
-    USoundBase* PickupSound;
+    USoundBase *PickupSound;
 
 
 protected:
-
     UFUNCTION()
     void OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result);
 
@@ -173,9 +204,13 @@ protected:
     // Open or Close Inventory Function
     void OpenCloseInventory(const FInputActionValue &value);
 
+    // Open or Close Pause Menu Function
+    void OpenClosePauseMenu(const FInputActionValue &value);
+
 public:
     // Called every frame
     virtual void Tick(float delta_time) override;
+
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent *input_component) override;
 

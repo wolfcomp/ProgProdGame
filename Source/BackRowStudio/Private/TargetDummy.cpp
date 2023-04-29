@@ -8,10 +8,8 @@
 
 ATargetDummy::ATargetDummy()
 {
-    Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
-    Mesh->SetupAttachment(RootComponent);
     Text = CreateDefaultSubobject<UTextRenderComponent>(TEXT("Text"));
-    Text->SetupAttachment(Mesh);
+    Text->SetupAttachment(GetRootComponent());
     Text->SetText(FText::FromString("Damage Taken: 0.0"));
     Text->SetHorizontalAlignment(EHTA_Center);
     Text->SetWorldSize(50.0f);

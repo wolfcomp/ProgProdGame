@@ -8,27 +8,18 @@
 
 AItemActor::AItemActor()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 
-	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+    Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
     Mesh->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepRelativeTransform);
 
-	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
-	SphereCollider->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
-	SphereCollider->InitSphereRadius(400.f);
+    SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
+    SphereCollider->AttachToComponent(Mesh, FAttachmentTransformRules::KeepRelativeTransform);
+    SphereCollider->InitSphereRadius(400.f);
 
-	Item = nullptr;
+    Item = nullptr;
 }
 
-void AItemActor::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
+void AItemActor::BeginPlay() { Super::BeginPlay(); }
 
-void AItemActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
+void AItemActor::Tick(float DeltaTime) { Super::Tick(DeltaTime); }

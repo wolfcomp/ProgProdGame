@@ -25,11 +25,23 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	int NumberOfInventorySlots = 15;
 
+	//UPROPERTY(EditAnywhere)
+	//TSubclassOf<UInventoryWidget> MyInvWidget;
+
+	//UPROPERTY()
+	//class UInventoryWidget* InvWidget;
+
 	UFUNCTION(BlueprintCallable)
     bool AddItem(FSlotStruct item);
 
 	UFUNCTION(BlueprintCallable)
     bool AddSpell(FSlotStruct spell);
+
+	//UFUNCTION(BlueprintCallable)
+	//void DisplayInventory();
+
+	//UFUNCTION(BlueprintCallable)
+	//void CloseInventory();
 
 protected:
     // Called when the game starts

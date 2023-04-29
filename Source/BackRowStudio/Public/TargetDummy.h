@@ -25,7 +25,4 @@ public:
 
     UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Target Dummy")
     class UTextRenderComponent *Text;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Target Dummy")
-    class UStaticMeshComponent *Mesh;
 };

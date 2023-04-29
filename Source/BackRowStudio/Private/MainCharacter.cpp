@@ -3,23 +3,26 @@
 
 #include "BackRowStudio/Public/MainCharacter.h"
 #include "BaseSpellActor.h"
-#include "Enemy.h"
 #include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/InputComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
+#include "Enemy.h"
 #include "Engine/TextureRenderTarget2D.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "HealthBarWidget.h"
 #include "InventoryComponent.h"
 #include "InventoryWidget.h"
 #include "ItemActor.h"
-#include "MinimapWidget.h"
 #include "Kismet/GameplayStatics.h"
+#include "MinimapWidget.h"
+#include "PauseWidget.h"
+#include "Wolf.h"
 
 // Sets default values
 AMainCharacter::AMainCharacter()
@@ -49,10 +52,10 @@ AMainCharacter::AMainCharacter()
 
     // Spell Setup
     SpellEnenhancements = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
-    //GroundSpellLocation = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ground Spell Location"));
-    //GroundSpellLocation->SetupAttachment(GetRootComponent());
-    //FVector rootLocation = GetRootComponent()->GetRelativeLocation();
-    //GroundSpellLocation->SetRelativeLocation(FVector(rootLocation.X, rootLocation.Y, rootLocation.Z - 80));
+    // GroundSpellLocation = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ground Spell Location"));
+    // GroundSpellLocation->SetupAttachment(GetRootComponent());
+    // FVector rootLocation = GetRootComponent()->GetRelativeLocation();
+    // GroundSpellLocation->SetRelativeLocation(FVector(rootLocation.X, rootLocation.Y, rootLocation.Z - 80));
 
     // Minimap Spring Arm Setup
     MiniMapSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Minimap SpringArm"));
@@ -71,13 +74,14 @@ AMainCharacter::AMainCharacter()
 
     // Inventory Component Setup
     MyInv = CreateDefaultSubobject<UInventoryComponent>(TEXT("Inventory Component"));
-    
 }
 
 // Called when the game starts or when spawned
 void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    OpenOrClosePause = true;
 
     GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
 
@@ -89,15 +93,25 @@ void AMainCharacter::BeginPlay()
             inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
     }
+
     if (MiniMapWidgetTemplate)
     {
         // seems like a bug that this doesn't work (doesn't display the widget on the screen)
         MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
         MinimapWidget->AddToViewport();
     }
+
     if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
+    }
+
+    if (MyPauseMenu->IsValidLowLevel())
+    {
+        PauseMenu = CreateWidget<UPauseWidget>(GetWorld(), MyPauseMenu, FName("Inventory Widget"));
+        PauseMenu->PC = PC;
+        PauseMenu->AddToViewport();
+        PauseMenu->SetVisibility(ESlateVisibility::Collapsed);
     }
 }
 
@@ -137,12 +151,15 @@ void AMainCharacter::JumpAction(const FInputActionValue &value) { Super::Jump();
 void AMainCharacter::LightAttackAction(const FInputActionValue &value)
 {
     if (CanJump())
-     SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
+        SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
 }
 
 void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
 {
-    if (!MyInv->Spells[SelectedSpell].Item) {return;}
+    if (!MyInv->Spells[SelectedSpell].Item)
+    {
+        return;
+    }
 
     if (CanJump())
     {
@@ -164,17 +181,23 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
     SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
         SelectedSpell = 3;
+
     if (SelectedSpell > 3)
         SelectedSpell = 0;
+
     SetSpell();
 }
 
 void AMainCharacter::SetSpell()
 {
     auto spellItem = MyInv->Spells[SelectedSpell].Item;
-    if (!spellItem) {return;}
+    if (!spellItem)
+        return;
+
     auto spell = spellItem->Spell;
-    if (!spell) {return;}
+    if (!spell)
+        return;
+
     SpellEnenhancements->Spell = spell;
     SpellEnenhancements->SetData();
 }
@@ -204,12 +227,31 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
             {
                 InvWidget->RemoveFromParent();
             }
+
             if (PC)
             {
                 PC->SetShowMouseCursor(false);
                 UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
             }
+
             OpenInventory = true;
+        }
+    }
+}
+
+void AMainCharacter::OpenClosePauseMenu(const FInputActionValue &value)
+{
+    if (MyPauseMenu->IsValidLowLevel())
+    {
+        if (OpenOrClosePause)
+        {
+            PauseMenu->DoOnCreate();
+            OpenOrClosePause = false;
+        }
+        else
+        {
+            PauseMenu->DoOnDestroy();
+            OpenOrClosePause = true;
         }
     }
 }
@@ -241,9 +283,12 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
             }
         }
     }
-    if(auto enemy = Cast<AEnemy>(other_actor))
+    if (auto enemy = Cast<AWolf>(other_actor))
     {
-        //implement enemy hit here when AI is integrated
+        if (enemy->CanAttackPlayer)
+        {
+            // implement enemy hit here
+        }
     }
 }
 
@@ -281,5 +326,8 @@ void AMainCharacter::SetupPlayerInputComponent(UInputComponent *input_component)
 
         // Player Open or Close Inventory keys
         enhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Started, this, &AMainCharacter::OpenCloseInventory);
+
+        // Player Open or Close Inventory keys
+        enhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AMainCharacter::OpenClosePauseMenu);
     }
 }

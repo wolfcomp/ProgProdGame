@@ -9,8 +9,8 @@
 
 void ISpellActor::InternalDebugSpell(const ESpellType type, FVector range, const float radius, FVector origin, const FRotator rotation, const UWorld *world) const
 {
-    origin += range * FVector(0,0,1);
-    range = range * FVector(1,1,0);
+    origin += range * FVector(0, 0, 1);
+    range = range * FVector(1, 1, 0);
     const auto location = origin + rotation.RotateVector(range);
     const auto left = rotation + FRotator(0, -radius / 2, 0);
     const auto right = left + FRotator(0, radius, 0);
@@ -58,8 +58,8 @@ void ISpellActor::InternalDebugSpell(const ESpellType type, FVector range, const
 
 TArray<ADamageActor *> ISpellActor::GetActors(ESpellType type, FVector range, const float radius, FVector origin, const FRotator rotation, UWorld *world) const
 {
-    origin += range * FVector(0,0,1);
-    range = range * FVector(1,1,0);
+    origin += range * FVector(0, 0, 1);
+    range = range * FVector(1, 1, 0);
     TArray<FHitResult> OutHits;
     TArray<FHitResult> OutHits2;
     TArray<ADamageActor *> OutActors;
