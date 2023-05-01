@@ -45,6 +45,7 @@ private:
 	void MoveToPlayer();
 	void StartChasingPlayer();
 	bool PlayerInAttackRange() const;
+	bool IsPointReachable(FVector point) const;
 	void AttackPlayer() const;
 	void Patrol();
 
