@@ -10,10 +10,7 @@
 #include "GameFramework/GameSession.h"
 #include "MinimapWidget.h"
 
-UMiniMapComponent::UMiniMapComponent()
-{
-    PrimaryComponentTick.bCanEverTick = true;
-}
+UMiniMapComponent::UMiniMapComponent() { PrimaryComponentTick.bCanEverTick = true; }
 
 void UMiniMapComponent::BeginPlay() { Super::BeginPlay(); }
 
