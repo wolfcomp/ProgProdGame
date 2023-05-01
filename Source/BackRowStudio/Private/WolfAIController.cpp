@@ -174,15 +174,18 @@ void AWolfAIController::Patrol()
     if (IsPatrolling && controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->IsClosedLoop())
     {
         MoveToLocation(patrolPoints[currentPatrolPoint]);
-        if (currentPatrolPoint + 1 < patrolPoints.Num())
+        if (patrolPoints.IsValidIndex(0))
         {
-            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("1"));
-            currentPatrolPoint++;
-        }
-        else
-        {
-            GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("2"));
-            currentPatrolPoint = 0;
+            if (currentPatrolPoint + 1 < patrolPoints.Num())
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("1"));
+                currentPatrolPoint++;
+            }
+            else
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("2"));
+                currentPatrolPoint = 0;
+            }
         }
     }
 }
