@@ -59,8 +59,7 @@ void AWolfAIController::BeginPlay()
 
     bIsActive = true;
     bSearchForPlayer = true;
-    //    bCanAttackPlayer = true;
-    bCanAttackPlayer = false;
+    bCanAttackPlayer = true;
     bMoveToPlayer = false;
 
     if (IsInitialized)
@@ -68,7 +67,6 @@ void AWolfAIController::BeginPlay()
         GenerateRandomSearchLocation();
         if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->GetNumberOfSplinePoints() > 0 && IsPatrolling == true)
         {
-            // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("1"));
             IsPatrolling = true;
             bSearchForPlayer = false;
             Patrol();
@@ -109,7 +107,7 @@ void AWolfAIController::MoveToPlayer()
                     AttackPlayer();
                 }
             }
-            else if (const float distance = FVector::Dist(PlayerPawn->GetActorLocation(), this->controlledWolf->GetActorLocation()); distance > 300)
+            else if (const float distance = FVector::Dist(PlayerPawn->GetActorLocation(), this->controlledWolf->GetActorLocation()); distance > 300 /*&& IsPointReachable(PlayerPawn->GetNavAgentLocation())*/)
             {
                 MoveToActor(PlayerPawn);
                 bSearchForPlayer = false;
@@ -172,6 +170,7 @@ void AWolfAIController::Patrol()
     // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("2"));
     DrawDebugSphere(GetWorld(), patrolPoints[currentPatrolPoint], 200, 16, FColor::Red, true, 100000);
     if (!controlledWolf->IsValidLowLevel()) { return; }
+    //if (!IsPointReachable(PlayerPawn->GetNavAgentLocation())) { return; }
     if (IsPatrolling && controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->IsClosedLoop())
     {
         MoveToLocation(patrolPoints[currentPatrolPoint]);
@@ -196,6 +195,7 @@ void AWolfAIController::OnMoveCompleted(FAIRequestID RequestID, const FPathFollo
 {
     if (controlledWolf)
     {
+
         controlledWolf->OnMoveCompleted(RequestID, Result);
     }
     Super::OnMoveCompleted(RequestID, Result);
