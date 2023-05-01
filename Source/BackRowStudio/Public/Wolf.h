@@ -36,10 +36,10 @@ public:
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     class AMainCharacter *PlayerRef;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     class AWolfAIController *WolfAIController;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
