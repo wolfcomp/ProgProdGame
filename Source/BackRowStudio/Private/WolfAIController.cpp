@@ -171,6 +171,7 @@ void AWolfAIController::Patrol()
 {
     // GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red,TEXT("2"));
     DrawDebugSphere(GetWorld(), patrolPoints[currentPatrolPoint], 200, 16, FColor::Red, true, 100000);
+    if (!controlledWolf->IsValidLowLevel()) { return; }
     if (IsPatrolling && controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->IsClosedLoop())
     {
         MoveToLocation(patrolPoints[currentPatrolPoint]);
