@@ -22,9 +22,9 @@ protected:
 
 public:
 	bool PlayerDetected;
-	bool UsingWolfController;
 	bool IsAttackingFrame = false;
 	float CurrentPatrolPoint = 0;
+	float CurrentSpotRadius = 640;
 	//bool CanAttackPlayer;
 	//UPROPERTY(BlueprintReadWrite)
 	//bool CanDealDamage;
@@ -44,23 +44,29 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USplineComponent* PatrolPath;
 
-	UPROPERTY(EditAnywhere)
-	class USphereComponent* PlayerAttackCollisionDetection;
+	//UPROPERTY(EditAnywhere)
+	//class USphereComponent* PlayerAttackCollisionDetection;
+
+	//UPROPERTY(EditAnywhere)
+	//class USphereComponent* PlayerAutoSpotRadius;
+
+	//UPROPERTY(EditAnywhere)
+	//class USphereComponent* PlayerForgetRadius;
 
 	UPROPERTY(EditAnywhere)
-	class USphereComponent* PlayerAutoSpotRadius;
+	float PlayerAttackCollisionDetectionRadius = 320;
 
 	UPROPERTY(EditAnywhere)
-	class USphereComponent* PlayerForgetRadius;
+	float PlayerAutoSpotRadius = 640;
+
+	UPROPERTY(EditAnywhere)
+	float PlayerForgetRadius = 1280;
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* AttackHitBox;
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* AttackMontage;
-
-	UPROPERTY()
-	class UAnimInstance* AnimInstance;
 
 	UFUNCTION()
 	void TryAttack(AActor* actorToAttack);

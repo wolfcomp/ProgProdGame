@@ -139,21 +139,13 @@ void AWolfAIController::MoveToPlayer()
 {
 	if (playerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds)
 	{
-		FAIMoveRequest nextPatrolPoint = FAIMoveRequest(controlledWolf->PlayerRef->GetActorLocation());
-		if (nextPatrolPoint.IsValid())
+		if (IsPointReachable(controlledWolf->PlayerRef->GetActorLocation()))
 		{
-			MoveTo(nextPatrolPoint);
+			MoveToLocation(controlledWolf->PlayerRef->GetActorLocation());
 			bSearchForPlayer = false;
 			bMoveToPlayer = true;
 			IsPatrolling = false;
 		}
-		//if (IsPointReachable(controlledWolf->PlayerRef->GetActorLocation()))
-		//{
-		//	MoveToLocation(controlledWolf->PlayerRef->GetActorLocation());
-		//	bSearchForPlayer = false;
-		//	bMoveToPlayer = true;
-		//	IsPatrolling = false;
-		//}
 		else if (controlledWolf->IsValidLowLevel())
 		{
 			controlledWolf->PlayerDetected = false;
@@ -206,13 +198,9 @@ void AWolfAIController::Patrol()
 		{
 			//DrawDebugSphere(GetWorld(), CurrentPatrolPoint, 100, 16, FColor::Green, true, 100);
 			//GEngine->AddOnScreenDebugMessage(4, 3.f, FColor::Yellow, TEXT("moving"));
-
-			//MoveToLocation(CurrentPatrolPoint);
-		}
-		FAIMoveRequest nextPatrolPoint = FAIMoveRequest(patrolPoints[controlledWolf->CurrentPatrolPoint]);
-		if (nextPatrolPoint.IsValid())
-		{
-			MoveTo(nextPatrolPoint);
+			//auto nextPatrolPoint = FAIMoveRequest(patrolPoints[controlledWolf->CurrentPatrolPoint]);
+			//MoveTo(nextPatrolPoint);
+			MoveToLocation(CurrentPatrolPoint);
 		}
 		else
 		{

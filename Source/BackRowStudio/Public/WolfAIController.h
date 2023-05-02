@@ -27,12 +27,21 @@ private:
 	class AWolf* controlledWolf;
 	class UNavigationSystemV1* NavArea;
 	FVector RandomLocation = FVector();
-	TArray<FVector> patrolPoints;
 
 	bool bIsActive;
 	bool bSearchForPlayer;
 	bool bMoveToPlayer;
 	bool bValidPlayerPawn;
+
+
+	//void StartChasingPlayer();
+	//bool PlayerInAttackRange() const;
+	//void AttackPlayer() const;
+
+public:
+	float playerMoveTimeTilNextCheck = 0;
+	TArray<FVector> patrolPoints;
+	float PatrolMoveTimeTilNextCheck = 0;
 
 	void MoveToPlayer();
 	bool IsPointReachable(FVector point) const;
@@ -40,11 +49,6 @@ private:
 	void GenerateRandomSearchLocation();
 	void SearchForPlayer();
 	void OnActiveFinishedMove();
-	//void StartChasingPlayer();
-	//bool PlayerInAttackRange() const;
-	//void AttackPlayer() const;
-
-public:
 	AWolfAIController();
 
 	UPROPERTY(EditAnywhere)
@@ -53,6 +57,8 @@ public:
 	UPROPERTY(EditAnywhere)
 	bool IsInitialized = true;
 
+	FNavLocation CurrentPatrolPoint;
+
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 	UFUNCTION()
@@ -60,6 +66,7 @@ public:
 
 	UFUNCTION()
 	void Deactivate();
+	void ReturnToPatrol();
 
 	//UPROPERTY(VisibleAnywhere, Category = AI)
 	//TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
@@ -68,6 +75,4 @@ public:
 	//virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 	//UFUNCTION()
 	//void OnTargetPerceptionUpdated_Delegate(AActor* Actor, FAIStimulus Stimulus);
-	//UFUNCTION(BlueprintCallable)
-	//void ReturnToPatrol();
 };

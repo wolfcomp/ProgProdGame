@@ -4,12 +4,11 @@
 #include "Wolf.h"
 
 #include "Animation/AnimMontage.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Async/Future.h"
 #include "MainCharacter.h"
 #include "WolfAIController.h"
 
@@ -20,23 +19,21 @@ AWolf::AWolf()
 	PrimaryActorTick.bCanEverTick = true;
 	PlayerDetected = false;
 
-	PlayerAttackCollisionDetection = CreateDefaultSubobject<USphereComponent>(TEXT("Attempt Attack Range Visual"));
-	PlayerAttackCollisionDetection->SetupAttachment(RootComponent);
-	PlayerAttackCollisionDetection->SetCollisionResponseToAllChannels(ECR_Ignore);
-
-	PlayerAutoSpotRadius = CreateDefaultSubobject<USphereComponent>(TEXT("spot player Range Visual"));
-	PlayerAutoSpotRadius->SetupAttachment(RootComponent);
-	PlayerAutoSpotRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
-
-	PlayerForgetRadius = CreateDefaultSubobject<USphereComponent>(TEXT("forget player Range Visual"));
-	PlayerAutoSpotRadius->SetupAttachment(RootComponent);
-	PlayerAutoSpotRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
-
+	//PlayerAttackCollisionDetection = CreateDefaultSubobject<USphereComponent>(TEXT("Attempt Attack Range Visual"));
+	//PlayerAutoSpotRadius = CreateDefaultSubobject<USphereComponent>(TEXT("spot player Range Visual"));
+	//PlayerForgetRadius = CreateDefaultSubobject<USphereComponent>(TEXT("forget player Range Visual"));
 	PatrolPath = CreateDefaultSubobject<USplineComponent>(TEXT("Wolf Patrol Path"));
-	PatrolPath->SetupAttachment(RootComponent);
-
 	AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
+
+	//PlayerAttackCollisionDetection->SetupAttachment(RootComponent);
+	//PlayerAutoSpotRadius->SetupAttachment(RootComponent);
+	//PlayerAutoSpotRadius->SetupAttachment(RootComponent);
+	PatrolPath->SetupAttachment(RootComponent);
 	AttackHitBox->SetupAttachment(RootComponent);
+
+	//PlayerAttackCollisionDetection->SetCollisionResponseToAllChannels(ECR_Ignore);
+	//PlayerAutoSpotRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
+	//PlayerAutoSpotRadius->SetCollisionResponseToAllChannels(ECR_Ignore);
 
 	// setting up character movement
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
@@ -46,11 +43,6 @@ AWolf::AWolf()
 // Called when the game starts or when spawned
 void AWolf::BeginPlay()
 {
-	if (AWolfAIController* tempCon = Cast<AWolfAIController>(GetController()))
-	{
-		WolfAIController = tempCon;
-		UsingWolfController = true;
-	}
 	if (APawn* tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
 	{
 		if (AMainCharacter* temp = Cast<AMainCharacter>(tempPawn); temp->IsValidLowLevel())
@@ -59,33 +51,63 @@ void AWolf::BeginPlay()
 		}
 	}
 
-	AnimInstance = GetMesh()->GetAnimInstance();
+	if (AWolfAIController* tempCon = Cast<AWolfAIController>(GetController()))
+	{
+		WolfAIController = tempCon;
+		WolfAIController->Patrol();
+	}
+	//CurrentSpotRadius = PlayerAutoSpotRadius->GetScaledSphereRadius();
 
 	Super::BeginPlay();
+	//FDateTime a = FDateTime::Now;
+	if (!AttackMontage->IsValidLowLevel())
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("something wrong here"));
+	}
 }
 
 // Called every frame
 void AWolf::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//GEngine->AddOnScreenDebugMessage(1, 3.f, FColor::Green, FString::FromInt(GetWorld()->TimeSeconds));
+	//GEngine->AddOnScreenDebugMessage(2, 3.f, FColor::Green, FString::FromInt(WolfAIController->playerMoveTimeTilNextCheck));
 	if (PlayerRef->IsValidLowLevel())
 	{
 		if (const double distance = FVector::Dist(PlayerRef->GetActorLocation(), GetActorLocation()); distance <=
-			PlayerAutoSpotRadius->GetScaledSphereRadius())
+			CurrentSpotRadius && WolfAIController->IsValidLowLevel())
 		{
-			PlayerDetected = true;
-			if (distance <= PlayerAttackCollisionDetection->GetScaledSphereRadius())
+			if (distance <= PlayerAttackCollisionDetectionRadius && PlayerDetected)
 			{
-				if (WolfAIController->IsValidLowLevel())
-				{
-					WolfAIController->Deactivate();
-				}
 				TryAttack(PlayerRef);
 			}
+			else if (!PlayerDetected)
+			{
+				WolfAIController->MoveToPlayer();
+				//DrawDebugSphere(GetWorld(), GetNavAgentLocation(), PlayerForgetRadius, 16, FColor::Red, true, 10);
+			}
+			else
+			{
+				WolfAIController->MoveToPlayer();
+			}
+			PlayerDetected = true;
+			CurrentSpotRadius = PlayerForgetRadius;
 		}
-		else if (distance >= PlayerForgetRadius->GetScaledSphereRadius())
+		else
 		{
+			CurrentSpotRadius = PlayerAutoSpotRadius;
 			PlayerDetected = false;
+			if (FVector::Dist(WolfAIController->patrolPoints[CurrentPatrolPoint], this->GetNavAgentLocation()) < 100)
+			{
+				if (CurrentPatrolPoint + 1 >= WolfAIController->patrolPoints.Num())
+				{
+					CurrentPatrolPoint = 0;
+				}
+				else
+				{
+					CurrentPatrolPoint++;
+				}
+			}
 		}
 	}
 }
@@ -98,15 +120,20 @@ void AWolf::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 void AWolf::TryAttack(AActor* actorToAttack)
 {
-	if (AttackMontage)
+	if (AttackMontage && GetMesh()->GetAnimInstance()->IsValidLowLevel())
 	{
-		AnimInstance->Montage_Play(AttackMontage);
+		GetMesh()->GetAnimInstance()->Montage_Play(AttackMontage);
+		//FTimerHandle timerHandle;
+		//GetWorld()->GetTimerManager().SetTimer(timerHandle, [&]()
+		//{
+		//	UE_LOG(LogTemp, Warning, TEXT("This text will appear in the console 3 seconds after execution"))
+		//}, 3, false);
 	}
 }
 
 void AWolf::AttackAnimationEnded()
 {
-	if (UsingWolfController)
+	if (WolfAIController->IsValidLowLevel())
 	{
 		WolfAIController->Reactivate();
 	}
@@ -114,7 +141,7 @@ void AWolf::AttackAnimationEnded()
 
 void AWolf::AttackAnimationBegin()
 {
-	if (UsingWolfController)
+	if (WolfAIController->IsValidLowLevel())
 	{
 		WolfAIController->Deactivate();
 	}
@@ -122,7 +149,7 @@ void AWolf::AttackAnimationBegin()
 
 void AWolf::AttackingFramesBegin()
 {
-	if (UsingWolfController)
+	if (WolfAIController->IsValidLowLevel())
 	{
 		IsAttackingFrame = true;
 	}
@@ -130,7 +157,7 @@ void AWolf::AttackingFramesBegin()
 
 void AWolf::AttackingFramesEnd()
 {
-	if (UsingWolfController)
+	if (WolfAIController->IsValidLowLevel())
 	{
 		IsAttackingFrame = false;
 	}
