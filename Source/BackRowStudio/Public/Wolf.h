@@ -10,59 +10,70 @@
 UCLASS()
 class BACKROWSTUDIO_API AWolf : public ADamageActor
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 public:
-    // Sets default values for this character's properties
-    AWolf();
+	// Sets default values for this character's properties
+	AWolf();
 
 protected:
-    // Called when the game starts or when spawned
-    virtual void BeginPlay() override;
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 
 public:
-    bool PlayerDetected;
+	bool PlayerDetected;
+	bool UsingWolfController;
+	bool IsAttackingFrame = false;
+	float CurrentPatrolPoint = 0;
+	//bool CanAttackPlayer;
+	//UPROPERTY(BlueprintReadWrite)
+	//bool CanDealDamage;
 
-    bool CanAttackPlayer;
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
 
-    float CurrentPatrolPoint = 0;
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-    UPROPERTY(BlueprintReadWrite)
-    bool CanDealDamage;
+	UPROPERTY()
+	class AMainCharacter* PlayerRef;
 
-    // Called every frame
-    virtual void Tick(float DeltaTime) override;
+	UPROPERTY()
+	class AWolfAIController* WolfAIController;
 
-    // Called to bind functionality to input
-    virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USplineComponent* PatrolPath;
 
-    UPROPERTY()
-    class AMainCharacter *PlayerRef;
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* PlayerAttackCollisionDetection;
 
-    UPROPERTY()
-    class AWolfAIController *WolfAIController;
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* PlayerAutoSpotRadius;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class USplineComponent *PatrolPath;
+	UPROPERTY(EditAnywhere)
+	class USphereComponent* PlayerForgetRadius;
 
-    UPROPERTY(EditAnywhere)
-    class USphereComponent *PlayerAttackCollisionDetection;
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* AttackHitBox;
 
-    UPROPERTY(EditAnywhere)
-    class UBoxComponent *AttackHitBox;
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* AttackMontage;
 
+	UPROPERTY()
+	class UAnimInstance* AnimInstance;
 
-    UPROPERTY(EditAnywhere)
-    class UAnimMontage *AttackMontage;
+	UFUNCTION()
+	void TryAttack(AActor* actorToAttack);
 
-    UPROPERTY(EditAnywhere)
-    class UAnimInstance *AnimInstance;
+	UFUNCTION(BlueprintCallable)
+	void AttackAnimationEnded();
 
-    void OnMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult &Result);
+	UFUNCTION(BlueprintCallable)
+	void AttackAnimationBegin();
 
-    UFUNCTION(BlueprintCallable)
-    void AttackAnimationEnded();
+	UFUNCTION(BlueprintCallable)
+	void AttackingFramesBegin();
 
-    UFUNCTION()
-    void TryAttack(AActor *actorToAttack);
+	UFUNCTION(BlueprintCallable)
+	void AttackingFramesEnd();
 };

@@ -16,72 +16,58 @@
 UCLASS()
 class BACKROWSTUDIO_API AWolfAIController : public AAIController
 {
-    GENERATED_BODY()
+	GENERATED_BODY()
 
 protected:
-    virtual void BeginPlay() override;
+	virtual void BeginPlay() override;
 
-    virtual void Tick(float DeltaSeconds) override;
+	virtual void Tick(float DeltaSeconds) override;
 
 private:
-    APawn *PlayerPawn;
+	class AWolf* controlledWolf;
+	class UNavigationSystemV1* NavArea;
+	FVector RandomLocation = FVector();
+	TArray<FVector> patrolPoints;
 
-    class AWolf *controlledWolf;
+	bool bIsActive;
+	bool bSearchForPlayer;
+	bool bMoveToPlayer;
+	bool bValidPlayerPawn;
 
-    class UNavigationSystemV1 *NavArea;
-
-    FVector RandomLocation = FVector();
-
-    TArray<FVector> patrolPoints;
-
-    bool bIsActive;
-    bool bSearchForPlayer;
-
-    bool bMoveToPlayer;
-
-    void MoveToPlayer();
-    void StartChasingPlayer();
-    bool PlayerInAttackRange() const;
-    bool IsPointReachable(FVector point) const;
-    void AttackPlayer() const;
-    void Patrol();
-
-    bool bCanAttackPlayer;
-
-    float wolfAttackDistance = 200.0f;
-
-    float currentPatrolPoint = 0;
-
-    void GenerateRandomSearchLocation();
-
-    void SearchForPlayer();
+	void MoveToPlayer();
+	bool IsPointReachable(FVector point) const;
+	void Patrol();
+	void GenerateRandomSearchLocation();
+	void SearchForPlayer();
+	void OnActiveFinishedMove();
+	//void StartChasingPlayer();
+	//bool PlayerInAttackRange() const;
+	//void AttackPlayer() const;
 
 public:
-    AWolfAIController();
+	AWolfAIController();
 
-    UPROPERTY(VisibleAnywhere, Category = AI)
-    TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
+	UPROPERTY(EditAnywhere)
+	bool IsPatrolling = true;
 
-    TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
+	UPROPERTY(EditAnywhere)
+	bool IsInitialized = true;
 
-    TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
+	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
-    UPROPERTY(EditAnywhere)
-    bool IsPatrolling = true;
+	UFUNCTION()
+	void Reactivate();
 
-    UPROPERTY(EditAnywhere)
-    bool IsInitialized = true;
+	UFUNCTION()
+	void Deactivate();
 
-    virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result) override;
-
-    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor &Other) const override;
-
-    UFUNCTION()
-    void OnTargetPerceptionUpdated_Delegate(AActor *Actor, FAIStimulus Stimulus);
-
-    UFUNCTION()
-    void Reactivate();
-
-    UFUNCTION(BlueprintCallable)
-    void ReturnToPatrol();
+	//UPROPERTY(VisibleAnywhere, Category = AI)
+	//TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
+	//TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
+	//TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
+	//virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+	//UFUNCTION()
+	//void OnTargetPerceptionUpdated_Delegate(AActor* Actor, FAIStimulus Stimulus);
+	//UFUNCTION(BlueprintCallable)
+	//void ReturnToPatrol();
 };
