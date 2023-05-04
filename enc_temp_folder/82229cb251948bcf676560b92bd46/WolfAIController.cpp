@@ -69,40 +69,28 @@ void AWolfAIController::BeginPlay()
     AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdated_Delegate);
 }
 
-void AWolfAIController::Tick(float DeltaSeconds)
-{
-	Super::Tick(DeltaSeconds);
-}
+void AWolfAIController::Tick(float DeltaSeconds) { Super::Tick(DeltaSeconds); }
 
 void AWolfAIController::MoveToPlayer()
 {
     if (playerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds)
     {
-        const FAIMoveRequest nextPatrolPoint = FAIMoveRequest(controlledWolf->PlayerRef->GetNavAgentLocation());
-        if (const double distance = FVector::Dist(controlledWolf->GetNavAgentLocation(), controlledWolf->PlayerRef->GetNavAgentLocation());
-        nextPatrolPoint.IsValid() && distance > 100)
+        if (bMoveToPlayer == true)
         {
-            MoveToActor(controlledWolf->PlayerRef);
-            bMoveToPlayer = true;
-        }
-        else if (distance <= controlledWolf->PlayerAttackCollisionDetectionRadius)
-        {
-            controlledWolf->TryAttack(controlledWolf->PlayerRef);
-            bMoveToPlayer = false;
-            FTimerHandle poggersProtector;
-            GetWorld()->GetTimerManager().SetTimer(poggersProtector,[&]()
+            const FAIMoveRequest nextPatrolPoint = FAIMoveRequest(controlledWolf->PlayerRef->GetNavAgentLocation());
+            if (const double distance = FVector::Dist(controlledWolf->GetNavAgentLocation(), controlledWolf->PlayerRef->GetNavAgentLocation());
+            nextPatrolPoint.IsValid() && distance > 10)
             {
-	            bMoveToPlayer = true;
+                MoveToActor(controlledWolf->PlayerRef);
+            }
+            else if (distance <= controlledWolf->PlayerAttackCollisionDetectionRadius)
+            {
+                controlledWolf->TryAttack(controlledWolf->PlayerRef);
+            }
+            else
+            {
                 controlledWolf->TryStoppingAttack();
-                if(!IsFollowingAPath())
-                {
-	                MoveToPlayer();
-                }
-            },1, false);
-        }
-        else
-        {
-            controlledWolf->TryStoppingAttack();
+            }
         }
         playerMoveTimeTilNextCheck = GetWorld()->TimeSeconds + 1;
     }

@@ -7,6 +7,15 @@
 #include "Wolf.generated.h"
 
 // https://awesometuts.com/blog/unreal-engine-enemy-ai/
+
+UENUM(BlueprintType)
+enum WolfAnimationType
+{
+	Stopped UMETA(DisplayName = "Stopped"),
+	Moving UMETA(DisplayName = "Moving"),
+	Attacking UMETA(DisplayName = "Attacking"),
+};
+
 UCLASS()
 class BACKROWSTUDIO_API AWolf : public ADamageActor
 {
@@ -21,14 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	bool PlayerDetected;
-	bool IsAttackingFrame = false;
-	float CurrentPatrolPoint = 0;
-	float CurrentSpotRadius = 640;
-	//bool CanAttackPlayer;
-	//UPROPERTY(BlueprintReadWrite)
-	//bool CanDealDamage;
-
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -44,20 +45,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class USplineComponent* PatrolPath;
 
-	//UPROPERTY(EditAnywhere)
-	//class USphereComponent* PlayerAttackCollisionDetection;
-
-	//UPROPERTY(EditAnywhere)
-	//class USphereComponent* PlayerAutoSpotRadius;
-
-	//UPROPERTY(EditAnywhere)
-	//class USphereComponent* PlayerForgetRadius;
-
 	UPROPERTY(EditAnywhere)
 	float PlayerAttackCollisionDetectionRadius = 320;
-
-	UPROPERTY(EditAnywhere)
-	float PlayerAutoSpotRadius = 640;
 
 	UPROPERTY(EditAnywhere)
 	float PlayerForgetRadius = 1280;
@@ -65,21 +54,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* AttackHitBox;
 
-	UPROPERTY(EditAnywhere)
-	class UAnimMontage* AttackMontage;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TEnumAsByte<WolfAnimationType> MyAnimationState = WolfAnimationType::Moving;
 
 	UFUNCTION()
 	void TryAttack(AActor* actorToAttack);
 
-	UFUNCTION(BlueprintCallable)
-	void AttackAnimationEnded();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackAnimationBegin();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackingFramesBegin();
-
-	UFUNCTION(BlueprintCallable)
-	void AttackingFramesEnd();
+	UFUNCTION()
+	void TryStoppingAttack();
 };

@@ -28,51 +28,41 @@ private:
 	class UNavigationSystemV1* NavArea;
 	FVector RandomLocation = FVector();
 
-	bool bIsActive;
-	bool bSearchForPlayer;
 	bool bMoveToPlayer;
 	bool bValidPlayerPawn;
 
 
-	//void StartChasingPlayer();
 	//bool PlayerInAttackRange() const;
+	//bool IsPointReachable(FVector point) const;
+	//void StartChasingPlayer();
 	//void AttackPlayer() const;
+	//void GenerateRandomSearchLocation();
+	//void SearchForPlayer();
+	//void OnActiveFinishedMove();
 
 public:
+	UPROPERTY(VisibleAnywhere, Category = AI)
+	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
+	TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
+	TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
+
 	float playerMoveTimeTilNextCheck = 0;
 	TArray<FVector> patrolPoints;
 	float PatrolMoveTimeTilNextCheck = 0;
 
 	void MoveToPlayer();
-	bool IsPointReachable(FVector point) const;
 	void Patrol();
-	void GenerateRandomSearchLocation();
-	void SearchForPlayer();
-	void OnActiveFinishedMove();
-	AWolfAIController();
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
 
-	UPROPERTY(EditAnywhere)
-	bool IsPatrolling = true;
+	AWolfAIController();
 
 	UPROPERTY(EditAnywhere)
 	bool IsInitialized = true;
 
-	FNavLocation CurrentPatrolPoint;
+	int CurrentPatrolPointIndex;
 
 	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
 
 	UFUNCTION()
-	void Reactivate();
-
-	UFUNCTION()
-	void Deactivate();
-	void ReturnToPatrol();
-
-	//UPROPERTY(VisibleAnywhere, Category = AI)
-	//TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
-	//TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
-	//TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
-	//virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
-	//UFUNCTION()
-	//void OnTargetPerceptionUpdated_Delegate(AActor* Actor, FAIStimulus Stimulus);
+	void OnTargetPerceptionUpdated_Delegate(AActor* Actor, FAIStimulus Stimulus);
 };
