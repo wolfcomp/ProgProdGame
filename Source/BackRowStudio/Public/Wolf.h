@@ -30,11 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UPROPERTY()
 	class AMainCharacter* PlayerRef;
@@ -58,7 +53,7 @@ public:
 	TEnumAsByte<WolfAnimationType> MyAnimationState = WolfAnimationType::Moving;
 
 	UFUNCTION()
-	void TryAttack(AActor* actorToAttack);
+	void TryAttack(AActor* actor_to_attack);
 
 	UFUNCTION()
 	void TryStoppingAttack();

@@ -48,19 +48,7 @@ void AWolf::BeginPlay()
 	Super::BeginPlay();
 }
 
-// Called every frame
-void AWolf::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
-// Called to bind functionality to input
-void AWolf::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-void AWolf::TryAttack(AActor* actorToAttack)
+void AWolf::TryAttack(AActor* actor_to_attack)
 {
 	MyAnimationState = Attacking;
 }

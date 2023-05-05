@@ -21,12 +21,10 @@ class BACKROWSTUDIO_API AWolfAIController : public AAIController
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void Tick(float DeltaSeconds) override;
-
 private:
 	class AWolf* controlledWolf;
-	class UNavigationSystemV1* NavArea;
-	FVector RandomLocation = FVector();
+	class UNavigationSystemV1* navArea;
+	FVector randomLocation = FVector();
 
 	bool bMoveToPlayer;
 	bool bValidPlayerPawn;
@@ -41,28 +39,27 @@ private:
 	//void OnActiveFinishedMove();
 
 public:
+	AWolfAIController();
+
+	int CurrentPatrolPointIndex = 0;
+	float playerMoveTimeTilNextCheck = 0;
+	float PatrolMoveTimeTilNextCheck = 0;
+	TArray<FVector> patrolPoints;
+
+	UPROPERTY(EditAnywhere)
+	bool IsInitialized = true;
+
 	UPROPERTY(VisibleAnywhere, Category = AI)
 	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
 	TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
 	TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
 
-	float playerMoveTimeTilNextCheck = 0;
-	TArray<FVector> patrolPoints;
-	float PatrolMoveTimeTilNextCheck = 0;
-
 	void MoveToPlayer();
 	void Patrol();
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& Other) const override;
+	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& other) const override;
 
-	AWolfAIController();
-
-	UPROPERTY(EditAnywhere)
-	bool IsInitialized = true;
-
-	int CurrentPatrolPointIndex;
-
-	virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult& Result) override;
+	virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult& result) override;
 
 	UFUNCTION()
-	void OnTargetPerceptionUpdated_Delegate(AActor* Actor, FAIStimulus Stimulus);
+	void OnTargetPerceptionUpdatedDelegate(AActor* actor, FAIStimulus stimulus);
 };
