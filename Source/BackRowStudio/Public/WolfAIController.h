@@ -16,49 +16,49 @@
 UCLASS()
 class BACKROWSTUDIO_API AWolfAIController : public AAIController
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 protected:
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 
 private:
-	class AWolf* controlledWolf;
-	class UNavigationSystemV1* navArea;
-	FVector randomLocation = FVector();
+    class AWolf* controlledWolf;
+    class UNavigationSystemV1* navArea;
+    FVector randomLocation = FVector();
 
-	bool bMoveToPlayer;
-	bool bValidPlayerPawn;
+    bool bMoveToPlayer;
+    bool bValidPlayerPawn;
 
 
-	//bool PlayerInAttackRange() const;
-	//bool IsPointReachable(FVector point) const;
-	//void StartChasingPlayer();
-	//void AttackPlayer() const;
-	//void GenerateRandomSearchLocation();
-	//void SearchForPlayer();
-	//void OnActiveFinishedMove();
+    //bool PlayerInAttackRange() const;
+    //bool IsPointReachable(FVector point) const;
+    //void StartChasingPlayer();
+    //void AttackPlayer() const;
+    //void GenerateRandomSearchLocation();
+    //void SearchForPlayer();
+    //void OnActiveFinishedMove();
 
 public:
-	AWolfAIController();
+    AWolfAIController();
 
-	int CurrentPatrolPointIndex = 0;
-	float PlayerMoveTimeTilNextCheck = 0;
-	TArray<FVector> patrolPoints;
+    int CurrentPatrolPointIndex = 0;
+    float PlayerMoveTimeTilNextCheck = 0;
+    TArray<FVector> patrolPoints;
 
-	UPROPERTY(EditAnywhere)
-	bool IsInitialized = true;
+    UPROPERTY(EditAnywhere)
+    bool IsInitialized = true;
 
-	UPROPERTY(VisibleAnywhere, Category = AI)
-	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
-	TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
-	TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
+    UPROPERTY(VisibleAnywhere, Category = AI)
+    TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
+    TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
+    TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
 
-	void MoveToPlayer();
-	void Patrol();
-	virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& other) const override;
+    void MoveToPlayer();
+    void Patrol();
+    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& other) const override;
 
-	virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult& result) override;
+    virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult& result) override;
 
-	UFUNCTION()
-	void OnTargetPerceptionUpdatedDelegate(AActor* actor, FAIStimulus stimulus);
+    UFUNCTION()
+    void OnTargetPerceptionUpdatedDelegate(AActor* actor, FAIStimulus stimulus);
 };

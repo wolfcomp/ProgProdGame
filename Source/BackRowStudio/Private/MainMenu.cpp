@@ -8,17 +8,17 @@
 
 void UMainMenu::NativeConstruct()
 {
-	Super::NativeConstruct();
+    Super::NativeConstruct();
 }
 
 void UMainMenu::MyStartGame()
 {
-	if (GameLevel.IsValid())
-	{
-		UGameplayStatics::OpenLevel(this, FName(GameLevel->GetMapName()));
-	}
-	else
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("main menu widget has invalid level"));
-	}
+    if (GameLevel.IsValid())
+    {
+        UGameplayStatics::OpenLevel(this, FName(GameLevel->GetMapName()));
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("main menu widget has invalid level"));
+    }
 }

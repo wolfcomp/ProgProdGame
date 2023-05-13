@@ -12,11 +12,11 @@
 UCLASS()
 class BACKROWSTUDIO_API AMainMenuLevel : public ALevelScriptActor
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Menu")
-	TSubclassOf<UUserWidget> MainMenuWidget;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Main Menu")
+    TSubclassOf<UUserWidget> MainMenuWidget;
 
-	virtual void BeginPlay() override;
+    virtual void BeginPlay() override;
 };

@@ -14,45 +14,45 @@
 // Sets default values
 AWolf::AWolf()
 {
-	PrimaryActorTick.bCanEverTick = true;
+    PrimaryActorTick.bCanEverTick = true;
 
-	PatrolPath = CreateDefaultSubobject<USplineComponent>(TEXT("Wolf Patrol Path"));
-	AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
+    PatrolPath = CreateDefaultSubobject<USplineComponent>(TEXT("Wolf Patrol Path"));
+    AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
 
-	PatrolPath->SetupAttachment(RootComponent);
-	AttackHitBox->SetupAttachment(RootComponent);
+    PatrolPath->SetupAttachment(RootComponent);
+    AttackHitBox->SetupAttachment(RootComponent);
 
-	// setting up character movement
-	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
-	GetCharacterMovement()->bOrientRotationToMovement = true;
+    // setting up character movement
+    GetCharacterMovement()->MaxWalkSpeed = 600.0f;
+    GetCharacterMovement()->bOrientRotationToMovement = true;
 }
 
 // Called when the game starts or when spawned
 void AWolf::BeginPlay()
 {
-	if (APawn* tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
-	{
-		if (AMainCharacter* temp = Cast<AMainCharacter>(tempPawn); temp->IsValidLowLevel())
-		{
-			PlayerRef = temp;
-		}
-	}
+    if (APawn* tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
+    {
+        if (AMainCharacter* temp = Cast<AMainCharacter>(tempPawn); temp->IsValidLowLevel())
+        {
+            PlayerRef = temp;
+        }
+    }
 
-	if (AWolfAIController* tempCon = Cast<AWolfAIController>(GetController()))
-	{
-		WolfAIController = tempCon;
-		WolfAIController->Patrol();
-	}
+    if (AWolfAIController* tempCon = Cast<AWolfAIController>(GetController()))
+    {
+        WolfAIController = tempCon;
+        WolfAIController->Patrol();
+    }
 
-	Super::BeginPlay();
+    Super::BeginPlay();
 }
 
 void AWolf::TryAttack(AActor* actor_to_attack)
 {
-	MyAnimationState = Attacking;
+    MyAnimationState = Attacking;
 }
 
 void AWolf::TryStoppingAttack()
 {
-	MyAnimationState = Moving;
+    MyAnimationState = Moving;
 }

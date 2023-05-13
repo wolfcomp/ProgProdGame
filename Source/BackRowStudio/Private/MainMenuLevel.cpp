@@ -8,10 +8,10 @@
 
 void AMainMenuLevel::BeginPlay()
 {
-	if (MainMenuWidget->IsValidLowLevel())
-	{
-		UUserWidget* myWidget = CreateWidget(GetWorld(), MainMenuWidget);
-		myWidget->AddToViewport();
-	}
-	Super::BeginPlay();
+    if (MainMenuWidget->IsValidLowLevel())
+    {
+        UUserWidget* myWidget = CreateWidget(GetWorld(), MainMenuWidget);
+        myWidget->AddToViewport();
+    }
+    Super::BeginPlay();
 }

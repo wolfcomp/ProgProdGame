@@ -13,17 +13,17 @@
 UCLASS()
 class BACKROWSTUDIO_API UMainMenu : public UUserWidget
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	UButton* StartButton;
+    UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+    UButton* StartButton;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSoftObjectPtr<UWorld> GameLevel;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TSoftObjectPtr<UWorld> GameLevel;
 
 
-	virtual void NativeConstruct() override;
+    virtual void NativeConstruct() override;
 
-	void MyStartGame();
+    void MyStartGame();
 };

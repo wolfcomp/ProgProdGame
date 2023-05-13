@@ -9,7 +9,6 @@
 #include "Components/InputComponent.h"
 #include "Components/SceneCaptureComponent2D.h"
 #include "Enemy.h"
-#include "Engine/TextureRenderTarget2D.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -86,9 +85,10 @@ void AMainCharacter::BeginPlay()
     GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
 
     // Adding mapping context component
-    if (const auto *controller = Cast<APlayerController>(Controller))
+    if (const auto* controller = Cast<APlayerController>(Controller))
     {
-        if (auto *inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(controller->GetLocalPlayer()))
+        if (auto* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+            controller->GetLocalPlayer()))
         {
             inputSystem->AddMappingContext(MappingContextComponent, 0);
         }
@@ -108,7 +108,7 @@ void AMainCharacter::BeginPlay()
         HealthBarWidget->AddToViewport();
     }
 
-    if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
+    if (APlayerController* TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
     }
@@ -123,7 +123,7 @@ void AMainCharacter::BeginPlay()
 }
 
 // Input action Functions
-void AMainCharacter::MoveAction(const FInputActionValue &value)
+void AMainCharacter::MoveAction(const FInputActionValue& value)
 {
     const auto movementVector = value.Get<FVector2D>();
 
@@ -142,7 +142,7 @@ void AMainCharacter::MoveAction(const FInputActionValue &value)
     }
 }
 
-void AMainCharacter::LookAroundAction(const FInputActionValue &value)
+void AMainCharacter::LookAroundAction(const FInputActionValue& value)
 {
     const FVector2D lookAxisValue = value.Get<FVector2D>();
 
@@ -153,15 +153,15 @@ void AMainCharacter::LookAroundAction(const FInputActionValue &value)
     }
 }
 
-void AMainCharacter::JumpAction(const FInputActionValue &value) { Super::Jump(); }
+void AMainCharacter::JumpAction(const FInputActionValue& value) { Super::Jump(); }
 
-void AMainCharacter::LightAttackAction(const FInputActionValue &value)
+void AMainCharacter::LightAttackAction(const FInputActionValue& value)
 {
     if (CanJump())
         SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
 }
 
-void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
+void AMainCharacter::HeavyAttackAction(const FInputActionValue& value)
 {
     if (!MyInv->Spells[SelectedSpell].Item)
     {
@@ -171,19 +171,22 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
     if (CanJump())
     {
         if (SpellEnenhancements->Spell->Heavy.IsGroundSpell)
-            SpellEnenhancements->CastSpell(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
+            SpellEnenhancements->CastSpell(
+                FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - GroundSpellLocationOffset),
+                GetActorRotation(), GetWorld(), GetRootComponent(), true);
         else
-            SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), true);
+            SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(),
+                                           true);
     }
 }
 
-void AMainCharacter::AbilityKeyAction(const FInputActionValue &value)
+void AMainCharacter::AbilityKeyAction(const FInputActionValue& value)
 {
     SelectedSpell = static_cast<int>(value.Get<float>()) - 1;
     SetSpell();
 }
 
-void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
+void AMainCharacter::AbilityScrollAction(const FInputActionValue& value)
 {
     SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
@@ -209,7 +212,7 @@ void AMainCharacter::SetSpell()
     SpellEnenhancements->SetData();
 }
 
-void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
+void AMainCharacter::OpenCloseInventory(const FInputActionValue& value)
 {
     if (MyInv->IsValidLowLevel())
     {
@@ -246,7 +249,7 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
     }
 }
 
-void AMainCharacter::OpenClosePauseMenu(const FInputActionValue &value)
+void AMainCharacter::OpenClosePauseMenu(const FInputActionValue& value)
 {
     if (MyPauseMenu->IsValidLowLevel())
     {
@@ -263,9 +266,16 @@ void AMainCharacter::OpenClosePauseMenu(const FInputActionValue &value)
     }
 }
 
-void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName socket_name) { SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(socket_name)); }
+void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellActors, */ FName socket_name)
+{
+    SpellEnenhancements->AttachToComponent(GetRootComponent(),
+                                           FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true),
+                                           FName(socket_name));
+}
 
-void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result)
+void AMainCharacter::OnOverlapBegin(UPrimitiveComponent* overlapped_component, AActor* other_actor,
+                                    UPrimitiveComponent* other_component, int other_index, bool from_sweep,
+                                    const FHitResult& sweep_result)
 {
     if (const auto item = Cast<AItemActor>(other_actor))
     {
@@ -296,38 +306,47 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
 void AMainCharacter::Tick(float delta_time) { Super::Tick(delta_time); }
 
 // Called to bind functionality to input
-void AMainCharacter::SetupPlayerInputComponent(UInputComponent *input_component)
+void AMainCharacter::SetupPlayerInputComponent(UInputComponent* input_component)
 {
     Super::SetupPlayerInputComponent(input_component);
 
     // Setting up Player Input Action Mappings
-    if (auto *enhancedInputComponent = CastChecked<UEnhancedInputComponent>(input_component))
+    if (auto* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(input_component))
     {
         // Player Move
-        enhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this, &AMainCharacter::MoveAction);
+        enhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::MoveAction);
 
         // Player Look Around
-        enhancedInputComponent->BindAction(InputActionLookAround, ETriggerEvent::Triggered, this, &AMainCharacter::LookAroundAction);
+        enhancedInputComponent->BindAction(InputActionLookAround, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::LookAroundAction);
 
         // Player Jump
-        enhancedInputComponent->BindAction(InputActionJump, ETriggerEvent::Triggered, this, &AMainCharacter::JumpAction);
+        enhancedInputComponent->BindAction(InputActionJump, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::JumpAction);
 
         // Player Light Attack
-        enhancedInputComponent->BindAction(InputActionLightAttack, ETriggerEvent::Triggered, this, &AMainCharacter::LightAttackAction);
+        enhancedInputComponent->BindAction(InputActionLightAttack, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::LightAttackAction);
 
         // Player Heavy Attack
-        enhancedInputComponent->BindAction(InputActionHeavyAttack, ETriggerEvent::Triggered, this, &AMainCharacter::HeavyAttackAction);
+        enhancedInputComponent->BindAction(InputActionHeavyAttack, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::HeavyAttackAction);
 
         // Player Ability Keys
-        enhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityKeyAction);
+        enhancedInputComponent->BindAction(InputActionAbilityKey, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::AbilityKeyAction);
 
         // Player Ability Scroll Functions
-        enhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this, &AMainCharacter::AbilityScrollAction);
+        enhancedInputComponent->BindAction(InputActionScrollAbility, ETriggerEvent::Triggered, this,
+                                           &AMainCharacter::AbilityScrollAction);
 
         // Player Open or Close Inventory keys
-        enhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Started, this, &AMainCharacter::OpenCloseInventory);
+        enhancedInputComponent->BindAction(InputActionOpenCloseInventory, ETriggerEvent::Started, this,
+                                           &AMainCharacter::OpenCloseInventory);
 
         // Player Open or Close Inventory keys
-        enhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this, &AMainCharacter::OpenClosePauseMenu);
+        enhancedInputComponent->BindAction(PauseAction, ETriggerEvent::Started, this,
+                                           &AMainCharacter::OpenClosePauseMenu);
     }
 }
