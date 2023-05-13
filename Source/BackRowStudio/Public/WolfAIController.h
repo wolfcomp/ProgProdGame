@@ -22,12 +22,12 @@ protected:
     virtual void BeginPlay() override;
 
 private:
-    class AWolf* controlledWolf;
-    class UNavigationSystemV1* navArea;
+    class AWolf *controlledWolf;
+    class UNavigationSystemV1 *navArea;
     FVector randomLocation = FVector();
 
-    bool bMoveToPlayer;
-    bool bValidPlayerPawn;
+    bool moveToPlayer;
+    bool validPlayerPawn;
 
 
     //bool PlayerInAttackRange() const;
@@ -43,7 +43,8 @@ public:
 
     int CurrentPatrolPointIndex = 0;
     float PlayerMoveTimeTilNextCheck = 0;
-    TArray<FVector> patrolPoints;
+    bool CanMove;
+    TArray<FVector> PatrolPoints;
 
     UPROPERTY(EditAnywhere)
     bool IsInitialized = true;
@@ -55,10 +56,10 @@ public:
 
     void MoveToPlayer();
     void Patrol();
-    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& other) const override;
+    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor &other) const override;
 
-    virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult& result) override;
+    virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult &result) override;
 
     UFUNCTION()
-    void OnTargetPerceptionUpdatedDelegate(AActor* actor, FAIStimulus stimulus);
+    void OnTargetPerceptionUpdatedDelegate(AActor *actor, FAIStimulus stimulus);
 };

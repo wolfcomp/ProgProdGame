@@ -36,18 +36,18 @@ void AWolfAIController::BeginPlay()
     Super::BeginPlay();
 
     navArea = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
-    bMoveToPlayer = false;
+    moveToPlayer = false;
 
-    if (AWolf* localControlledWolf = Cast<AWolf>(this->GetCharacter()); this->GetCharacter()->IsValidLowLevel() &&
+    if (AWolf *localControlledWolf = Cast<AWolf>(this->GetCharacter()); this->GetCharacter()->IsValidLowLevel() &&
         localControlledWolf->IsValidLowLevel())
     {
         controlledWolf = localControlledWolf;
-        bValidPlayerPawn = true;
+        validPlayerPawn = true;
         for (int i = 0; i < controlledWolf->PatrolPath->GetNumberOfSplinePoints(); ++i)
         {
             if (controlledWolf->PatrolPath->GetWorldLocationAtSplinePoint(i) != FVector(0, 0, 0))
             {
-                patrolPoints.Add(controlledWolf->PatrolPath->GetWorldLocationAtSplinePoint(i));
+                PatrolPoints.Add(controlledWolf->PatrolPath->GetWorldLocationAtSplinePoint(i));
             }
         }
     }
@@ -76,18 +76,18 @@ void AWolfAIController::MoveToPlayer()
             IsValid() && distance > 100)
         {
             MoveToActor(controlledWolf->PlayerRef);
-            bMoveToPlayer = true;
+            moveToPlayer = true;
         }
         else if (distance <= controlledWolf->PlayerAttackCollisionDetectionRadius)
         {
             controlledWolf->TryAttack(controlledWolf->PlayerRef);
-            bMoveToPlayer = false;
+            moveToPlayer = false;
             FTimerHandle poggersProtector;
             GetWorld()->GetTimerManager().SetTimer(
                 poggersProtector,
                 [&]()
                 {
-                    bMoveToPlayer = true;
+                    moveToPlayer = true;
                     controlledWolf->TryStoppingAttack();
                     if (!IsFollowingAPath())
                     {
@@ -106,12 +106,12 @@ void AWolfAIController::MoveToPlayer()
 
 void AWolfAIController::Patrol()
 {
-    FAIMoveRequest nextPatrolPoint = FAIMoveRequest(patrolPoints[CurrentPatrolPointIndex]);
+    FAIMoveRequest nextPatrolPoint = FAIMoveRequest(PatrolPoints[CurrentPatrolPointIndex]);
     if (nextPatrolPoint.IsValid())
     {
         MoveTo(nextPatrolPoint);
     }
-    if (CurrentPatrolPointIndex + 1 < patrolPoints.Num())
+    if (CurrentPatrolPointIndex + 1 < PatrolPoints.Num())
     {
         CurrentPatrolPointIndex++;
     }
@@ -121,11 +121,11 @@ void AWolfAIController::Patrol()
     }
 }
 
-void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult& result)
+void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult &result)
 {
-    if (result.IsSuccess() && !result.IsInterrupted())
+    if (result.IsSuccess() && !result.IsInterrupted() && CanMove)
     {
-        if (bMoveToPlayer)
+        if (moveToPlayer)
         {
             MoveToPlayer();
         }
@@ -137,9 +137,9 @@ void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFoll
     // Super::OnMoveCompleted(requestID, result);
 }
 
-ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor& other) const
+ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &other) const
 {
-    if (APawn const* otherPawn = Cast<APawn>(&other))
+    if (APawn const *otherPawn = Cast<APawn>(&other))
     {
         if (auto const teamAgent = Cast<IGenericTeamAgentInterface>(otherPawn->GetController()))
         {
@@ -154,7 +154,7 @@ ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor& othe
     return ETeamAttitude::Neutral;
 }
 
-void AWolfAIController::OnTargetPerceptionUpdatedDelegate(AActor* actor, FAIStimulus stimulus)
+void AWolfAIController::OnTargetPerceptionUpdatedDelegate(AActor *actor, FAIStimulus stimulus)
 {
     if (GetTeamAttitudeTowards(*actor) == ETeamAttitude::Hostile)
     {

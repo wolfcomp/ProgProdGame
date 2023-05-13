@@ -89,6 +89,8 @@ public:
     UPROPERTY()
     APlayerController *PC;
 
+    UPROPERTY(VisibleAnywhere, Category = "Checkpoint")
+    FVector RespawnLocation;
 
     // |Input| Mapping Context Component
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
@@ -216,6 +218,8 @@ public:
 
     // Called to bind functionality to input
     virtual void SetupPlayerInputComponent(class UInputComponent *input_component) override;
+
+    void SetCheckpoint(const class ACheckpointActor *checkpoint);
 
 private:
     // Movement Component

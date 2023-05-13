@@ -13,6 +13,7 @@ UCLASS(BlueprintType)
 class BACKROWSTUDIO_API UInventoryItemAsset : public UDataAsset
 {
     GENERATED_BODY()
+
 public:
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
     int MaxQuantity = 64;
@@ -36,7 +37,7 @@ public:
     bool HasEquipMenu = false;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    USpell* Spell;
+    USpell *Spell;
 };
 
 USTRUCT(blueprinttype)
