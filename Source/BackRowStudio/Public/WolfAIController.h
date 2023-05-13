@@ -11,7 +11,7 @@
 // The other controllers need to inherit from IGenericTeamAgentInterface and set their team id. In this example I take the PlayerController
 
 /**
- *
+ * wolf ai controller
  */
 UCLASS()
 class BACKROWSTUDIO_API AWolfAIController : public AAIController
