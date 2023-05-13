@@ -85,9 +85,9 @@ void AMainCharacter::BeginPlay()
     GetCapsuleComponent()->OnComponentBeginOverlap.AddDynamic(this, &AMainCharacter::OnOverlapBegin);
 
     // Adding mapping context component
-    if (const auto* controller = Cast<APlayerController>(Controller))
+    if (const auto *controller = Cast<APlayerController>(Controller))
     {
-        if (auto* inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
+        if (auto *inputSystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(
             controller->GetLocalPlayer()))
         {
             inputSystem->AddMappingContext(MappingContextComponent, 0);
@@ -108,7 +108,7 @@ void AMainCharacter::BeginPlay()
         HealthBarWidget->AddToViewport();
     }
 
-    if (APlayerController* TempPC = Cast<APlayerController>(GetController()))
+    if (APlayerController *TempPC = Cast<APlayerController>(GetController()))
     {
         PC = TempPC;
     }
@@ -123,7 +123,7 @@ void AMainCharacter::BeginPlay()
 }
 
 // Input action Functions
-void AMainCharacter::MoveAction(const FInputActionValue& value)
+void AMainCharacter::MoveAction(const FInputActionValue &value)
 {
     const auto movementVector = value.Get<FVector2D>();
 
@@ -142,7 +142,7 @@ void AMainCharacter::MoveAction(const FInputActionValue& value)
     }
 }
 
-void AMainCharacter::LookAroundAction(const FInputActionValue& value)
+void AMainCharacter::LookAroundAction(const FInputActionValue &value)
 {
     const FVector2D lookAxisValue = value.Get<FVector2D>();
 
@@ -153,15 +153,15 @@ void AMainCharacter::LookAroundAction(const FInputActionValue& value)
     }
 }
 
-void AMainCharacter::JumpAction(const FInputActionValue& value) { Super::Jump(); }
+void AMainCharacter::JumpAction(const FInputActionValue &value) { Super::Jump(); }
 
-void AMainCharacter::LightAttackAction(const FInputActionValue& value)
+void AMainCharacter::LightAttackAction(const FInputActionValue &value)
 {
     if (CanJump())
         SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
 }
 
-void AMainCharacter::HeavyAttackAction(const FInputActionValue& value)
+void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
 {
     if (!MyInv->Spells[SelectedSpell].Item)
     {
@@ -180,13 +180,13 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue& value)
     }
 }
 
-void AMainCharacter::AbilityKeyAction(const FInputActionValue& value)
+void AMainCharacter::AbilityKeyAction(const FInputActionValue &value)
 {
     SelectedSpell = static_cast<int>(value.Get<float>()) - 1;
     SetSpell();
 }
 
-void AMainCharacter::AbilityScrollAction(const FInputActionValue& value)
+void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
 {
     SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
@@ -212,7 +212,7 @@ void AMainCharacter::SetSpell()
     SpellEnenhancements->SetData();
 }
 
-void AMainCharacter::OpenCloseInventory(const FInputActionValue& value)
+void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
 {
     if (MyInv->IsValidLowLevel())
     {
@@ -249,7 +249,7 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue& value)
     }
 }
 
-void AMainCharacter::OpenClosePauseMenu(const FInputActionValue& value)
+void AMainCharacter::OpenClosePauseMenu(const FInputActionValue &value)
 {
     if (MyPauseMenu->IsValidLowLevel())
     {
@@ -273,9 +273,9 @@ void AMainCharacter::AttachSpellComponents(/*TSubclassOf<ABaseSpellActor> SpellA
                                            FName(socket_name));
 }
 
-void AMainCharacter::OnOverlapBegin(UPrimitiveComponent* overlapped_component, AActor* other_actor,
-                                    UPrimitiveComponent* other_component, int other_index, bool from_sweep,
-                                    const FHitResult& sweep_result)
+void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor,
+                                    UPrimitiveComponent *other_component, int other_index, bool from_sweep,
+                                    const FHitResult &sweep_result)
 {
     if (const auto item = Cast<AItemActor>(other_actor))
     {
@@ -306,12 +306,12 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent* overlapped_component, A
 void AMainCharacter::Tick(float delta_time) { Super::Tick(delta_time); }
 
 // Called to bind functionality to input
-void AMainCharacter::SetupPlayerInputComponent(UInputComponent* input_component)
+void AMainCharacter::SetupPlayerInputComponent(UInputComponent *input_component)
 {
     Super::SetupPlayerInputComponent(input_component);
 
     // Setting up Player Input Action Mappings
-    if (auto* enhancedInputComponent = CastChecked<UEnhancedInputComponent>(input_component))
+    if (auto *enhancedInputComponent = CastChecked<UEnhancedInputComponent>(input_component))
     {
         // Player Move
         enhancedInputComponent->BindAction(InputActionMove, ETriggerEvent::Triggered, this,

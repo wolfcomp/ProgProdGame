@@ -31,13 +31,13 @@ protected:
 
 public:
     UPROPERTY()
-    class AMainCharacter* PlayerRef;
+    class AMainCharacter *PlayerRef;
 
     UPROPERTY()
-    class AWolfAIController* WolfAIController;
+    class AWolfAIController *WolfAIController;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class USplineComponent* PatrolPath;
+    class USplineComponent *PatrolPath;
 
     UPROPERTY(EditAnywhere)
     float PlayerAttackCollisionDetectionRadius = 320;
@@ -46,13 +46,13 @@ public:
     float PlayerForgetRadius = 1280;
 
     UPROPERTY(EditAnywhere)
-    class UBoxComponent* AttackHitBox;
+    class UBoxComponent *AttackHitBox;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TEnumAsByte<WolfAnimationType> MyAnimationState = WolfAnimationType::Moving;
 
     UFUNCTION()
-    void TryAttack(AActor* actor_to_attack);
+    void TryAttack(AActor *actor_to_attack);
 
     UFUNCTION()
     void TryStoppingAttack();
