@@ -24,7 +24,6 @@ public:
 
 
 	virtual void NativeConstruct() override;
-	//virtual void BeginDestroy() override;
 
 	void MyStartGame();
 };

@@ -8,15 +8,8 @@
 
 void UMainMenu::NativeConstruct()
 {
-	//this->StartButton->OnClicked.AddDynamic(this, &UMainMenu::MyStartGame);
 	Super::NativeConstruct();
 }
-
-//void UMainMenu::BeginDestroy()
-//{
-//	UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(GetWorld()->GetFirstPlayerController());
-//	Super::BeginDestroy();
-//}
 
 void UMainMenu::MyStartGame()
 {
