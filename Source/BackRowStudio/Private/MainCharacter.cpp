@@ -23,7 +23,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "MinimapWidget.h"
 #include "PauseWidget.h"
-#include "Wolf.h"
 
 AMainCharacter::AMainCharacter()
 {

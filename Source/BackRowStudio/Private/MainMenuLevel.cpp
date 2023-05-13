@@ -10,8 +10,13 @@ void AMainMenuLevel::BeginPlay()
 {
     if (MainMenuWidget->IsValidLowLevel())
     {
-        UUserWidget* myWidget = CreateWidget(GetWorld(), MainMenuWidget);
+        APlayerController *controller = GetWorld()->GetFirstPlayerController();
+
+        UUserWidget *myWidget = CreateWidget(GetWorld(), MainMenuWidget);
+
         myWidget->AddToViewport();
+        controller->SetShowMouseCursor(true);
+        UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(controller);
     }
     Super::BeginPlay();
 }
