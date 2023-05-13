@@ -4,26 +4,22 @@
 #include "Wolf.h"
 
 #include "Animation/AnimMontage.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/BoxComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Async/Future.h"
 #include "MainCharacter.h"
 #include "WolfAIController.h"
 
 // Sets default values
 AWolf::AWolf()
 {
-    // Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
 
-    PlayerAttackCollisionDetection = CreateDefaultSubobject<USphereComponent>(TEXT("Attempt Attack Range Visual"));
-    PlayerAttackCollisionDetection->SetupAttachment(RootComponent);
     PatrolPath = CreateDefaultSubobject<USplineComponent>(TEXT("Wolf Patrol Path"));
-    PatrolPath->SetupAttachment(RootComponent);
     AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
+
+    PatrolPath->SetupAttachment(RootComponent);
     AttackHitBox->SetupAttachment(RootComponent);
 
     // setting up character movement
@@ -34,31 +30,29 @@ AWolf::AWolf()
 // Called when the game starts or when spawned
 void AWolf::BeginPlay()
 {
-    if (AWolfAIController *tempCon = Cast<AWolfAIController>(GetController()))
+    if (APawn* tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
     {
-        WolfAIController = tempCon;
+        if (AMainCharacter* temp = Cast<AMainCharacter>(tempPawn); temp->IsValidLowLevel())
+        {
+            PlayerRef = temp;
+        }
     }
 
-    AnimInstance = GetMesh()->GetAnimInstance();
+    if (AWolfAIController* tempCon = Cast<AWolfAIController>(GetController()))
+    {
+        WolfAIController = tempCon;
+        WolfAIController->Patrol();
+    }
 
     Super::BeginPlay();
 }
 
-// Called every frame
-void AWolf::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
-
-// Called to bind functionality to input
-void AWolf::SetupPlayerInputComponent(UInputComponent *PlayerInputComponent) { Super::SetupPlayerInputComponent(PlayerInputComponent); }
-
-// just in case we wanna do something like play an animation
-void AWolf::OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result) {}
-
-void AWolf::AttackAnimationEnded() { WolfAIController->Reactivate(); }
-
-void AWolf::TryAttack(AActor *actorToAttack)
+void AWolf::TryAttack(AActor* actor_to_attack)
 {
-    if (AttackMontage)
-    {
-        AnimInstance->Montage_Play(AttackMontage);
-    }
+    MyAnimationState = Attacking;
+}
+
+void AWolf::TryStoppingAttack()
+{
+    MyAnimationState = Moving;
 }

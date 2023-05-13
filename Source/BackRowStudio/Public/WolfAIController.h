@@ -11,84 +11,54 @@
 // The other controllers need to inherit from IGenericTeamAgentInterface and set their team id. In this example I take the PlayerController
 
 /**
- *
+ * wolf ai controller
  */
 UCLASS()
 class BACKROWSTUDIO_API AWolfAIController : public AAIController
 {
     GENERATED_BODY()
+
 protected:
     virtual void BeginPlay() override;
 
-    virtual void Tick(float DeltaSeconds) override;
-
 private:
-    APawn *PlayerPawn;
-
-    class AWolf *controlledWolf;
-
-    class UNavigationSystemV1 *NavArea;
-
-    FVector RandomLocation = FVector();
-
-    TArray<FVector> patrolPoints;
-
-    bool bIsActive;
+    class AWolf* controlledWolf;
+    class UNavigationSystemV1* navArea;
+    FVector randomLocation = FVector();
 
     bool bMoveToPlayer;
+    bool bValidPlayerPawn;
 
-    bool bSearchForPlayer;
 
-    bool bCanAttackPlayer;
-
-    float wolfAttackDistance = 200.0f;
-
-    float currentPatrolPoint = 0;
-
-    void GenerateRandomSearchLocation();
-
-    void SearchForPlayer();
-
-    void MoveToPlayer();
-
-    void StartChasingPlayer();
-
-    bool PlayerInAttackRange() const;
-
-    void AttackPlayer() const;
-
-    void Patrol();
-
-    FTimerHandle SearchTimerHandle;
-
-    FTimerHandle AttackTimerHandle;
+    //bool PlayerInAttackRange() const;
+    //bool IsPointReachable(FVector point) const;
+    //void StartChasingPlayer();
+    //void AttackPlayer() const;
+    //void GenerateRandomSearchLocation();
+    //void SearchForPlayer();
+    //void OnActiveFinishedMove();
 
 public:
     AWolfAIController();
 
-    UPROPERTY(VisibleAnywhere, Category = AI)
-    TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
-
-    TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
-
-    TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
-
-    UPROPERTY(EditAnywhere)
-    bool IsPatrolling = true;
+    int CurrentPatrolPointIndex = 0;
+    float PlayerMoveTimeTilNextCheck = 0;
+    TArray<FVector> patrolPoints;
 
     UPROPERTY(EditAnywhere)
     bool IsInitialized = true;
 
-    virtual void OnMoveCompleted(FAIRequestID RequestID, const FPathFollowingResult &Result) override;
+    UPROPERTY(VisibleAnywhere, Category = AI)
+    TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent = nullptr;
+    TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
+    TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
 
-    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor &Other) const override;
+    void MoveToPlayer();
+    void Patrol();
+    virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor& other) const override;
+
+    virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult& result) override;
 
     UFUNCTION()
-    void OnTargetPerceptionUpdated_Delegate(AActor *Actor, FAIStimulus Stimulus);
-
-    UFUNCTION()
-    void Reactivate();
-
-    UFUNCTION(BlueprintCallable)
-    void ReturnToPatrol();
+    void OnTargetPerceptionUpdatedDelegate(AActor* actor, FAIStimulus stimulus);
 };

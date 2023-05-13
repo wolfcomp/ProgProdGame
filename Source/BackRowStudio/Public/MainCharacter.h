@@ -17,10 +17,12 @@ class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamA
 
 {
     GENERATED_BODY()
+
 private:
-    FGenericTeamId TeamID = FGenericTeamId(1);
 
 public:
+    FGenericTeamId TeamID = FGenericTeamId(1);
+
     float Health = 100;
 
     float MaxHealth = 100;
@@ -166,10 +168,11 @@ public:
     UPROPERTY(EditDefaultsOnly)
     USoundBase *PickupSound;
 
-
 protected:
     UFUNCTION()
-    void OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result);
+    void OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor,
+                        UPrimitiveComponent *other_component, int other_index, bool from_sweep,
+                        const FHitResult &sweep_result);
 
     // Called when the game starts or when spawned
     virtual void BeginPlay() override;

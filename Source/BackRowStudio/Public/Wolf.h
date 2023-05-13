@@ -7,6 +7,15 @@
 #include "Wolf.generated.h"
 
 // https://awesometuts.com/blog/unreal-engine-enemy-ai/
+
+UENUM(BlueprintType)
+enum WolfAnimationType
+{
+    Stopped UMETA(DisplayName = "Stopped"),
+    Moving UMETA(DisplayName = "Moving"),
+    Attacking UMETA(DisplayName = "Attacking"),
+};
+
 UCLASS()
 class BACKROWSTUDIO_API AWolf : public ADamageActor
 {
@@ -21,48 +30,30 @@ protected:
     virtual void BeginPlay() override;
 
 public:
-    bool PlayerDetected;
-
-    bool CanAttackPlayer;
-
-    float CurrentPatrolPoint = 0;
-
-    UPROPERTY(BlueprintReadWrite)
-    bool CanDealDamage;
-
-    // Called every frame
-    virtual void Tick(float DeltaTime) override;
-
-    // Called to bind functionality to input
-    virtual void SetupPlayerInputComponent(class UInputComponent *PlayerInputComponent) override;
-
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     class AMainCharacter *PlayerRef;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     class AWolfAIController *WolfAIController;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class USplineComponent *PatrolPath;
 
     UPROPERTY(EditAnywhere)
-    class USphereComponent *PlayerAttackCollisionDetection;
+    float PlayerAttackCollisionDetectionRadius = 320;
+
+    UPROPERTY(EditAnywhere)
+    float PlayerForgetRadius = 1280;
 
     UPROPERTY(EditAnywhere)
     class UBoxComponent *AttackHitBox;
 
-
-    UPROPERTY(EditAnywhere)
-    class UAnimMontage *AttackMontage;
-
-    UPROPERTY(EditAnywhere)
-    class UAnimInstance *AnimInstance;
-
-    void OnMoveCompleted(struct FAIRequestID RequestID, const struct FPathFollowingResult &Result);
-
-    UFUNCTION(BlueprintCallable)
-    void AttackAnimationEnded();
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    TEnumAsByte<WolfAnimationType> MyAnimationState = WolfAnimationType::Moving;
 
     UFUNCTION()
-    void TryAttack(AActor *actorToAttack);
+    void TryAttack(AActor *actor_to_attack);
+
+    UFUNCTION()
+    void TryStoppingAttack();
 };

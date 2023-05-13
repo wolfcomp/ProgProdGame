@@ -25,7 +25,7 @@ public class BackRowStudio : ModuleRules
             "UMG", 
             "Slate", 
             "SlateCore",
-            "AiModule",
+            "AIModule",
             "NavigationSystem"
         });
     }
