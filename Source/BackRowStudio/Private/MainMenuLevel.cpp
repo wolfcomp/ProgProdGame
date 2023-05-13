@@ -12,7 +12,6 @@ void AMainMenuLevel::BeginPlay()
 	{
 		UUserWidget* myWidget = CreateWidget(GetWorld(), MainMenuWidget);
 		myWidget->AddToViewport();
-		//UWidgetBlueprintLibrary::SetInputMode_UIOnlyEx(GetWorld()->GetFirstPlayerController(), myWidget);
 	}
 	Super::BeginPlay();
 }
