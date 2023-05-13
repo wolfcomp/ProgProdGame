@@ -72,7 +72,7 @@ void AWolfAIController::BeginPlay()
 
 void AWolfAIController::MoveToPlayer()
 {
-	if (playerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds)
+	if (PlayerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds)
 	{
 		const FAIMoveRequest nextPatrolPoint = FAIMoveRequest(controlledWolf->PlayerRef->GetNavAgentLocation());
 		if (const double distance = FVector::Dist(controlledWolf->GetNavAgentLocation(),
@@ -104,28 +104,24 @@ void AWolfAIController::MoveToPlayer()
 		{
 			controlledWolf->TryStoppingAttack();
 		}
-		playerMoveTimeTilNextCheck = GetWorld()->TimeSeconds + 1;
+		PlayerMoveTimeTilNextCheck = GetWorld()->TimeSeconds + 1;
 	}
 }
 
 void AWolfAIController::Patrol()
 {
-	if (PatrolMoveTimeTilNextCheck <= GetWorld()->TimeSeconds)
+	FAIMoveRequest nextPatrolPoint = FAIMoveRequest(patrolPoints[CurrentPatrolPointIndex]);
+	if (nextPatrolPoint.IsValid())
 	{
-		FAIMoveRequest nextPatrolPoint = FAIMoveRequest(patrolPoints[CurrentPatrolPointIndex]);
-		if (nextPatrolPoint.IsValid())
-		{
-			MoveTo(nextPatrolPoint);
-		}
-		if (CurrentPatrolPointIndex + 1 < patrolPoints.Num())
-		{
-			CurrentPatrolPointIndex++;
-		}
-		else
-		{
-			CurrentPatrolPointIndex = 0;
-		}
-		playerMoveTimeTilNextCheck = GetWorld()->TimeSeconds + 1;
+		MoveTo(nextPatrolPoint);
+	}
+	if (CurrentPatrolPointIndex + 1 < patrolPoints.Num())
+	{
+		CurrentPatrolPointIndex++;
+	}
+	else
+	{
+		CurrentPatrolPointIndex = 0;
 	}
 }
 

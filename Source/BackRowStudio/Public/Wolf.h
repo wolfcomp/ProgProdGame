@@ -30,7 +30,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-
 	UPROPERTY()
 	class AMainCharacter* PlayerRef;
 

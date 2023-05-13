@@ -42,8 +42,7 @@ public:
 	AWolfAIController();
 
 	int CurrentPatrolPointIndex = 0;
-	float playerMoveTimeTilNextCheck = 0;
-	float PatrolMoveTimeTilNextCheck = 0;
+	float PlayerMoveTimeTilNextCheck = 0;
 	TArray<FVector> patrolPoints;
 
 	UPROPERTY(EditAnywhere)
