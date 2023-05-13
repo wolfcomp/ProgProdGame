@@ -2,11 +2,7 @@
 
 
 #include "WolfAIController.h"
-
-#include "Kismet/GameplayStatics.h"
 #include "NavigationSystem.h"
-
-#include "Components/SphereComponent.h"
 #include "Components/SplineComponent.h"
 #include "MainCharacter.h"
 #include "Perception/AIPerceptionComponent.h"
