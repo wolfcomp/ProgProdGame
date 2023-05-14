@@ -22,4 +22,4 @@ AItemActor::AItemActor()
 
 void AItemActor::BeginPlay() { Super::BeginPlay(); }
 
-void AItemActor::Tick(float DeltaTime) { Super::Tick(DeltaTime); }
+void AItemActor::Tick(float delta_time) { Super::Tick(delta_time); }

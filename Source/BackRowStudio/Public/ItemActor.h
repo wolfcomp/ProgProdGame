@@ -18,14 +18,16 @@ public:
     class UInventoryItemAsset *Item;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Mesh")
-    UStaticMeshComponent* Mesh;
+    UStaticMeshComponent *Mesh;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Collider")
     class USphereComponent *SphereCollider;
+
+    bool IsPickedUp;
 
 protected:
     virtual void BeginPlay() override;
 
 public:
-    virtual void Tick(float DeltaTime) override;
+    virtual void Tick(float delta_time) override;
 };
