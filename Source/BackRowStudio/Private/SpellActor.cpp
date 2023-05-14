@@ -142,13 +142,17 @@ void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorl
         if (is_heavy)
         {
             if (Spell->Heavy.VFX)
+            {
                 UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell->Heavy.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
+            }
             HeavyAttack(origin, rotation, world, root->GetAttachParentActor(), actors, true);
         }
         else
         {
             if (Spell->Light.VFX)
+            {
                 UNiagaraFunctionLibrary::SpawnSystemAtLocation(world, Spell->Light.VFX, origin, rotation)->AttachToComponent(root, FAttachmentTransformRules::KeepRelativeTransform);
+            }
             LightAttack(origin, rotation, world, root->GetAttachParentActor(), actors, true);
         }
     }
@@ -159,26 +163,36 @@ void ISpellActor::DebugSpell(const FVector origin, const FRotator rotation, cons
     if (Spell != nullptr)
     {
         if (Spell->DebugHeavy)
+        {
             InternalDebugSpell(Spell->Heavy.Type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
+        }
         if (Spell->DebugLight)
+        {
             InternalDebugSpell(Spell->Light.Type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
+        }
     }
 }
 
 void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage)
 {
-    actors = GetActors(Spell->Light.Type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
-    for (ADamageActor *actor : actors)
+    if (Spell != nullptr)
     {
-        actor->TakeDamage(Spell->Light.Potency, self);
+        actors = GetActors(Spell->Light.Type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
+        for (ADamageActor *actor : actors)
+        {
+            actor->TakeDamage(Spell->Light.Potency, self);
+        }
     }
 }
 
 void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, AActor *self, TArray<ADamageActor *> &actors, const bool apply_damage)
 {
-    actors = GetActors(Spell->Heavy.Type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
-    for (ADamageActor *actor : actors)
+    if (Spell != nullptr)
     {
-        actor->TakeDamage(Spell->Heavy.Potency, self);
+        actors = GetActors(Spell->Heavy.Type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
+        for (ADamageActor *actor : actors)
+        {
+            actor->TakeDamage(Spell->Heavy.Potency, self);
+        }
     }
 }

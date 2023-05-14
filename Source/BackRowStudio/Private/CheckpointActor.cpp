@@ -5,13 +5,13 @@
 
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/SphereComponent.h"
 #include "InventoryComponent.h"
 #include "ItemActor.h"
 #include "Kismet/GameplayStatics.h"
 #include "MainCharacter.h"
 #include "Wolf.h"
 #include "WolfAIController.h"
-#include "Components/SphereComponent.h"
 
 // Sets default values
 ACheckpointActor::ACheckpointActor()
@@ -25,6 +25,8 @@ ACheckpointActor::ACheckpointActor()
     CheckpointCollisionBox->SetupAttachment(GetRootComponent());
 
     SpawnPoint = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SpawnPoint"));
+    SpawnPoint->SetupAttachment(CheckpointCollisionBox);
+    SpawnPoint->SetRelativeScale3D(FVector(0.1));
     SpawnPoint->SetCollisionEnabled(ECollisionEnabled::NoCollision);
     SpawnPoint->SetCollisionResponseToAllChannels(ECR_Ignore);
     static ConstructorHelpers::FObjectFinder<UStaticMesh> SpawnPointMesh(TEXT("StaticMesh'/Engine/BasicShapes/Cube.Cube'"));
@@ -32,7 +34,6 @@ ACheckpointActor::ACheckpointActor()
     static ConstructorHelpers::FObjectFinder<UMaterial> SpawnPointMaterial(TEXT("Material'/Engine/BasicShapes/BasicShapeMaterial.BasicShapeMaterial'"));
     SpawnPoint->SetMaterial(0, SpawnPointMaterial.Object);
     SpawnPoint->SetHiddenInGame(true);
-    SpawnPoint->SetupAttachment(CheckpointCollisionBox);
 
     SpawnPointArrow = CreateDefaultSubobject<UArrowComponent>(TEXT("SpawnPointArrow"));
     SpawnPointArrow->SetupAttachment(SpawnPoint);
@@ -52,10 +53,18 @@ void ACheckpointActor::OnOverlapBegin(UPrimitiveComponent *overlapped_component,
 {
     if (const auto character = Cast<AMainCharacter>(other_actor); character && !IsTriggered)
     {
+        FHitResult hitResult;
+        GetWorld()->SweepSingleByChannel(hitResult, GetActorLocation(), GetActorLocation() - FVector(0, 0, 1000), FQuat::Identity, ECC_Pawn, FCollisionShape::MakeBox(FVector(5)));
+        SavedData.PlayerLocationOffset = (character->GetActorLocation() - hitResult.ImpactPoint) * FVector(0, 0, 1);
+
         for (auto item : character->MyInv->Items)
+        {
             SavedData.Items.Add(item);
+        }
         for (auto spell : character->MyInv->Spells)
+        {
             SavedData.Spells.Add(spell);
+        }
         SavedData.Health = character->Health;
 
         TArray<AActor *> foundActors;
@@ -74,7 +83,9 @@ void ACheckpointActor::OnOverlapBegin(UPrimitiveComponent *overlapped_component,
         UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItemActor::StaticClass(), foundActors);
 
         for (const auto actor : foundActors)
+        {
             SavedData.ItemsInWorld.Add(actor->GetUniqueID(), !Cast<AItemActor>(actor)->IsPickedUp);
+        }
 
         character->SetCheckpoint(this);
         IsTriggered = true;
@@ -89,19 +100,24 @@ void ACheckpointActor::RespawnOthers()
     TMap<uint32, AWolf *> mappedWolfs;
 
     for (AActor *actor : foundActors)
+    {
         mappedWolfs.Add(actor->GetUniqueID(), Cast<AWolf>(actor));
+    }
 
     foundActors.Empty();
 
     for (auto enemy : SavedData.EnemyLocations)
     {
         mappedWolfs[enemy.Key]->SetActorLocation(enemy.Value);
+        mappedWolfs[enemy.Key]->HideActor(false);
     }
 
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItemActor::StaticClass(), foundActors);
     TMap<uint32, AItemActor *> mappedItems;
     for (AActor *actor : foundActors)
+    {
         mappedItems.Add(actor->GetUniqueID(), Cast<AItemActor>(actor));
+    }
 
     for (const auto items : SavedData.ItemsInWorld)
     {
@@ -117,9 +133,20 @@ void ACheckpointActor::RespawnOthers()
 
 void ACheckpointActor::RespawnPlayer(AMainCharacter *player)
 {
-    player->SetActorLocation(SpawnPoint->GetComponentLocation());
-    player->SetActorRotation(SpawnPoint->GetComponentRotation());
+    FHitResult hitResult;
+    GetWorld()->SweepSingleByChannel(hitResult, SpawnPoint->GetComponentLocation(), SpawnPoint->GetComponentLocation() - FVector(0, 0, 10000), FQuat::Identity, ECC_WorldStatic, FCollisionShape::MakeBox(FVector(5)));
+    auto loc = hitResult.Location - FVector(0, 0, 5) + SavedData.PlayerLocationOffset;
+    player->SetActorLocation(loc);
+    auto controller = player->GetController();
+    auto rot = controller->GetControlRotation();
+    controller->ClientSetRotation(FRotator(rot.Pitch, SpawnPoint->GetComponentRotation().Yaw, 0));
     player->MyInv->Items = SavedData.Items;
     player->MyInv->Spells = SavedData.Spells;
     player->Health = SavedData.Health;
+    TArray<AActor *> foundActors;
+    UGameplayStatics::GetAllActorsOfClass(GetWorld(), AWolf::StaticClass(), foundActors);
+    for (AActor *foundActor : foundActors)
+    {
+        Cast<AWolf>(foundActor)->WolfAIController->CanMove = true;
+    }
 }

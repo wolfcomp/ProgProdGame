@@ -30,15 +30,15 @@ AWolf::AWolf()
 // Called when the game starts or when spawned
 void AWolf::BeginPlay()
 {
-    if (APawn* tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
+    if (APawn *tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
     {
-        if (AMainCharacter* temp = Cast<AMainCharacter>(tempPawn); temp->IsValidLowLevel())
+        if (AMainCharacter *temp = Cast<AMainCharacter>(tempPawn); temp->IsValidLowLevel())
         {
             PlayerRef = temp;
         }
     }
 
-    if (AWolfAIController* tempCon = Cast<AWolfAIController>(GetController()))
+    if (AWolfAIController *tempCon = Cast<AWolfAIController>(GetController()))
     {
         WolfAIController = tempCon;
         WolfAIController->Patrol();
@@ -47,7 +47,7 @@ void AWolf::BeginPlay()
     Super::BeginPlay();
 }
 
-void AWolf::TryAttack(AActor* actor_to_attack)
+void AWolf::TryAttack(AActor *actor_to_attack)
 {
     MyAnimationState = Attacking;
 }
@@ -55,4 +55,23 @@ void AWolf::TryAttack(AActor* actor_to_attack)
 void AWolf::TryStoppingAttack()
 {
     MyAnimationState = Moving;
+}
+
+void AWolf::HideActor(bool is_hidden)
+{
+    SetActorHiddenInGame(!is_hidden);
+    SetActorEnableCollision(is_hidden);
+    SetActorTickEnabled(is_hidden);
+    MyAnimationState = Moving;
+}
+
+void AWolf::TakeDamage(int i, AActor *actor)
+{
+    Super::TakeDamage(i, actor);
+    Health -= i;
+
+    if (Health < 0)
+    {
+        HideActor(true);
+    }
 }

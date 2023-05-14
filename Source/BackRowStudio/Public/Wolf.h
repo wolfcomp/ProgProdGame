@@ -30,6 +30,12 @@ protected:
     virtual void BeginPlay() override;
 
 public:
+    UPROPERTY(EditAnywhere, Category = "Wolf")
+    int AttackPower = 100;
+
+    UPROPERTY(EditAnywhere, Category="Wolf")
+    int Health = 500;
+
     UPROPERTY()
     class AMainCharacter *PlayerRef;
 
@@ -56,4 +62,8 @@ public:
 
     UFUNCTION()
     void TryStoppingAttack();
+
+    void HideActor(bool is_hidden);
+
+    virtual void TakeDamage(int, AActor *) override;
 };

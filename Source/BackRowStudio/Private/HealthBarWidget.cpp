@@ -12,4 +12,4 @@ void UHealthBarWidget::NativeConstruct()
     MyHealthBar->SynchronizeProperties();
 }
 
-float UHealthBarWidget::GetHealth() const { return MyPlayer->Health / MyPlayer->MaxHealth; }
+float UHealthBarWidget::GetHealth() const { return MyPlayer->Health / static_cast<float>(MyPlayer->MaxHealth); }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InventoryItemAsset.h"
 #include "GameFramework/Actor.h"
 #include "CheckpointActor.generated.h"
 
@@ -11,15 +12,23 @@ struct FCheckpointSave
 {
     GENERATED_BODY()
 
-    TArray<struct FSlotStruct> Items;
+    UPROPERTY(VisibleAnywhere)
+    TArray<FSlotStruct> Items;
 
+    UPROPERTY(VisibleAnywhere)
     TArray<FSlotStruct> Spells;
 
+    UPROPERTY(VisibleAnywhere)
     int Health;
 
+    UPROPERTY(VisibleAnywhere)
     TMap<uint32, FVector> EnemyLocations;
 
+    UPROPERTY(VisibleAnywhere)
     TMap<uint32, bool> ItemsInWorld;
+
+    UPROPERTY(VisibleAnywhere)
+    FVector PlayerLocationOffset;
 };
 
 UCLASS()
@@ -30,16 +39,16 @@ class BACKROWSTUDIO_API ACheckpointActor : public AActor
 public:
     ACheckpointActor();
 
-    UPROPERTY(EditAnywhere, Category = "Checkpoint")
+    UPROPERTY(EditAnywhere, Category = "Checkpoint | Components")
     class UBoxComponent *CheckpointCollisionBox;
 
-    UPROPERTY(EditAnywhere, Category = "Checkpoint")
+    UPROPERTY(EditAnywhere, Category = "Checkpoint | Components")
     UStaticMeshComponent *SpawnPoint;
 
-    UPROPERTY(VisibleAnywhere, Category = "Checkpoint")
-    UArrowComponent *SpawnPointArrow;
+    UPROPERTY(VisibleAnywhere, Category = "Checkpoint | Components")
+    class UArrowComponent *SpawnPointArrow;
 
-    UPROPERTY(VisibleAnywhere, Category = "Checkpoint")
+    UPROPERTY(VisibleAnywhere, Category = "Checkpoint | Saved Data")
     bool IsTriggered;
 
     UPROPERTY(VisibleAnywhere, Category = "Checkpoint | Saved Data")
