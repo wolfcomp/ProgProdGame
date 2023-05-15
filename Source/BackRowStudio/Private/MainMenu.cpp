@@ -9,16 +9,25 @@
 void UMainMenu::NativeConstruct()
 {
     Super::NativeConstruct();
+    StartButton->OnClicked.AddDynamic(this, &UMainMenu::MyStartGame);
+    OptionsButton->OnClicked.AddDynamic(this, &UMainMenu::SwitchMenu);
+    OptionsMenu->ExitButton->OnClicked.AddDynamic(this, &UMainMenu::SwitchMenu);
 }
 
 void UMainMenu::MyStartGame()
 {
-    if (GameLevel.IsValid())
+    GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+    UGameplayStatics::OpenLevel(this, LevelToLoad);
+}
+
+void UMainMenu::SwitchMenu()
+{
+    if (MyWidgetSwitcher->GetActiveWidgetIndex() == 1)
     {
-        UGameplayStatics::OpenLevel(this, FName(GameLevel->GetMapName()));
+        MyWidgetSwitcher->SetActiveWidgetIndex(0);
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("main menu widget has invalid level"));
+        MyWidgetSwitcher->SetActiveWidgetIndex(1);
     }
 }

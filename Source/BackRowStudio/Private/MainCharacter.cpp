@@ -11,6 +11,7 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SphereComponent.h"
 #include "Enemy.h"
+#include "Wolf.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -23,7 +24,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "MinimapWidget.h"
 #include "PauseWidget.h"
-#include "Wolf.h"
 
 AMainCharacter::AMainCharacter()
 {
