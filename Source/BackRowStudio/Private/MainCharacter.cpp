@@ -46,6 +46,7 @@ AMainCharacter::AMainCharacter()
     AutoPossessPlayer = EAutoReceiveInput::Player0;
 
     SpellEnenhancements = CreateDefaultSubobject<ABaseSpellActor>(TEXT("ArcaneEnhancement"));
+    SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 
     MiniMapSpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Minimap SpringArm"));
     MiniMapSpringArm->SetupAttachment(GetRootComponent());
@@ -99,7 +100,7 @@ void AMainCharacter::BeginPlay()
 
     if (MyPauseMenu->IsValidLowLevel())
     {
-        PauseMenu = CreateWidget<UPauseWidget>(GetWorld(), MyPauseMenu, FName("Inventory Widget"));
+        PauseMenu = CreateWidget<UPauseWidget>(GetWorld(), MyPauseMenu, FName("Pause Widget"));
         PauseMenu->PC = PC;
         PauseMenu->AddToViewport();
         PauseMenu->SetVisibility(ESlateVisibility::Collapsed);
