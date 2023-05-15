@@ -25,6 +25,7 @@ AWolf::AWolf()
     // setting up character movement
     GetCharacterMovement()->MaxWalkSpeed = 600.0f;
     GetCharacterMovement()->bOrientRotationToMovement = true;
+    AIControllerClass = AWolfAIController::StaticClass();
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +37,10 @@ void AWolf::BeginPlay()
         {
             PlayerRef = temp;
         }
+    }
+    if (Controller == nullptr)
+    {
+        this->SpawnDefaultController();
     }
 
     if (AWolfAIController *tempCon = Cast<AWolfAIController>(GetController()))

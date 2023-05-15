@@ -36,10 +36,10 @@ public:
     UPROPERTY(EditAnywhere, Category="Wolf")
     int Health = 500;
 
-    UPROPERTY()
+    UPROPERTY(VisibleAnywhere)
     class AMainCharacter *PlayerRef;
 
-    UPROPERTY()
+    UPROPERTY(VisibleAnywhere)
     class AWolfAIController *WolfAIController;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)

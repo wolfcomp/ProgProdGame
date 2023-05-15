@@ -27,7 +27,6 @@ private:
     FVector randomLocation = FVector();
 
     bool moveToPlayer;
-    bool validPlayerPawn;
 
 
     //bool PlayerInAttackRange() const;
@@ -43,7 +42,7 @@ public:
 
     int CurrentPatrolPointIndex = 0;
     float PlayerMoveTimeTilNextCheck = 0;
-    bool CanMove;
+    bool CanMove = true;
     TArray<FVector> PatrolPoints;
 
     UPROPERTY(EditAnywhere)
@@ -59,6 +58,7 @@ public:
     virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor &other) const override;
 
     virtual void OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult &result) override;
+    virtual void OnPossess(APawn *InPawn) override;
 
     UFUNCTION()
     void OnTargetPerceptionUpdatedDelegate(AActor *actor, FAIStimulus stimulus);

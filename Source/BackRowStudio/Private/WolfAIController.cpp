@@ -37,12 +37,10 @@ void AWolfAIController::BeginPlay()
 
     navArea = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
     moveToPlayer = false;
+    controlledWolf = Cast<AWolf>(this->GetPawn());
 
-    if (AWolf *localControlledWolf = Cast<AWolf>(this->GetCharacter()); this->GetCharacter()->IsValidLowLevel() &&
-        localControlledWolf->IsValidLowLevel())
+    if (PatrolPoints.IsValidIndex(0))
     {
-        controlledWolf = localControlledWolf;
-        validPlayerPawn = true;
         for (int i = 0; i < controlledWolf->PatrolPath->GetNumberOfSplinePoints(); ++i)
         {
             if (controlledWolf->PatrolPath->GetWorldLocationAtSplinePoint(i) != FVector(0, 0, 0))
@@ -51,19 +49,18 @@ void AWolfAIController::BeginPlay()
             }
         }
     }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Red, TEXT("Dafuq am i Controlling? -WolfAiController"));
-    }
 
-    if (IsInitialized)
+    if (IsInitialized && controlledWolf)
     {
         if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->GetNumberOfSplinePoints() > 0)
         {
             Patrol();
         }
     }
-    AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdatedDelegate);
+    if (!AIPerceptionComponent->OnTargetPerceptionUpdated.IsBound())
+    {
+        AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdatedDelegate);
+    }
 }
 
 void AWolfAIController::MoveToPlayer()
@@ -106,18 +103,21 @@ void AWolfAIController::MoveToPlayer()
 
 void AWolfAIController::Patrol()
 {
-    FAIMoveRequest nextPatrolPoint = FAIMoveRequest(PatrolPoints[CurrentPatrolPointIndex]);
-    if (nextPatrolPoint.IsValid())
+    if (!PatrolPoints.IsEmpty())
     {
-        MoveTo(nextPatrolPoint);
-    }
-    if (CurrentPatrolPointIndex + 1 < PatrolPoints.Num())
-    {
-        CurrentPatrolPointIndex++;
-    }
-    else
-    {
-        CurrentPatrolPointIndex = 0;
+        FAIMoveRequest nextPatrolPoint = FAIMoveRequest(PatrolPoints[CurrentPatrolPointIndex]);
+        if (nextPatrolPoint.IsValid())
+        {
+            MoveTo(nextPatrolPoint);
+        }
+        if (CurrentPatrolPointIndex + 1 < PatrolPoints.Num())
+        {
+            CurrentPatrolPointIndex++;
+        }
+        else
+        {
+            CurrentPatrolPointIndex = 0;
+        }
     }
 }
 
@@ -135,6 +135,19 @@ void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFoll
         }
     }
     // Super::OnMoveCompleted(requestID, result);
+}
+
+void AWolfAIController::OnPossess(APawn *InPawn)
+{
+    if (!AIPerceptionComponent->OnTargetPerceptionUpdated.IsBound())
+    {
+        AIPerceptionComponent->OnTargetPerceptionUpdated.AddDynamic(this, &ThisClass::OnTargetPerceptionUpdatedDelegate);
+    }
+    if (AWolf *tempWolf = Cast<AWolf>(InPawn))
+    {
+        controlledWolf = tempWolf;
+    }
+    Super::OnPossess(InPawn);
 }
 
 ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &other) const
