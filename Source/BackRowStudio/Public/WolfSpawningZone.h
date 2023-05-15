@@ -26,7 +26,7 @@ public:
     bool ShouldTrigger = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    int SpawnAmountPerSphere = 1;
+    int SpawnAmount;
 
     UPROPERTY(EditAnywhere)
     class UBoxComponent *TriggeringZone;

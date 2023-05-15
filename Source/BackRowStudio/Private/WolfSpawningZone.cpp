@@ -42,12 +42,11 @@ void AWolfSpawningZone::Tick(float DeltaTime)
 
 void AWolfSpawningZone::SpawnInTheWolves()
 {
-    const FVector a1 = SpawningZone->GetComponentLocation() + FVector(FMath::RandRange(1.0f, SpawningZone->GetScaledSphereRadius() / 2), FMath::RandRange(1.0f, SpawningZone->GetScaledSphereRadius() / 2), 0);
-    const FRotator lookAt = (GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - SpawningZone->GetComponentLocation()).Rotation();
-    for (int j = 0; j < SpawnAmountPerSphere; ++j)
+    for (int j = 0; j < SpawnAmount; ++j)
     {
-        AActor *a = GetWorld()->SpawnActor(WolfToSpawn, &a1, &lookAt);
-
+        const FVector a1 = SpawningZone->GetComponentLocation();
+        const FRotator lookAt = (GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - SpawningZone->GetComponentLocation()).Rotation();
+        GetWorld()->SpawnActor(WolfToSpawn, &a1, &lookAt);
     }
 }
 
