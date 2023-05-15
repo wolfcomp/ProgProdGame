@@ -17,8 +17,6 @@ class BACKROWSTUDIO_API UMainMenu : public UUserWidget
 {
     GENERATED_BODY()
 
-    bool bIsTitleScreen = true;
-
 public:
     UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
     UWidgetSwitcher *MyWidgetSwitcher;
@@ -35,7 +33,6 @@ public:
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName LevelToLoad;
-
 
     virtual void NativeConstruct() override;
 
