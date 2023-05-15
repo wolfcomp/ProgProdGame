@@ -129,10 +129,10 @@ public:
     UInputAction *DebugActionKey;
 #pragma endregion
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell")
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spell | Data")
     int SelectedSpell;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spell | Data")
     float GroundSpellLocationOffset = 100.f;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Spells | Spell Enhancement")
