@@ -83,7 +83,7 @@ void AMainCharacter::BeginPlay()
 
     if (MiniMapWidgetTemplate)
     {
-        MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("My Minimap"));
+        MinimapWidget = CreateWidget<UMinimapWidget>(GetWorld(), MiniMapWidgetTemplate, FName("Minimap"));
         MinimapWidget->AddToViewport();
     }
     if (MyHealthWidget)
