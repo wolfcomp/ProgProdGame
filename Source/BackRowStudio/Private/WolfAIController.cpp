@@ -110,20 +110,20 @@ void AWolfAIController::MoveToPlayer()
 
 void AWolfAIController::Patrol()
 {
-    if (!PatrolPoints.IsEmpty())
+    if (!PatrolPoints.IsEmpty() && controlledWolf->Patrol)
     {
         FAIMoveRequest nextPatrolPoint = FAIMoveRequest(PatrolPoints[CurrentPatrolPointIndex]);
         if (nextPatrolPoint.IsValid())
         {
             MoveTo(nextPatrolPoint);
         }
-        if (CurrentPatrolPointIndex + 1 < PatrolPoints.Num())
+        if (CurrentPatrolPointIndex >= PatrolPoints.Num())
         {
-            CurrentPatrolPointIndex++;
+            CurrentPatrolPointIndex = 0;
         }
         else
         {
-            CurrentPatrolPointIndex = 0;
+            CurrentPatrolPointIndex++;
         }
     }
 }
