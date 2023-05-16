@@ -12,13 +12,25 @@ class UInventoryWidget;
 class UMinimapWidget;
 struct FInputActionValue;
 
+UENUM(BlueprintType, meta = (Bitflags, UseEnumValuesAsMaskValuesInEditor = "true"))
+enum class ECharacterAnimationState : uint8
+{
+    Idle = 0x00,
+    Jumping = 0x01,
+    Attack = 0x02,
+    Pickup = 0x04,
+    Death = 0x08,
+    Attacked = 0x10
+};
+
+ENUM_CLASS_FLAGS(ECharacterAnimationState);
+
 UCLASS()
 class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamAgentInterface
 
 {
     GENERATED_BODY()
 
-private:
     bool beingAttacked;
 
     float attackTimer;
@@ -27,8 +39,33 @@ private:
 
     float respawnTimer;
 
+    void UnsetAnimationFlag(ECharacterAnimationState flag);
+
+    bool CheckAnimationFlag(ECharacterAnimationState flag);
+
 public:
     FGenericTeamId TeamID = FGenericTeamId(1);
+
+    UPROPERTY(VisibleAnywhere, Category = "Animation State", meta = (Bitmask, BitmaskEnum = ECharacterAnimationState))
+    uint8 AnimationState = 0;
+
+    UPROPERTY(EditAnywhere, Category="Animation State")
+    float AnimationAttackLength = 0.5f;
+
+    UPROPERTY(VisibleAnywhere, Category="Animation State")
+    float AnimationAttackTimer = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category="Animation State")
+    float AnimationPickupLength = 0.5f;
+
+    UPROPERTY(VisibleAnywhere, Category="Animation State")
+    float AnimationPickupTimer = 0.0f;
+
+    UPROPERTY(EditAnywhere, Category="Animation State")
+    float AnimationAttackedLength = 0.5f;
+
+    UPROPERTY(EditAnywhere, Category="Animation State")
+    float AnimationAttackedTimer;
 
     UPROPERTY(EditAnywhere, Category = "Health")
     int Health = 1000;
@@ -142,6 +179,8 @@ public:
 
     UPROPERTY(EditDefaultsOnly)
     USoundBase *PickupSound;
+
+    virtual bool ShouldNotifyLanded(const FHitResult &Hit) override;
 
 protected:
     UFUNCTION()

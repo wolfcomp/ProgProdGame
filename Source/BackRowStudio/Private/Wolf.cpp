@@ -10,6 +10,7 @@
 #include "Async/Future.h"
 #include "MainCharacter.h"
 #include "WolfAIController.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
 
 // Sets default values
@@ -75,9 +76,12 @@ void AWolf::TakeDamage(int i, AActor *actor)
     Super::TakeDamage(i, actor);
     Health -= i;
 
-    if (Health < 0)
+    if (Health <= 0)
     {
-        HideActor(true);
+        GetMesh()->SetVisibility(false);
+        GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        AttackHitBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+        WolfAIController->CanMove = false;
     }
 }
 

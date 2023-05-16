@@ -12,6 +12,7 @@
 #include "MainCharacter.h"
 #include "Wolf.h"
 #include "WolfAIController.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 ACheckpointActor::ACheckpointActor()
@@ -109,7 +110,9 @@ void ACheckpointActor::RespawnOthers()
     for (auto enemy : SavedData.EnemyLocations)
     {
         mappedWolfs[enemy.Key]->SetActorLocation(enemy.Value);
-        mappedWolfs[enemy.Key]->HideActor(false);
+        mappedWolfs[enemy.Key]->GetMesh()->SetVisibility(true);
+        mappedWolfs[enemy.Key]->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+        mappedWolfs[enemy.Key]->AttackHitBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     }
 
     UGameplayStatics::GetAllActorsOfClass(GetWorld(), AItemActor::StaticClass(), foundActors);
