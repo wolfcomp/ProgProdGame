@@ -28,15 +28,6 @@ private:
 
     bool moveToPlayer;
 
-
-    //bool PlayerInAttackRange() const;
-    //bool IsPointReachable(FVector point) const;
-    //void StartChasingPlayer();
-    //void AttackPlayer() const;
-    //void GenerateRandomSearchLocation();
-    //void SearchForPlayer();
-    //void OnActiveFinishedMove();
-
 public:
     AWolfAIController();
 
