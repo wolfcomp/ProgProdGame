@@ -11,7 +11,6 @@
 #include "Components/SceneCaptureComponent2D.h"
 #include "Components/SphereComponent.h"
 #include "Enemy.h"
-#include "Wolf.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -24,6 +23,17 @@
 #include "Kismet/GameplayStatics.h"
 #include "MinimapWidget.h"
 #include "PauseWidget.h"
+#include "Wolf.h"
+
+void AMainCharacter::UnsetAnimationFlag(ECharacterAnimationState flag)
+{
+    AnimationState &= ~static_cast<uint8>(flag);
+}
+
+bool AMainCharacter::CheckAnimationFlag(ECharacterAnimationState flag)
+{
+    return (AnimationState & static_cast<uint8>(flag)) == static_cast<uint8>(flag);
+}
 
 AMainCharacter::AMainCharacter()
 {
@@ -67,6 +77,8 @@ AMainCharacter::AMainCharacter()
 void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    AnimationState = static_cast<uint8>(ECharacterAnimationState::Idle);
 
     OpenOrClosePause = true;
 
@@ -135,7 +147,11 @@ void AMainCharacter::LookAroundAction(const FInputActionValue &value)
     }
 }
 
-void AMainCharacter::JumpAction(const FInputActionValue &value) { Super::Jump(); }
+void AMainCharacter::JumpAction(const FInputActionValue &value)
+{
+    AnimationState |= static_cast<uint8>(ECharacterAnimationState::Jumping);
+    Super::Jump();
+}
 
 void AMainCharacter::LightAttackAction(const FInputActionValue &value)
 {
@@ -146,6 +162,7 @@ void AMainCharacter::LightAttackAction(const FInputActionValue &value)
 
     if (CanJump() && SpellEnenhancements)
     {
+        AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attack);
         SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
     }
 }
@@ -159,6 +176,7 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
 
     if (CanJump())
     {
+        AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attack);
         if (SpellEnenhancements->Spell->Heavy.IsGroundSpell)
         {
             SpellEnenhancements->CastSpell(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
@@ -272,12 +290,19 @@ void AMainCharacter::DebugAction(const FInputActionValue &value)
 
 void AMainCharacter::AttachSpellComponents(FName socket_name) { SpellEnenhancements->AttachToComponent(GetRootComponent(), FAttachmentTransformRules(EAttachmentRule::SnapToTarget, true), FName(socket_name)); }
 
+bool AMainCharacter::ShouldNotifyLanded(const FHitResult &Hit)
+{
+    UnsetAnimationFlag(ECharacterAnimationState::Jumping);
+    return Super::ShouldNotifyLanded(Hit);
+}
+
 void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, AActor *other_actor, UPrimitiveComponent *other_component, int other_index, bool from_sweep, const FHitResult &sweep_result)
 {
     if (const auto item = Cast<AItemActor>(other_actor))
     {
         if (item->Item != nullptr && !item->IsPickedUp)
         {
+            AnimationState |= static_cast<uint8>(ECharacterAnimationState::Pickup);
             if (item->Item->Spell == nullptr)
             {
                 if (MyInv->AddItem(FSlotStruct(item->Item, 1)))
@@ -326,17 +351,45 @@ void AMainCharacter::Tick(float delta_time)
         attackTimer += delta_time;
         if (attackTimer > AttackedTimeCooldown)
         {
+            AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attacked);
             Health -= attackingPower;
             attackTimer = 0;
         }
     }
+    if (CheckAnimationFlag(ECharacterAnimationState::Attacked))
+    {
+        AnimationAttackedTimer += delta_time;
+    }
+    if (AnimationAttackedTimer >= AnimationAttackedLength)
+    {
+        UnsetAnimationFlag(ECharacterAnimationState::Attacked);
+        AnimationAttackedTimer = 0;
+    }
+    if (CheckAnimationFlag(ECharacterAnimationState::Attack))
+    {
+        AnimationAttackTimer += delta_time;
+    }
+    if (AnimationAttackTimer >= AnimationAttackLength)
+    {
+        UnsetAnimationFlag(ECharacterAnimationState::Attack);
+        AnimationAttackTimer = 0;
+    }
+    if (CheckAnimationFlag(ECharacterAnimationState::Pickup))
+    {
+        AnimationPickupTimer += delta_time;
+    }
+    if (AnimationPickupTimer >= AnimationPickupLength)
+    {
+        UnsetAnimationFlag(ECharacterAnimationState::Pickup);
+        AnimationPickupTimer = 0;
+    }
     if (RespawnLocation && Health < 0)
     {
+        AnimationState = static_cast<uint8>(ECharacterAnimationState::Death);
         if (beingAttacked)
         {
             RespawnLocation->RespawnOthers();
             beingAttacked = false;
-            SetActorHiddenInGame(true);
             GetController()->SetIgnoreMoveInput(true);
             GetController()->SetIgnoreLookInput(true);
         }
@@ -344,7 +397,7 @@ void AMainCharacter::Tick(float delta_time)
     }
     if (RespawnLocation && respawnTimer > 1)
     {
-        SetActorHiddenInGame(false);
+        AnimationState = static_cast<uint8>(ECharacterAnimationState::Idle);
         GetController()->ResetIgnoreInputFlags();
         RespawnLocation->RespawnPlayer(this);
         attackingPower = 0;
