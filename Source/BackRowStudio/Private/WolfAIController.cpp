@@ -29,7 +29,6 @@ AWolfAIController::AWolfAIController()
 
     // Team ID For Wolf
     AWolfAIController::SetGenericTeamId(FGenericTeamId(1));
-
 }
 
 void AWolfAIController::BeginPlay()
@@ -75,9 +74,7 @@ void AWolfAIController::MoveToPlayer()
     if (PlayerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds && controlledWolf && controlledWolf->PlayerRef)
     {
         const FAIMoveRequest nextPatrolPoint = FAIMoveRequest(controlledWolf->PlayerRef->GetNavAgentLocation());
-        if (const double distance = FVector::Dist(controlledWolf->GetNavAgentLocation(),
-                                                  controlledWolf->PlayerRef->GetNavAgentLocation()); nextPatrolPoint.
-            IsValid() && distance > 100)
+        if (const double distance = FVector::Dist(controlledWolf->GetNavAgentLocation(), controlledWolf->PlayerRef->GetNavAgentLocation()); nextPatrolPoint.IsValid() && distance > 100)
         {
             MoveToActor(controlledWolf->PlayerRef);
             moveToPlayer = true;
@@ -112,16 +109,16 @@ void AWolfAIController::Patrol()
 {
     if (!PatrolPoints.IsEmpty() && controlledWolf->Patrol)
     {
+        if (CurrentPatrolPointIndex >= PatrolPoints.Num())
+        {
+            CurrentPatrolPointIndex = 0;
+        }
         FAIMoveRequest nextPatrolPoint = FAIMoveRequest(PatrolPoints[CurrentPatrolPointIndex]);
         if (nextPatrolPoint.IsValid())
         {
             MoveTo(nextPatrolPoint);
         }
         CurrentPatrolPointIndex++;
-        if (CurrentPatrolPointIndex >= PatrolPoints.Num())
-        {
-            CurrentPatrolPointIndex = 0;
-        }
     }
 }
 
@@ -161,8 +158,7 @@ ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &othe
     {
         if (auto const teamAgent = Cast<IGenericTeamAgentInterface>(otherPawn->GetController()))
         {
-            if (teamAgent->GetGenericTeamId() == FGenericTeamId(0) || teamAgent->GetGenericTeamId() ==
-                FGenericTeamId(1))
+            if (teamAgent->GetGenericTeamId() == FGenericTeamId(0) || teamAgent->GetGenericTeamId() == FGenericTeamId(1))
             {
                 return ETeamAttitude::Friendly;
             }
