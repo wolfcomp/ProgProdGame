@@ -29,6 +29,7 @@ AWolfAIController::AWolfAIController()
 
     // Team ID For Wolf
     AWolfAIController::SetGenericTeamId(FGenericTeamId(1));
+
 }
 
 void AWolfAIController::BeginPlay()
@@ -39,20 +40,20 @@ void AWolfAIController::BeginPlay()
     moveToPlayer = false;
     controlledWolf = Cast<AWolf>(this->GetPawn());
 
-    if (PatrolPoints.IsValidIndex(0))
+    if (controlledWolf->Patrol == true)
     {
-        for (int i = 0; i < controlledWolf->PatrolPath->GetNumberOfSplinePoints(); ++i)
+        for (int i = 0; i < controlledWolf->PatrolPath->PatrolPath->GetNumberOfSplinePoints(); ++i)
         {
-            if (controlledWolf->PatrolPath->GetWorldLocationAtSplinePoint(i) != FVector(0, 0, 0))
+            if (controlledWolf->PatrolPath->PatrolPath->GetWorldLocationAtSplinePoint(i) != FVector(0, 0, 0))
             {
-                PatrolPoints.Add(controlledWolf->PatrolPath->GetWorldLocationAtSplinePoint(i));
+                PatrolPoints.Add(controlledWolf->PatrolPath->PatrolPath->GetWorldLocationAtSplinePoint(i));
             }
         }
     }
 
     if (IsInitialized && controlledWolf)
     {
-        if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->GetNumberOfSplinePoints() > 0)
+        if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->PatrolPath->GetNumberOfSplinePoints() > 0)
         {
             Patrol();
         }

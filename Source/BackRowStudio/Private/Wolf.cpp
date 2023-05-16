@@ -5,21 +5,20 @@
 
 #include "Animation/AnimMontage.h"
 #include "Components/BoxComponent.h"
-#include "Components/SplineComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Async/Future.h"
 #include "MainCharacter.h"
 #include "WolfAIController.h"
+#include "Components/SplineComponent.h"
 
 // Sets default values
 AWolf::AWolf()
 {
+    Patrol = true;
+
     PrimaryActorTick.bCanEverTick = true;
-
-    PatrolPath = CreateDefaultSubobject<USplineComponent>(TEXT("Wolf Patrol Path"));
     AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
-
-    PatrolPath->SetupAttachment(RootComponent);
     AttackHitBox->SetupAttachment(RootComponent);
 
     // setting up character movement
@@ -80,4 +79,33 @@ void AWolf::TakeDamage(int i, AActor *actor)
     {
         HideActor(true);
     }
+}
+
+TObjectPtr<APatrolPathActor> AWolf::ArtistUtility()
+{
+    float smallestDistance = INFINITY;
+    TObjectPtr<APatrolPathActor> returnActor;
+    TArray<AActor *> actors;
+    UGameplayStatics::GetAllActorsOfClass(this, APatrolPathActor::StaticClass(), actors);
+    if (actors.IsValidIndex(0))
+    {
+        for (int i = 0; i < actors.Num(); ++i)
+        {
+            APatrolPathActor *actor = Cast<APatrolPathActor>(actors[i]);
+            for (int i2 = 0; i2 < actor->PatrolPath->GetNumberOfSplinePoints(); ++i2)
+            {
+                if (const float distance = FVector::Dist(GetActorLocation(), actor->PatrolPath->GetWorldLocationAtSplinePoint(i2)); distance < smallestDistance)
+                {
+                    smallestDistance = distance;
+                    returnActor = ToObjectPtr(actor);
+                }
+            }
+        }
+    }
+    else
+    {
+        Patrol = false;
+    }
+
+    return returnActor;
 }

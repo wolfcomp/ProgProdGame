@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Enemy.h"
+#include "PatrolPathActor.h"
 #include "Wolf.generated.h"
 
 // https://awesometuts.com/blog/unreal-engine-enemy-ai/
@@ -30,7 +31,7 @@ protected:
     virtual void BeginPlay() override;
 
 public:
-    UPROPERTY(EditAnywhere, Category = "Wolf")
+    UPROPERTY(EditAnywhere, Category="Wolf")
     int AttackPower = 100;
 
     UPROPERTY(EditAnywhere, Category="Wolf")
@@ -42,13 +43,17 @@ public:
     UPROPERTY(VisibleAnywhere)
     class AWolfAIController *WolfAIController;
 
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    class USplineComponent *PatrolPath;
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Artist")
+    bool Patrol;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Artist", meta=(EditCondition="Patrol==true", EditConditionHides))
+    TObjectPtr<APatrolPathActor> PatrolPath = ArtistUtility();
+
+
+    UPROPERTY()
     float PlayerAttackCollisionDetectionRadius = 320;
 
-    UPROPERTY(EditAnywhere)
+    UPROPERTY()
     float PlayerForgetRadius = 1280;
 
     UPROPERTY(EditAnywhere)
@@ -66,4 +71,7 @@ public:
     void HideActor(bool is_hidden);
 
     virtual void TakeDamage(int, AActor *) override;
+
+
+    TObjectPtr<APatrolPathActor> ArtistUtility();
 };
