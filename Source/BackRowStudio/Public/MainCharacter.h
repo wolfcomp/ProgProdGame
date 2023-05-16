@@ -31,12 +31,16 @@ class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamA
 {
     GENERATED_BODY()
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     bool beingAttacked;
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     float attackTimer;
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     int attackingPower;
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     float respawnTimer;
 
     void UnsetAnimationFlag(ECharacterAnimationState flag);

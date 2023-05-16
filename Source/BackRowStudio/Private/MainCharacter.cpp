@@ -25,15 +25,9 @@
 #include "PauseWidget.h"
 #include "Wolf.h"
 
-void AMainCharacter::UnsetAnimationFlag(ECharacterAnimationState flag)
-{
-    AnimationState &= ~static_cast<uint8>(flag);
-}
+void AMainCharacter::UnsetAnimationFlag(ECharacterAnimationState flag) { AnimationState &= ~static_cast<uint8>(flag); }
 
-bool AMainCharacter::CheckAnimationFlag(ECharacterAnimationState flag)
-{
-    return (AnimationState & static_cast<uint8>(flag)) == static_cast<uint8>(flag);
-}
+bool AMainCharacter::CheckAnimationFlag(ECharacterAnimationState flag) { return (AnimationState & static_cast<uint8>(flag)) == static_cast<uint8>(flag); }
 
 AMainCharacter::AMainCharacter()
 {
@@ -327,6 +321,14 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
     {
         beingAttacked = true;
         attackingPower += wolf->AttackPower;
+    }
+    if (const auto enemy = Cast<AEnemy>(other_actor))
+    {
+        Health -= enemy->AttackPower;
+        AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attacked);
+        auto distance = GetActorLocation() - enemy->GetActorLocation();
+        distance.Normalize();
+        LaunchCharacter(distance * enemy->PushForce, true, true);
     }
 }
 
