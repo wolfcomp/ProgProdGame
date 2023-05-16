@@ -39,23 +39,29 @@ void AWolfAIController::BeginPlay()
     navArea = FNavigationSystem::GetCurrent<UNavigationSystemV1>(this);
     moveToPlayer = false;
     controlledWolf = Cast<AWolf>(this->GetPawn());
-
-    if (controlledWolf->Patrol == true)
+    if (controlledWolf)
     {
-        for (int i = 0; i < controlledWolf->PatrolPath->PatrolPath->GetNumberOfSplinePoints(); ++i)
+        if (controlledWolf->Patrol == true && controlledWolf->PatrolPath && controlledWolf->PatrolPath->PatrolPath)
         {
-            if (controlledWolf->PatrolPath->PatrolPath->GetWorldLocationAtSplinePoint(i) != FVector(0, 0, 0))
+            for (int i = 0; i < controlledWolf->PatrolPath->PatrolPath->GetNumberOfSplinePoints(); ++i)
             {
-                PatrolPoints.Add(controlledWolf->PatrolPath->PatrolPath->GetWorldLocationAtSplinePoint(i));
+                if (controlledWolf->PatrolPath->PatrolPath->GetWorldLocationAtSplinePoint(i) != FVector(0, 0, 0))
+                {
+                    PatrolPoints.Add(controlledWolf->PatrolPath->PatrolPath->GetWorldLocationAtSplinePoint(i));
+                }
             }
         }
     }
 
     if (IsInitialized && controlledWolf)
     {
-        if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->PatrolPath->GetNumberOfSplinePoints() > 0)
+        if (controlledWolf->PatrolPath->IsValidLowLevel() && controlledWolf->PatrolPath->PatrolPath->GetNumberOfSplinePoints() > 0 && controlledWolf->Patrol)
         {
             Patrol();
+        }
+        else
+        {
+            MoveToPlayer();
         }
     }
     if (!AIPerceptionComponent->OnTargetPerceptionUpdated.IsBound())
@@ -66,7 +72,7 @@ void AWolfAIController::BeginPlay()
 
 void AWolfAIController::MoveToPlayer()
 {
-    if (PlayerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds)
+    if (PlayerMoveTimeTilNextCheck <= GetWorld()->TimeSeconds && controlledWolf && controlledWolf->PlayerRef)
     {
         const FAIMoveRequest nextPatrolPoint = FAIMoveRequest(controlledWolf->PlayerRef->GetNavAgentLocation());
         if (const double distance = FVector::Dist(controlledWolf->GetNavAgentLocation(),
@@ -148,6 +154,7 @@ void AWolfAIController::OnPossess(APawn *InPawn)
     {
         controlledWolf = tempWolf;
     }
+
     Super::OnPossess(InPawn);
 }
 

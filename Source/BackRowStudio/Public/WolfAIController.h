@@ -22,18 +22,24 @@ protected:
     virtual void BeginPlay() override;
 
 private:
+    UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
     class AWolf *controlledWolf;
+    UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
     class UNavigationSystemV1 *navArea;
-    FVector randomLocation = FVector();
 
+    UPROPERTY(EditAnywhere, meta=(AllowPrivateAccess))
     bool moveToPlayer;
 
 public:
     AWolfAIController();
 
+    UPROPERTY(EditAnywhere)
     int CurrentPatrolPointIndex = 0;
+    UPROPERTY(EditAnywhere)
     float PlayerMoveTimeTilNextCheck = 0;
+    UPROPERTY(EditAnywhere)
     bool CanMove = true;
+    UPROPERTY(EditAnywhere)
     TArray<FVector> PatrolPoints;
 
     UPROPERTY(EditAnywhere)
@@ -44,7 +50,9 @@ public:
     TObjectPtr<class UAISenseConfig_Sight> AISenseConfigSight = nullptr;
     TObjectPtr<class UAISenseConfig_Hearing> AISenseConfigHearing = nullptr;
 
+    UFUNCTION(CallInEditor)
     void MoveToPlayer();
+    UFUNCTION(CallInEditor)
     void Patrol();
     virtual ETeamAttitude::Type GetTeamAttitudeTowards(const AActor &other) const override;
 
