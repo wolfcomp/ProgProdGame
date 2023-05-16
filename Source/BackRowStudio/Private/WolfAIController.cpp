@@ -117,13 +117,13 @@ void AWolfAIController::Patrol()
         {
             MoveTo(nextPatrolPoint);
         }
-        if (CurrentPatrolPointIndex + 1 < PatrolPoints.Num())
+        if (CurrentPatrolPointIndex >= PatrolPoints.Num())
         {
-            CurrentPatrolPointIndex++;
+            CurrentPatrolPointIndex = 0;
         }
         else
         {
-            CurrentPatrolPointIndex = 0;
+            CurrentPatrolPointIndex++;
         }
     }
 }
