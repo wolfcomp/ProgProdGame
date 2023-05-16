@@ -19,8 +19,8 @@ AWolfSpawningZone::AWolfSpawningZone()
     TriggeringZone = CreateDefaultSubobject<UBoxComponent>(TEXT("Trigger Hitbox"));
     SpawningZone = CreateDefaultSubobject<USphereComponent>(TEXT("Spawning Zone"));
 
-    TriggeringZone->SetupAttachment(RootComponent);
-    SpawningZone->SetupAttachment(RootComponent);
+    TriggeringZone->SetupAttachment(GetRootComponent());
+    SpawningZone->SetupAttachment(TriggeringZone);
 
     TriggeringZone->SetGenerateOverlapEvents(true);
     TriggeringZone->OnComponentBeginOverlap.AddDynamic(this, &AWolfSpawningZone::OnPickupOverlapBegin);
@@ -46,7 +46,11 @@ void AWolfSpawningZone::SpawnInTheWolves()
     {
         const FVector a1 = SpawningZone->GetComponentLocation();
         const FRotator lookAt = (GetWorld()->GetFirstPlayerController()->GetPawn()->GetActorLocation() - SpawningZone->GetComponentLocation()).Rotation();
-        GetWorld()->SpawnActor(WolfToSpawn, &a1, &lookAt);
+        AActor *a = GetWorld()->SpawnActor(WolfToSpawn, &a1, &lookAt);
+        //GetWorld()->SpawnActorDeferred<>()
+        AWolf *wolf = Cast<AWolf>(a);
+        wolf->SpawnDefaultController();
+        AWolfAIController *wolfController = Cast<AWolfAIController>(wolf->Controller);
     }
 }
 

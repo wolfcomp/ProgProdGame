@@ -91,7 +91,7 @@ TObjectPtr<APatrolPathActor> AWolf::ArtistUtility()
     TObjectPtr<APatrolPathActor> returnActor;
     TArray<AActor *> actors;
     UGameplayStatics::GetAllActorsOfClass(this, APatrolPathActor::StaticClass(), actors);
-    if (actors.IsValidIndex(0))
+    if (!actors.IsEmpty())
     {
         for (int i = 0; i < actors.Num(); ++i)
         {
@@ -106,7 +106,7 @@ TObjectPtr<APatrolPathActor> AWolf::ArtistUtility()
             }
         }
     }
-    else
+    if (!returnActor)
     {
         Patrol = false;
     }
