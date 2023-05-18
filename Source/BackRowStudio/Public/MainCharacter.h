@@ -31,40 +31,45 @@ class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamA
 {
     GENERATED_BODY()
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     bool beingAttacked;
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     float attackTimer;
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     int attackingPower;
 
+    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
     float respawnTimer;
 
     void UnsetAnimationFlag(ECharacterAnimationState flag);
 
-    bool CheckAnimationFlag(ECharacterAnimationState flag);
-
 public:
     FGenericTeamId TeamID = FGenericTeamId(1);
 
-    UPROPERTY(VisibleAnywhere, Category = "Animation State", meta = (Bitmask, BitmaskEnum = ECharacterAnimationState))
+    UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation State", meta = (Bitmask, BitmaskEnum = ECharacterAnimationState))
     uint8 AnimationState = 0;
 
-    UPROPERTY(EditAnywhere, Category="Animation State")
+    UFUNCTION(BlueprintCallable, Category = "Animation State")
+    bool CheckAnimationFlag(ECharacterAnimationState flag);
+
+    UPROPERTY(EditAnywhere, Category = "Animation State")
     float AnimationAttackLength = 0.5f;
 
-    UPROPERTY(VisibleAnywhere, Category="Animation State")
+    UPROPERTY(VisibleAnywhere, Category = "Animation State")
     float AnimationAttackTimer = 0.0f;
 
-    UPROPERTY(EditAnywhere, Category="Animation State")
+    UPROPERTY(EditAnywhere, Category = "Animation State")
     float AnimationPickupLength = 0.5f;
 
-    UPROPERTY(VisibleAnywhere, Category="Animation State")
+    UPROPERTY(VisibleAnywhere, Category = "Animation State")
     float AnimationPickupTimer = 0.0f;
 
-    UPROPERTY(EditAnywhere, Category="Animation State")
+    UPROPERTY(EditAnywhere, Category = "Animation State")
     float AnimationAttackedLength = 0.5f;
 
-    UPROPERTY(EditAnywhere, Category="Animation State")
+    UPROPERTY(EditAnywhere, Category = "Animation State")
     float AnimationAttackedTimer;
 
     UPROPERTY(EditAnywhere, Category = "Health")
