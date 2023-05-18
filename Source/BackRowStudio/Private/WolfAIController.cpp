@@ -59,7 +59,7 @@ void AWolfAIController::BeginPlay()
         {
             Patrol();
         }
-        else
+        else if (!controlledWolf->Patrol)
         {
             MoveToPlayer();
         }
