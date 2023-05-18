@@ -253,6 +253,7 @@ void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
         PC->SetShowMouseCursor(false);
         PC->SetPause(false);
         InvWidget->SetVisibility(ESlateVisibility::Collapsed);
+        InvWidget->HoveredSlot = nullptr;
         OpenInventory = true;
     }
 }
