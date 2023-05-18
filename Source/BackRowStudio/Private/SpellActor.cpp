@@ -135,7 +135,6 @@ TArray<ADamageActor *> ISpellActor::GetActors(ESpellType type, FVector range, co
 
 void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorld *world, USceneComponent *root, const bool is_heavy)
 {
-    GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, origin.ToString());
     TArray<ADamageActor *> actors;
 
     if (Spell != nullptr)
