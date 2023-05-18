@@ -1,23 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "BaseSpellActor.h"
 
-// Sets default values
-ABaseSpellActor::ABaseSpellActor()
-{
-    // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-    PrimaryActorTick.bCanEverTick = true;
-}
+ABaseSpellActor::ABaseSpellActor() { PrimaryActorTick.bCanEverTick = true; }
 
-// Called when the game starts or when spawned
 void ABaseSpellActor::BeginPlay()
 {
     Super::BeginPlay();
     SetData();
 }
 
-// Called every frame
 void ABaseSpellActor::Tick(const float delta_time) { Super::Tick(delta_time); }
 
 void ABaseSpellActor::SetData() { ISpellActor::Spell = Spell; }

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "AIController.h"
@@ -10,9 +8,6 @@
 // also this other helpful tutorial: https://sologamedevblog.com/tutorials/unreal-perception-c-friend-or-enemy/
 // The other controllers need to inherit from IGenericTeamAgentInterface and set their team id. In this example I take the PlayerController
 
-/**
- * wolf ai controller
- */
 UCLASS()
 class BACKROWSTUDIO_API AWolfAIController : public AAIController
 {

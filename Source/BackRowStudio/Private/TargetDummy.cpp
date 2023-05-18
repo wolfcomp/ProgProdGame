@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "TargetDummy.h"
-
 #include "Components/TextRenderComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 

@@ -1,12 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "SpellActor.generated.h"
-/**
- *
- */
 
 class ADamageActor;
 
@@ -16,6 +11,7 @@ enum class ESpellType : uint8
     Circle UMETA(DisplayName = "Circle"),
     Cone UMETA(DisplayName = "Cone"),
     Line UMETA(DisplayName = "Line"),
+    Particle UMETA(DisplayName = "Particle"),
 };
 
 UINTERFACE(MinimalAPI, Blueprintable)
@@ -48,6 +44,9 @@ struct FSpellInternal
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     class UNiagaraSystem *VFX;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UBlueprint *Blueprint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool IsGroundSpell;
@@ -90,9 +89,8 @@ class ISpellActor
 
     TArray<ADamageActor *> GetActors(ESpellType, FVector, float, FVector, FRotator, UWorld *) const;
 
-
 public:
-    USpell* Spell;
+    USpell *Spell;
 
     void CastSpell(const FVector origin, const FRotator rotation, UWorld *world, USceneComponent *root, const bool is_heavy);
 

@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SpellActor.h"
 #include "Enemy.h"
 #include "NiagaraComponent.h"
@@ -178,10 +175,19 @@ void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, 
 {
     if (Spell != nullptr)
     {
-        actors = GetActors(Spell->Light.Type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
-        for (ADamageActor *actor : actors)
+        auto type = Spell->Light.Type;
+        if (type != ESpellType::Particle)
         {
-            actor->TakeDamage(Spell->Light.Potency, self);
+            actors = GetActors(type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
+            for (ADamageActor *actor : actors)
+            {
+                actor->TakeDamage(Spell->Light.Potency, self);
+            }
+        }
+        else
+        {
+            origin += rotation.RotateVector(Spell->Heavy.Range);
+            world->SpawnActor(Spell->Light.Blueprint->GetClass(), &origin, &rotation);
         }
     }
 }
@@ -190,10 +196,19 @@ void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, 
 {
     if (Spell != nullptr)
     {
-        actors = GetActors(Spell->Heavy.Type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
-        for (ADamageActor *actor : actors)
+        auto type = Spell->Heavy.Type;
+        if (type != ESpellType::Particle)
         {
-            actor->TakeDamage(Spell->Heavy.Potency, self);
+            actors = GetActors(type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
+            for (ADamageActor *actor : actors)
+            {
+                actor->TakeDamage(Spell->Heavy.Potency, self);
+            }
+        }
+        else
+        {
+            origin += rotation.RotateVector(Spell->Heavy.Range);
+            world->SpawnActor(Spell->Heavy.Blueprint->GetClass(), &origin, &rotation);
         }
     }
 }

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "Blueprint/UserWidget.h"
@@ -9,9 +7,6 @@
 #include "Components/WidgetSwitcher.h"
 #include "PauseWidget.generated.h"
 
-/**
- *
- */
 UCLASS()
 class BACKROWSTUDIO_API UPauseWidget : public UUserWidget
 {
@@ -35,7 +30,6 @@ public:
     UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
     UOptionsMenu *OptionsMenu;
 
-    // Player Controller reference
     UPROPERTY()
     APlayerController *PC;
 
