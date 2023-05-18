@@ -15,8 +15,6 @@
 // Sets default values
 AWolf::AWolf()
 {
-    Patrol = true;
-
     PrimaryActorTick.bCanEverTick = true;
     AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
     AttackHitBox->SetupAttachment(RootComponent);
