@@ -25,6 +25,9 @@ public:
     FString MyDebugMsg = "this is a debug msg";
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int HitpointRestoration = 50;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
     bool HasMenu = true;
 
     UPROPERTY(EditAnywhere, BlueprintReadOnly)

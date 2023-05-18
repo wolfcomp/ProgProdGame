@@ -3,39 +3,36 @@
 
 #include "InventoryWidget.h"
 #include "InventoryComponent.h"
+#include "SlotWidget.h"
 
-void UInventoryWidget::NativeTick(const FGeometry &geometry, float delta_time) { Super::NativeTick(geometry, delta_time); }
+void UInventoryWidget::NativeConstruct() { Super::NativeConstruct(); }
 
-void UInventoryWidget::NativePreConstruct() { Super::NativePreConstruct(); }
-
-void UInventoryWidget::NativeConstruct()
+void UInventoryWidget::UpdateInventory()
 {
-    if (Inventory->IsValidLowLevel())
+    if (Inventory->IsValidLowLevel() && SlotWidget != nullptr)
     {
+        BagPanel->ClearChildren();
+        SpellPanel->ClearChildren();
         if (!Inventory->Items.IsEmpty())
         {
-            if (SlotWidget != nullptr)
+            for (int i = 0; i < Inventory->Items.Num(); ++i)
             {
-                for (int i = 0; i < Inventory->Items.Num(); ++i)
-                {
-                    auto *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
-                    slotWidget->MyContent = Inventory->Items[i];
-                    BagPanel->AddChildToGrid(slotWidget, i / HorizontalLimit, i % HorizontalLimit);
-                }
+                auto *slotWidget = CreateWidget<USlotWidget>(this, SlotWidget);
+                slotWidget->InventoryWidget = this;
+                slotWidget->MyContent = Inventory->Items[i];
+                BagPanel->AddChildToGrid(slotWidget, i / HorizontalLimit, i % HorizontalLimit);
             }
         }
+
         if (!Inventory->Spells.IsEmpty())
         {
-            if (SlotWidget != nullptr)
+            for (int i = 0; i < Inventory->Spells.Num(); ++i)
             {
-                for (int i = 0; i < Inventory->Spells.Num(); ++i)
-                {
-                    auto *slotWidget = Cast<USlotWidget>(CreateWidget(this, SlotWidget));
-                    slotWidget->MyContent = Inventory->Spells[i];
-                    SpellPanel->AddChildToGrid(slotWidget, i / HorizontalLimit, i % HorizontalLimit);
-                }
+                auto *slotWidget = CreateWidget<USlotWidget>(this, SlotWidget);
+                slotWidget->InventoryWidget = this;
+                slotWidget->MyContent = Inventory->Spells[i];
+                SpellPanel->AddChildToGrid(slotWidget, i / HorizontalLimit, i % HorizontalLimit);
             }
         }
     }
-    Super::NativeConstruct();
 }
