@@ -72,10 +72,10 @@ public:
     UPROPERTY(EditAnywhere, Category = "Animation State")
     float AnimationAttackedTimer;
 
-    UPROPERTY(EditAnywhere, Category = "Health")
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health")
     int Health = 1000;
 
-    UPROPERTY(EditAnywhere, Category = "Health")
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Health")
     int MaxHealth = 1000;
 
     UPROPERTY(EditAnywhere, Category = "Health")
