@@ -18,12 +18,12 @@ void UOptionsMenu::ToggleFullScreen()
     {
         GEngine->GameUserSettings->SetFullscreenMode(EWindowMode::Fullscreen);
         GEngine->GameUserSettings->ApplySettings(false);
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("False"));
+        //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("False"));
     }
     else
     {
         GEngine->GameUserSettings->SetFullscreenMode(EWindowMode::Windowed);
         GEngine->GameUserSettings->ApplySettings(false);
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("True"));
+        //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("True"));
     };
 }
