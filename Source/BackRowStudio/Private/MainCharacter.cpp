@@ -72,6 +72,10 @@ void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
 
+    AnimationAttackTimer = 0;
+    AnimationAttackedTimer = 0;
+    AnimationPickupTimer = 0;
+
     AnimationState = static_cast<uint8>(ECharacterAnimationState::Idle);
 
     OpenOrClosePause = true;
