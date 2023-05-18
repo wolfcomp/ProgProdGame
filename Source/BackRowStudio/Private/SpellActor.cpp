@@ -186,6 +186,7 @@ void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, 
         }
         else
         {
+            origin += rotation.RotateVector(Spell->Heavy.Range);
             world->SpawnActor(Spell->Light.Blueprint->GetClass(), &origin, &rotation);
         }
     }
@@ -206,6 +207,7 @@ void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, 
         }
         else
         {
+            origin += rotation.RotateVector(Spell->Heavy.Range);
             world->SpawnActor(Spell->Heavy.Blueprint->GetClass(), &origin, &rotation);
         }
     }

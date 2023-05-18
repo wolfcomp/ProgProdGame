@@ -29,16 +29,34 @@ class BACKROWSTUDIO_API AMainCharacter : public ACharacter, public IGenericTeamA
 {
     GENERATED_BODY()
 
-    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Attack", meta = (AllowPrivateAccess = "true"))
     bool beingAttacked;
 
-    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Attack", meta = (AllowPrivateAccess = "true"))
     float attackTimer;
 
-    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Cast", meta = (AllowPrivateAccess = "true"))
+    float cooldownTimer;
+
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Cast", meta = (AllowPrivateAccess = "true"))
+    float cooldownLength;
+
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Cast", meta = (AllowPrivateAccess = "true"))
+    float castTimer;
+
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Cast", meta = (AllowPrivateAccess = "true"))
+    class USpell *spell;
+
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Cast", meta = (AllowPrivateAccess = "true"))
+    bool isHeavy;
+
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Cast", meta = (AllowPrivateAccess = "true"))
+    bool canAttack;
+
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Attack", meta = (AllowPrivateAccess = "true"))
     int attackingPower;
 
-    UPROPERTY(VisibleAnywhere, Category = "Damage State", meta = (AllowPrivateAccess = "true"))
+    UPROPERTY(VisibleAnywhere, Category = "Damage State | Attack", meta = (AllowPrivateAccess = "true"))
     float respawnTimer;
 
     void UnsetAnimationFlag(ECharacterAnimationState flag);
