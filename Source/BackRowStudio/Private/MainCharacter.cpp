@@ -25,15 +25,9 @@
 #include "PauseWidget.h"
 #include "Wolf.h"
 
-void AMainCharacter::UnsetAnimationFlag(ECharacterAnimationState flag)
-{
-    AnimationState &= ~static_cast<uint8>(flag);
-}
+void AMainCharacter::UnsetAnimationFlag(ECharacterAnimationState flag) { AnimationState &= ~static_cast<uint8>(flag); }
 
-bool AMainCharacter::CheckAnimationFlag(ECharacterAnimationState flag)
-{
-    return (AnimationState & static_cast<uint8>(flag)) == static_cast<uint8>(flag);
-}
+bool AMainCharacter::CheckAnimationFlag(ECharacterAnimationState flag) { return (AnimationState & static_cast<uint8>(flag)) == static_cast<uint8>(flag); }
 
 AMainCharacter::AMainCharacter()
 {
@@ -77,6 +71,10 @@ AMainCharacter::AMainCharacter()
 void AMainCharacter::BeginPlay()
 {
     Super::BeginPlay();
+
+    AnimationAttackTimer = 0;
+    AnimationAttackedTimer = 0;
+    AnimationPickupTimer = 0;
 
     AnimationState = static_cast<uint8>(ECharacterAnimationState::Idle);
 
@@ -327,6 +325,17 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
     {
         beingAttacked = true;
         attackingPower += wolf->AttackPower;
+    }
+    if (const auto enemy = Cast<AEnemy>(other_actor))
+    {
+        Health -= enemy->AttackPower;
+        AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attacked);
+        auto distance = GetActorLocation() - enemy->GetActorLocation();
+        distance *= FVector(1, 1, 0);
+        distance.Normalize();
+        distance.Z = .45;
+        distance *= enemy->PushForce;
+        LaunchCharacter(distance, true, true);
     }
 }
 

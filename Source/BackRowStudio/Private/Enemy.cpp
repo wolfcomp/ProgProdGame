@@ -17,6 +17,9 @@ AEnemy::AEnemy()
 {
     // Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
     PrimaryActorTick.bCanEverTick = true;
+
+    StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Static Mesh"));
+    StaticMesh->SetupAttachment(GetRootComponent());
 }
 
 // Called when the game starts or when spawned
@@ -25,4 +28,11 @@ void AEnemy::BeginPlay() { Super::BeginPlay(); }
 // Called every frame
 void AEnemy::Tick(float delta_time) { Super::Tick(delta_time); }
 
-void AEnemy::TakeDamage(int damage, AActor *actor) {}
+void AEnemy::TakeDamage(int damage, AActor *actor)
+{
+    Health -= damage;
+    if (Health <= 0)
+    {
+        Destroy();
+    }
+}
