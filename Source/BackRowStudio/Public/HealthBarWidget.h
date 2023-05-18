@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/WidgetSwitcher.h"
 #include "HealthBarWidget.generated.h"
 
 /**
@@ -12,15 +13,16 @@
 UCLASS()
 class BACKROWSTUDIO_API UHealthBarWidget : public UUserWidget
 {
-	GENERATED_BODY()
-	virtual void NativeConstruct() override;
+    GENERATED_BODY()
+    virtual void NativeConstruct() override;
+
 public:
-	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
-	class UProgressBar* MyHealthBar;
+    UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+    class UProgressBar *MyHealthBar;
 
-	UPROPERTY()
-	class AMainCharacter* MyPlayer;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    class AMainCharacter *MyPlayer;
 
-	UFUNCTION()
-	float GetHealth() const;
+    UFUNCTION()
+    float GetHealth() const;
 };
