@@ -115,6 +115,14 @@ void AMainCharacter::BeginPlay()
         PauseMenu->AddToViewport();
         PauseMenu->SetVisibility(ESlateVisibility::Collapsed);
     }
+
+    if (MyPauseMenu->IsValidLowLevel())
+    {
+        InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Inventory Widget"));
+        InvWidget->Inventory = MyInv;
+        InvWidget->AddToViewport();
+        InvWidget->SetVisibility(ESlateVisibility::Collapsed);
+    }
 }
 
 void AMainCharacter::MoveAction(const FInputActionValue &value)
@@ -177,7 +185,7 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
         AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attack);
         if (SpellEnenhancements->Spell->Heavy.IsGroundSpell)
         {
-            SpellEnenhancements->CastSpell(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
+            SpellEnenhancements->CastSpell(GetActorLocation() - FVector(0, 0, GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
         }
         else
         {
@@ -228,38 +236,25 @@ void AMainCharacter::SetSpell()
 
 void AMainCharacter::OpenCloseInventory(const FInputActionValue &value)
 {
-    if (MyInv->IsValidLowLevel())
+    if (InvWidget && PC)
     {
         if (OpenInventory)
         {
-            if (MyInvWidget)
-            {
-                InvWidget = CreateWidget<UInventoryWidget>(GetWorld(), MyInvWidget, FName("Inventory Widget"));
-                InvWidget->Inventory = MyInv;
-                InvWidget->AddToViewport();
-                if (PC)
-                {
-                    PC->SetShowMouseCursor(true);
-                    UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
-                }
-            }
+            InvWidget->UpdateInventory();
+            UWidgetBlueprintLibrary::SetInputMode_GameAndUIEx(PC, InvWidget);
+            PC->SetShowMouseCursor(true);
+            PC->SetPause(true);
+            InvWidget->SetVisibility(ESlateVisibility::Visible);
             OpenInventory = false;
+            return;
         }
-        else
-        {
-            if (InvWidget)
-            {
-                InvWidget->RemoveFromParent();
-            }
 
-            if (PC)
-            {
-                PC->SetShowMouseCursor(false);
-                UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
-            }
-
-            OpenInventory = true;
-        }
+        UWidgetBlueprintLibrary::SetInputMode_GameOnly(PC);
+        PC->SetShowMouseCursor(false);
+        PC->SetPause(false);
+        InvWidget->SetVisibility(ESlateVisibility::Collapsed);
+        InvWidget->HoveredSlot = nullptr;
+        OpenInventory = true;
     }
 }
 
@@ -308,14 +303,12 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
                     UGameplayStatics::PlaySound2D(this, PickupSound);
                 }
             }
-            else
+            else if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
             {
-                if (MyInv->AddSpell(FSlotStruct(item->Item, 1)))
-                {
-                    SetSpell();
-                    UGameplayStatics::PlaySound2D(this, PickupSound);
-                }
+                SetSpell();
+                UGameplayStatics::PlaySound2D(this, PickupSound);
             }
+
             item->IsPickedUp = true;
             item->Mesh->SetVisibility(false);
             item->SphereCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);

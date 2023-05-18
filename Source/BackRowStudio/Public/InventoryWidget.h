@@ -5,20 +5,18 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/GridPanel.h"
 #include "CoreMinimal.h"
-#include "InventoryComponent.h"
-#include "SlotWidget.h"
 #include "InventoryWidget.generated.h"
 
 UCLASS()
 class BACKROWSTUDIO_API UInventoryWidget : public UUserWidget
 {
     GENERATED_BODY()
+
 public:
-    virtual void NativeTick(const FGeometry &geometry, float delta_time) override;
-
-    virtual void NativePreConstruct() override;
-
     virtual void NativeConstruct() override;
+
+    UFUNCTION(BlueprintCallable)
+    void UpdateInventory();
 
     UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn))
     class UInventoryComponent *Inventory;
@@ -30,7 +28,10 @@ public:
     UGridPanel *SpellPanel;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    TSubclassOf<USlotWidget> SlotWidget;
+    TSubclassOf<class USlotWidget> SlotWidget;
+
+    UPROPERTY(BlueprintReadWrite)
+    USlotWidget *HoveredSlot;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     int HorizontalLimit = 5;
