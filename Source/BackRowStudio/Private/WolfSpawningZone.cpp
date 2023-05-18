@@ -4,6 +4,8 @@
 #include "WolfAIController.h"
 #include "WolfSpawningZone.h"
 
+#include "Kismet/GameplayStatics.h"
+
 AWolfSpawningZone::AWolfSpawningZone()
 {
     PrimaryActorTick.bCanEverTick = true;
@@ -32,6 +34,10 @@ void AWolfSpawningZone::SpawnInTheWolves()
         AWolf *wolf = Cast<AWolf>(a);
         wolf->SpawnDefaultController();
         AWolfAIController *wolfController = Cast<AWolfAIController>(wolf->Controller);
+        wolf->PlayerRef = Cast<AMainCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
+        wolf->PrimaryActorTick.bCanEverTick = true;
+        wolfController->SetPawn(wolf);
+        wolfController->MoveToPlayer();
     }
 }
 
