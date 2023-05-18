@@ -1,8 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "ItemActor.h"
-
 #include "Components/SphereComponent.h"
 #include "InventoryItemAsset.h"
 

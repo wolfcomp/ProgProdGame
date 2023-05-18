@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -28,5 +26,5 @@ public:
     virtual void HeavyAttack(FVector, FRotator, UWorld *, AActor *self, TArray<ADamageActor *> &, const bool apply_damage) override;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    USpell* Spell;
+    USpell *Spell;
 };

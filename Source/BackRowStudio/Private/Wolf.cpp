@@ -1,33 +1,26 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Wolf.h"
-
 #include "Animation/AnimMontage.h"
-#include "Components/BoxComponent.h"
-#include "Kismet/GameplayStatics.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Async/Future.h"
-#include "MainCharacter.h"
-#include "WolfAIController.h"
+#include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/SplineComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "MainCharacter.h"
+#include "WolfAIController.h"
 
-// Sets default values
 AWolf::AWolf()
 {
     PrimaryActorTick.bCanEverTick = true;
     AttackHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Wolf Attack Hitbox"));
     AttackHitBox->SetupAttachment(RootComponent);
 
-    // setting up character movement
     GetCharacterMovement()->MaxWalkSpeed = 600.0f;
     GetCharacterMovement()->bOrientRotationToMovement = true;
     AIControllerClass = AWolfAIController::StaticClass();
     SpawnCollisionHandlingMethod = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 }
 
-// Called when the game starts or when spawned
 void AWolf::BeginPlay()
 {
     if (APawn *tempPawn = GetWorld()->GetFirstPlayerController()->GetPawn(); tempPawn->IsValidLowLevel())
@@ -51,15 +44,9 @@ void AWolf::BeginPlay()
     Super::BeginPlay();
 }
 
-void AWolf::TryAttack(AActor *actor_to_attack)
-{
-    MyAnimationState = Attacking;
-}
+void AWolf::TryAttack(AActor *actor_to_attack) { MyAnimationState = Attacking; }
 
-void AWolf::TryStoppingAttack()
-{
-    MyAnimationState = Moving;
-}
+void AWolf::TryStoppingAttack() { MyAnimationState = Moving; }
 
 void AWolf::HideActor(bool is_hidden)
 {

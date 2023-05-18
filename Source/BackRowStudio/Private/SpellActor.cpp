@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "SpellActor.h"
 #include "Enemy.h"
 #include "NiagaraComponent.h"
@@ -189,6 +186,7 @@ void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, 
         }
         else
         {
+            origin += rotation.RotateVector(Spell->Heavy.Range);
             world->SpawnActor(Spell->Light.Blueprint->GetClass(), &origin, &rotation);
         }
     }
@@ -209,6 +207,7 @@ void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, 
         }
         else
         {
+            origin += rotation.RotateVector(Spell->Heavy.Range);
             world->SpawnActor(Spell->Heavy.Blueprint->GetClass(), &origin, &rotation);
         }
     }

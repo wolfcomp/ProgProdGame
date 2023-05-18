@@ -1,9 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "OptionsMenu.h"
-#include "Sound/SoundClass.h"
 #include "GameFramework/GameUserSettings.h"
+#include "Sound/SoundClass.h"
 
 void UOptionsMenu::NativeConstruct()
 {
@@ -18,12 +15,10 @@ void UOptionsMenu::ToggleFullScreen()
     {
         GEngine->GameUserSettings->SetFullscreenMode(EWindowMode::Fullscreen);
         GEngine->GameUserSettings->ApplySettings(false);
-        //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("False"));
     }
     else
     {
         GEngine->GameUserSettings->SetFullscreenMode(EWindowMode::Windowed);
         GEngine->GameUserSettings->ApplySettings(false);
-        //GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Green,TEXT("True"));
-    };
+    }
 }
