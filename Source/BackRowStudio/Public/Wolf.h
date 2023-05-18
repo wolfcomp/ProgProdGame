@@ -46,6 +46,9 @@ public:
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Artist")
     bool Patrol;
 
+    UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Artist")
+    bool MoveToPlayer;
+
     UPROPERTY(EditInstanceOnly, BlueprintReadWrite, Category="Artist", meta=(EditCondition="Patrol==true", EditConditionHides))
     TObjectPtr<APatrolPathActor> PatrolPath = ArtistUtility();
 
