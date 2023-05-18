@@ -1,10 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "CheckpointActor.h"
-
 #include "Components/ArrowComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Components/SphereComponent.h"
 #include "InventoryComponent.h"
 #include "ItemActor.h"
@@ -12,9 +9,7 @@
 #include "MainCharacter.h"
 #include "Wolf.h"
 #include "WolfAIController.h"
-#include "Components/CapsuleComponent.h"
 
-// Sets default values
 ACheckpointActor::ACheckpointActor()
 {
     PrimaryActorTick.bCanEverTick = false;
@@ -42,7 +37,6 @@ ACheckpointActor::ACheckpointActor()
     SpawnPointArrow->ArrowLength = 100;
 }
 
-// Called when the game starts or when spawned
 void ACheckpointActor::BeginPlay()
 {
     Super::BeginPlay();

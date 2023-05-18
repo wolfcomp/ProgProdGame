@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -9,9 +7,6 @@
 #include "Components/WidgetSwitcher.h"
 #include "MainMenu.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class BACKROWSTUDIO_API UMainMenu : public UUserWidget
 {
@@ -29,7 +24,6 @@ public:
 
     UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
     UOptionsMenu *OptionsMenu;
-
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FName LevelToLoad;

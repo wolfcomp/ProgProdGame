@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 #include "Components/ActorComponent.h"
 #include "CoreMinimal.h"
@@ -55,8 +53,6 @@ struct FSlotStruct
     int Quantity = 0;
 
     FSlotStruct();
-
-    //void Erase();
 
     explicit FSlotStruct(UInventoryItemAsset *item, int quantity);
 
