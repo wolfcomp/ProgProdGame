@@ -185,7 +185,7 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
         AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attack);
         if (SpellEnenhancements->Spell->Heavy.IsGroundSpell)
         {
-            SpellEnenhancements->CastSpell(FVector(GetActorLocation().X, GetActorLocation().Y, GetActorLocation().Z - GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
+            SpellEnenhancements->CastSpell(GetActorLocation() - FVector(0, 0, GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
         }
         else
         {
