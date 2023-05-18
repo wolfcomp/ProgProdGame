@@ -58,8 +58,9 @@ void AWolfAIController::BeginPlay()
         {
             Patrol();
         }
-        else
+        else if (!controlledWolf->Patrol && CanMove && controlledWolf->MoveToPlayer)
         {
+            GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("here's the culprint"));
             MoveToPlayer();
         }
     }
@@ -109,6 +110,7 @@ void AWolfAIController::Patrol()
 {
     if (!PatrolPoints.IsEmpty() && controlledWolf->Patrol)
     {
+        CurrentPatrolPointIndex++;
         if (CurrentPatrolPointIndex >= PatrolPoints.Num())
         {
             CurrentPatrolPointIndex = 0;
@@ -118,24 +120,23 @@ void AWolfAIController::Patrol()
         {
             MoveTo(nextPatrolPoint);
         }
-        CurrentPatrolPointIndex++;
     }
 }
 
 void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult &result)
 {
-    if (result.IsSuccess() && !result.IsInterrupted() && CanMove)
-    {
-        if (moveToPlayer)
-        {
-            MoveToPlayer();
-        }
-        else
-        {
-            Patrol();
-        }
-    }
-    // Super::OnMoveCompleted(requestID, result);
+    Super::OnMoveCompleted(request_id, result);
+    //if (result.IsSuccess() && !result.IsInterrupted() && CanMove)
+    //{
+    //    if (moveToPlayer)
+    //    {
+    //        MoveToPlayer();
+    //    }
+    //    else
+    //    {
+    //        Patrol();
+    //    }
+    //}
 }
 
 void AWolfAIController::OnPossess(APawn *InPawn)
@@ -158,11 +159,10 @@ ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &othe
     {
         if (auto const teamAgent = Cast<IGenericTeamAgentInterface>(otherPawn->GetController()))
         {
-            if (teamAgent->GetGenericTeamId() == FGenericTeamId(0) || teamAgent->GetGenericTeamId() == FGenericTeamId(1))
+            if (teamAgent->GetGenericTeamId() == FGenericTeamId(4))
             {
-                return ETeamAttitude::Friendly;
+                return ETeamAttitude::Hostile;
             }
-            return ETeamAttitude::Hostile;
         }
     }
     return ETeamAttitude::Neutral;
@@ -170,8 +170,9 @@ ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &othe
 
 void AWolfAIController::OnTargetPerceptionUpdatedDelegate(AActor *actor, FAIStimulus stimulus)
 {
-    if (GetTeamAttitudeTowards(*actor) == ETeamAttitude::Hostile)
+    if (GetTeamAttitudeTowards(*actor) == ETeamAttitude::Hostile && FVector::Dist(controlledWolf->GetActorLocation(), actor->GetActorLocation()) < 2000)
     {
+        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("here's the second culprint"));
         MoveToPlayer();
     }
     switch (stimulus.Type)
