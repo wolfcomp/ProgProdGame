@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "WolfAIController.h"
 #include "Components/SplineComponent.h"
 #include "MainCharacter.h"
@@ -27,7 +24,6 @@ AWolfAIController::AWolfAIController()
     AIPerceptionComponent->ConfigureSense(*AISenseConfigHearing);
     AIPerceptionComponent->SetDominantSense(UAISenseConfig_Sight::StaticClass());
 
-    // Team ID For Wolf
     AWolfAIController::SetGenericTeamId(FGenericTeamId(1));
 }
 
@@ -60,7 +56,6 @@ void AWolfAIController::BeginPlay()
         }
         else if (!controlledWolf->Patrol && CanMove && controlledWolf->MoveToPlayer)
         {
-            GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("here's the culprint"));
             MoveToPlayer();
         }
     }
@@ -123,21 +118,7 @@ void AWolfAIController::Patrol()
     }
 }
 
-void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult &result)
-{
-    Super::OnMoveCompleted(request_id, result);
-    //if (result.IsSuccess() && !result.IsInterrupted() && CanMove)
-    //{
-    //    if (moveToPlayer)
-    //    {
-    //        MoveToPlayer();
-    //    }
-    //    else
-    //    {
-    //        Patrol();
-    //    }
-    //}
-}
+void AWolfAIController::OnMoveCompleted(FAIRequestID request_id, const FPathFollowingResult &result) { Super::OnMoveCompleted(request_id, result); }
 
 void AWolfAIController::OnPossess(APawn *InPawn)
 {
@@ -155,9 +136,9 @@ void AWolfAIController::OnPossess(APawn *InPawn)
 
 ETeamAttitude::Type AWolfAIController::GetTeamAttitudeTowards(const AActor &other) const
 {
-    if (APawn const *otherPawn = Cast<APawn>(&other))
+    if (const APawn *otherPawn = Cast<APawn>(&other))
     {
-        if (auto const teamAgent = Cast<IGenericTeamAgentInterface>(otherPawn->GetController()))
+        if (const auto teamAgent = Cast<IGenericTeamAgentInterface>(otherPawn->GetController()))
         {
             if (teamAgent->GetGenericTeamId() == FGenericTeamId(4))
             {
@@ -172,17 +153,6 @@ void AWolfAIController::OnTargetPerceptionUpdatedDelegate(AActor *actor, FAIStim
 {
     if (GetTeamAttitudeTowards(*actor) == ETeamAttitude::Hostile && FVector::Dist(controlledWolf->GetActorLocation(), actor->GetActorLocation()) < 2000)
     {
-        GEngine->AddOnScreenDebugMessage(-1, 2.0f, FColor::Cyan, TEXT("here's the second culprint"));
         MoveToPlayer();
-    }
-    switch (stimulus.Type)
-    {
-    case 0:
-    // react to sight stimulus
-
-    case 1:
-        // react to hearing;
-    default:
-        return;
     }
 }
