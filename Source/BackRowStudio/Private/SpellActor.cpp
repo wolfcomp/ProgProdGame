@@ -178,10 +178,18 @@ void ISpellActor::LightAttack(FVector origin, FRotator rotation, UWorld *world, 
 {
     if (Spell != nullptr)
     {
-        actors = GetActors(Spell->Light.Type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
-        for (ADamageActor *actor : actors)
+        auto type = Spell->Light.Type;
+        if (type != ESpellType::Particle)
         {
-            actor->TakeDamage(Spell->Light.Potency, self);
+            actors = GetActors(type, Spell->Light.Range, Spell->Light.Radius, origin, rotation, world);
+            for (ADamageActor *actor : actors)
+            {
+                actor->TakeDamage(Spell->Light.Potency, self);
+            }
+        }
+        else
+        {
+            world->SpawnActor(Spell->Light.Blueprint->GetClass(), &origin, &rotation);
         }
     }
 }
@@ -190,10 +198,18 @@ void ISpellActor::HeavyAttack(FVector origin, FRotator rotation, UWorld *world, 
 {
     if (Spell != nullptr)
     {
-        actors = GetActors(Spell->Heavy.Type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
-        for (ADamageActor *actor : actors)
+        auto type = Spell->Heavy.Type;
+        if (type != ESpellType::Particle)
         {
-            actor->TakeDamage(Spell->Heavy.Potency, self);
+            actors = GetActors(type, Spell->Heavy.Range, Spell->Heavy.Radius, origin, rotation, world);
+            for (ADamageActor *actor : actors)
+            {
+                actor->TakeDamage(Spell->Heavy.Potency, self);
+            }
+        }
+        else
+        {
+            world->SpawnActor(Spell->Heavy.Blueprint->GetClass(), &origin, &rotation);
         }
     }
 }
