@@ -156,6 +156,7 @@ void ISpellActor::CastSpell(const FVector origin, const FRotator rotation, UWorl
             LightAttack(origin, rotation, world, root->GetAttachParentActor(), actors, true);
         }
     }
+    DebugSpell(origin, rotation, world);
 }
 
 void ISpellActor::DebugSpell(const FVector origin, const FRotator rotation, const UWorld *world) const
