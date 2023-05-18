@@ -327,8 +327,11 @@ void AMainCharacter::OnOverlapBegin(UPrimitiveComponent *overlapped_component, A
         Health -= enemy->AttackPower;
         AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attacked);
         auto distance = GetActorLocation() - enemy->GetActorLocation();
+        distance *= FVector(1, 1, 0);
         distance.Normalize();
-        LaunchCharacter(distance * enemy->PushForce, true, true);
+        distance.Z = .45;
+        distance *= enemy->PushForce;
+        LaunchCharacter(distance, true, true);
     }
 }
 
