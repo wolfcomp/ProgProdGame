@@ -163,10 +163,11 @@ void AMainCharacter::LightAttackAction(const FInputActionValue &value)
         return;
     }
 
-    if (CanJump() && SpellEnenhancements)
+    if (CanJump() && SpellEnenhancements && canAttack)
     {
         AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attack);
-        SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), false);
+        spell = SpellEnenhancements->Spell;
+        isHeavy = false;
     }
 }
 
@@ -177,17 +178,11 @@ void AMainCharacter::HeavyAttackAction(const FInputActionValue &value)
         return;
     }
 
-    if (CanJump())
+    if (CanJump() && SpellEnenhancements && canAttack)
     {
         AnimationState |= static_cast<uint8>(ECharacterAnimationState::Attack);
-        if (SpellEnenhancements->Spell->Heavy.IsGroundSpell)
-        {
-            SpellEnenhancements->CastSpell(GetActorLocation() - FVector(0, 0, GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), true);
-        }
-        else
-        {
-            SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), true);
-        }
+        spell = SpellEnenhancements->Spell;
+        isHeavy = true;
     }
 }
 
@@ -202,10 +197,10 @@ void AMainCharacter::AbilityScrollAction(const FInputActionValue &value)
     SelectedSpell += static_cast<int>(value.Get<float>());
     if (SelectedSpell < 0)
     {
-        SelectedSpell = 3;
+        SelectedSpell = 1;
     }
 
-    if (SelectedSpell > 3)
+    if (SelectedSpell > 1)
     {
         SelectedSpell = 0;
     }
@@ -401,6 +396,38 @@ void AMainCharacter::Tick(float delta_time)
         RespawnLocation->RespawnPlayer(this);
         attackingPower = 0;
         respawnTimer = 0;
+    }
+    if (!canAttack)
+    {
+        if (cooldownTimer < cooldownLength)
+        {
+            cooldownTimer += delta_time;
+        }
+        else
+        {
+            canAttack = true;
+            cooldownTimer = 0;
+            cooldownLength = 0;
+        }
+    }
+    if (spell)
+    {
+        if (const auto spellType = isHeavy ? spell->Heavy : spell->Light; castTimer > spellType.CastTime)
+        {
+            if (spellType.IsGroundSpell)
+            {
+                SpellEnenhancements->CastSpell(GetActorLocation() - FVector(0, 0, GroundSpellLocationOffset), GetActorRotation(), GetWorld(), GetRootComponent(), isHeavy);
+            }
+            else
+            {
+                SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), isHeavy);
+            }
+        spellEnd:
+            spell = nullptr;
+            castTimer = 0;
+            return;
+        }
+        castTimer += delta_time;
     }
 }
 
