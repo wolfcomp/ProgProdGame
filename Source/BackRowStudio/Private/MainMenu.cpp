@@ -1,4 +1,5 @@
 #include "MainMenu.h"
+#include "Blueprint/WidgetBlueprintLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
 void UMainMenu::NativeConstruct()
@@ -12,6 +13,7 @@ void UMainMenu::NativeConstruct()
 void UMainMenu::MyStartGame()
 {
     GetWorld()->GetFirstPlayerController()->SetShowMouseCursor(false);
+    UWidgetBlueprintLibrary::SetInputMode_GameOnly(GetWorld()->GetFirstPlayerController());
     UGameplayStatics::OpenLevel(this, LevelToLoad);
 }
 

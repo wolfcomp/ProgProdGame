@@ -46,11 +46,10 @@ struct FSpellInternal
     class UNiagaraSystem *VFX;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    UBlueprint *Blueprint;
+    TSubclassOf<AActor> Blueprint;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     bool IsGroundSpell;
-
 };
 
 UCLASS(BlueprintType)
