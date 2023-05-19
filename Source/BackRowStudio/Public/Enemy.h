@@ -15,7 +15,8 @@ protected:
 public:
     virtual void Tick(float) override;
 
-    virtual void TakeDamage(int, AActor *);
+    UFUNCTION(BlueprintCallable)
+    virtual void TakeDamage(int damage, AActor *actor);
 };
 
 UCLASS()

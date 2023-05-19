@@ -422,7 +422,6 @@ void AMainCharacter::Tick(float delta_time)
             {
                 SpellEnenhancements->CastSpell(GetActorLocation(), GetActorRotation(), GetWorld(), GetRootComponent(), isHeavy);
             }
-        spellEnd:
             spell = nullptr;
             castTimer = 0;
             return;
